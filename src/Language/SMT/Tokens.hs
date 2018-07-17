@@ -1,8 +1,8 @@
 -- | Lexems of the Synquid language
-module Tokens.hs.Tokens where
+module Language.SMT.Tokens where
 
-import Tokens.hs.Logic
-import Tokens.hs.Util
+import Language.SMT.Logic
+import Language.SMT.Util
 import Data.Maybe
 import Data.Map (Map, fromList)
 import Data.Char

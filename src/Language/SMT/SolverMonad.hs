@@ -1,8 +1,8 @@
 -- | Interface to SMT solvers
-module MUSFix.SolverMonad where
+module Language.SMT.SolverMonad where
 
-import MUSFix.Logic
-import Synquid.Program
+import Language.SMT.Logic
+import Language.SMT.Program
 import Data.Map
 import Data.Set
 import Control.Applicative

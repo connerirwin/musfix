@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, UndecidableInstances, FlexibleContexts #-}
 
-module MUSFix.Pretty (
+module Language.SMT.Pretty (
   -- * Interface
   Pretty (..),
   Doc,
@@ -53,12 +53,12 @@ module MUSFix.Pretty (
   programNodeCount
 ) where
 
-import MUSFix.Logic
-import Synquid.Type
-import MUSFix.Error
+import Language.SMT.Logic
+import Language.SMT.Type
+import Language.SMT.Error
 -- import Synquid.Program -- Need to remove all references
-import MUSFix.Tokens
-import MUSFix.Util
+import Language.SMT.Tokens
+import Language.SMT.Util
 
 import Text.PrettyPrint.ANSI.Leijen hiding ((<+>), (<$>), hsep, vsep)
 import qualified Text.PrettyPrint.ANSI.Leijen as L

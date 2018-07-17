@@ -1,5 +1,5 @@
 -- | Common types and helper functions
-module MUSFix.Util where
+module Language.SMT.Util where
 
 import Data.Maybe
 import Data.Either

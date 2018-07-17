@@ -1,9 +1,9 @@
 {-# LANGUAGE TemplateHaskell, Rank2Types #-}
 
 -- | Formulas of the refinement logic
-module Language.Fixpoint.MUSFix.Logic where
+module Language.SMT.Logic where
 
-import Language.Fixpoint.MUSFix.Util
+import Language.SMT.Util
 
 import Data.Tuple
 import Data.List

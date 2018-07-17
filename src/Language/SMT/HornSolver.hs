@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts, TypeSynonymInstances, FlexibleInstances #-}
 
 -- | Solver for second-order constraints
-module Language.Fixpoint.HornSolver (
+module Language.SMT.HornSolver (
     CandidatePickStrategy (..)
   , ConstraintPickStrategy (..)
   , OptimalValuationsStrategy (..)
@@ -10,10 +10,10 @@ module Language.Fixpoint.HornSolver (
   , evalFixPointSolver
   ) where
 
-import Language.MUSFix.Logic
-import Language.MUSFix.SolverMonad
-import Language.MUSFix.Util
-import Language.Horn.Fixpoint.MUSFix.Pretty
+import Language.SMT.Logic
+import Language.SMT.SolverMonad
+import Language.SMT.Util
+import Language.SMT.Pretty
 
 import Data.Function
 import Data.List
