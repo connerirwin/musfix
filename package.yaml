@@ -1,0 +1,15 @@
+name: musfix
+version: '0.1.0.0'
+synopsis: Greatest Fixpoint Horn Solver from Synquid
+category: Language
+author:
+- Nadia Polikarpova
+- Conner Irwin
+- Kevin Hine
+maintainer: cjirwin@ucsd.edu
+license: UnspecifiedLicense
+dependencies:
+- base >=4.6 && <4.9
+- atto-lisp ==0.2.*
+library:
+  source-dirs: src
