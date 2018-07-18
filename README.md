@@ -8,7 +8,7 @@ General purpose version of Synquid's greatest-fixpoint Horn clause solver.
    `apt install haskell-stack` </br>
    `stack update` </br>
    (alternatively `curl -sSL https://get.haskellstack.org/ | sh`)
-2. Install the Z3 Theorem Prover v4.3.2 </br>
+2. Install the Z3 Theorem Prover v4.7.1 </br>
    `git clone --branch z3-4.7.1 https://github.com/Z3Prover/z3.git` </br>
    `python scripts/mk_make.py` </br>
    `cd build; make` </br>
