@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bd88081530663326bacbf69201f32f1aa014433bd8dd25807b93700a0071bb8a
+-- hash: c825eb7e12012a186908fae55856b97933f84b2b6e4fb8f0b7444c96b50e5273
 
 name:           musfix
 version:        0.1.0.0
@@ -32,10 +32,13 @@ library
   hs-source-dirs:
       src
   build-depends:
-      atto-lisp ==0.2.*
+      ansi-terminal >=0.6
+    , ansi-wl-pprint >=0.6 && <0.7
+    , atto-lisp ==0.2.*
     , base >=4.6 && <4.9
     , containers >=0.5 && <0.6
     , lens >=3.7
     , mtl >=2.2 && <2.3
+    , parsec ==3.1.*
     , transformers >=0.3 && <0.5
   default-language: Haskell2010
