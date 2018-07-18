@@ -56,7 +56,8 @@ module Language.SMT.Pretty (
 import Language.SMT.Logic
 import Language.SMT.Type
 import Language.SMT.Error
--- import Synquid.Program -- Need to remove all references
+-- | Figure out why this line was commented out \/
+import Language.SMT.Program -- Need to remove all references
 import Language.SMT.Tokens
 import Language.SMT.Util
 
