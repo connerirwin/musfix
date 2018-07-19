@@ -14,6 +14,10 @@ General purpose version of Synquid's greatest-fixpoint Horn clause solver.
         python scripts/mk_make.py
         cd build; make
         sudo make install
+        
+   After building Z3 it may be necessary to update the system's library cache:
+   
+        sudo ldconfig
     
 3. Install Synquid
 
