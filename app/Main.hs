@@ -1,9 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.Attoparsec.ByteString as A
-import Language.SMT.Parser
-import Language.SMT.HornSolver
 import qualified Data.AttoLisp as L
+import qualified Data.Map as M
+
+import Language.SMT.HornSolver
+import Language.SMT.Logic
+import Language.SMT.Parser
+import Language.SMT.Resolver
+import Language.SMT.Util
+import Language.SMT.Z3
 
 main :: IO ()
 main = do
@@ -27,6 +33,18 @@ defaultHornSolverParams = HornSolverParams {
   constraintPickStrategy = SmallSpaceConstraint,
   solverLogLevel = 0
 }
+
+type HornSolver = FixPointSolver Z3State
+
+solveForConstraints :: Id -> Sort -> Formula -> IO ()
+solveForConstraints var sort formula = print "resolvedTypes eventually..."
+  where
+    -- TODO figure out how resolveTypeRefinement works, is it even what we want?
+    resolvedTypes = resolveTypeRefinement sort formula
+    --Resolver s = resolvedTypes
+
+    qualifSpace = toSpace Nothing [formula]
+    qualifMap = M.singleton var qualifSpace
 
 {-
 resolveTypeRefinement :: Sort -> Formula -> Resolver Formula

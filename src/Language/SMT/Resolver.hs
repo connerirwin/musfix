@@ -1,7 +1,10 @@
 {-# LANGUAGE TupleSections, FlexibleContexts, TemplateHaskell #-}
 
 -- | Functions for processing the AST created by the Parser (eg filling in unknown types, verifying that refinement formulas evaluate to a boolean, etc.)
-module Language.SMT.Resolver (resolveDecls, resolveRefinement, resolveRefinedType, addAllVariables, ResolverState (..), instantiateSorts) where
+module Language.SMT.Resolver (
+  resolveDecls, resolveRefinement, resolveRefinedType, resolveTypeRefinement,
+  addAllVariables, ResolverState (..), instantiateSorts
+  ) where
 
 import Language.SMT.Logic
 import Language.SMT.Type
