@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4bfd1f025b8a5d22c26534cee571240eb6ce1bde92301e2e3e49b47787618408
+-- hash: d117f8e1645b8728c667e5b48465caff0c35d52bd4c70f179345eadd2c14a3aa
 
 name:           musfix
 version:        0.1.0.0
@@ -21,6 +21,7 @@ library
       Language.SMT.Error
       Language.SMT.HornSolver
       Language.SMT.Logic
+      Language.SMT.Parser
       Language.SMT.Pretty
       Language.SMT.Program
       Language.SMT.SolverMonad
@@ -37,12 +38,51 @@ library
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7
     , atto-lisp ==0.2.*
+    , attoparsec >=0.10 && <0.14
     , base >=4.6 && <4.9
     , bimap >=0.2
     , containers >=0.5 && <0.6
     , lens >=3.7
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
+    , scientific >=0.3
+    , text >=1.2
+    , transformers >=0.3 && <0.5
+    , z3 >4.0
+  default-language: Haskell2010
+
+executable musfix
+  main-is: Main.hs
+  other-modules:
+      Language.SMT.Error
+      Language.SMT.HornSolver
+      Language.SMT.Logic
+      Language.SMT.Parser
+      Language.SMT.Pretty
+      Language.SMT.Program
+      Language.SMT.SolverMonad
+      Language.SMT.Tokens
+      Language.SMT.Type
+      Language.SMT.Util
+      Language.SMT.Z3
+      MUSFix
+      Paths_musfix
+  hs-source-dirs:
+      src
+      app
+  build-depends:
+      ansi-terminal >=0.6
+    , ansi-wl-pprint >=0.6 && <0.7
+    , atto-lisp ==0.2.*
+    , attoparsec >=0.10 && <0.14
+    , base >=4.6 && <4.9
+    , bimap >=0.2
+    , containers >=0.5 && <0.6
+    , lens >=3.7
+    , mtl >=2.2 && <2.3
+    , parsec ==3.1.*
+    , scientific >=0.3
+    , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
   default-language: Haskell2010
