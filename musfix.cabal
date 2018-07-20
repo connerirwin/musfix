@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d117f8e1645b8728c667e5b48465caff0c35d52bd4c70f179345eadd2c14a3aa
+-- hash: 4beca37a1431b94b1bcb6b9c10a4f394991b702dd2879177baceec57bdd67693
 
 name:           musfix
 version:        0.1.0.0
@@ -29,7 +29,6 @@ library
       Language.SMT.Type
       Language.SMT.Util
       Language.SMT.Z3
-      MUSFix
   other-modules:
       Paths_musfix
   hs-source-dirs:
@@ -65,7 +64,6 @@ executable musfix
       Language.SMT.Type
       Language.SMT.Util
       Language.SMT.Z3
-      MUSFix
       Paths_musfix
   hs-source-dirs:
       src

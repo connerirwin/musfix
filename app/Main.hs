@@ -21,10 +21,10 @@ main :: IO ()
 main = do
         print $ f
     where
-        l = case A.parseOnly L.lisp "(+ (v1 int) (+ 2 (- 5)))" of
-            (Left err) -> error $ "bad input: " ++ err
-            (Right lexpr) -> lexpr
-        f = case L.parseMaybe parseFormula l of
-            (Just formula) -> formula
-            Nothing -> error "bad formula"
+        l = case A.parseOnly L.lisp "(qualif Neg ((v1 int) (v2 int)) (+ v1 23))" of
+                Left err -> error $ "bad input: " ++ err
+                Right lexpr -> lexpr
+        f = case L.parse parseInputExpr l of
+                L.Success input -> input
+                L.Error reason -> error $ "bad input: " ++ reason ++ " \n attempting to parse lisp: " ++ (show l)
     
