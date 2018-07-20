@@ -33,8 +33,8 @@ sorts = Map.fromList [ ("int",   IntS),
 
 {- Formulas -}
 instance FromLisp Formula where
-    parseLisp (Symbol "False")          = pure (BoolLit True)
-    parseLisp (Symbol "True")           = pure (BoolLit False)
+    parseLisp (Symbol "False")          = pure (BoolLit False)
+    parseLisp (Symbol "True")           = pure (BoolLit True)
     parseLisp (Number (N.I a))          = pure (IntLit a)
     parseLisp (List [(Symbol "forall"), x, y])  = do
             xExpr <- parseFormula x
