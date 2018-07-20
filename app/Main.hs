@@ -3,6 +3,19 @@
 import Data.Attoparsec.ByteString as A
 import Language.SMT.Parser
 import qualified Data.AttoLisp as L
+import Language.SMT.HornSolver
+
+-- | Parameters for constraint solving
+defaultHornSolverParams = HornSolverParams {
+  pruneQuals = True,
+  isLeastFixpoint = False,
+  optimalValuationsStrategy = MarcoValuations,
+  semanticPrune = True,
+  agressivePrune = True,
+  candidatePickStrategy = InitializedWeakCandidate,
+  constraintPickStrategy = SmallSpaceConstraint,
+  solverLogLevel = 0
+  }
 
 main :: IO ()
 main = do
