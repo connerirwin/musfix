@@ -2,6 +2,7 @@
 
 import Data.Attoparsec.ByteString as A
 import Language.SMT.Parser
+import Language.SMT.HornSolver
 import qualified Data.AttoLisp as L
 
 main :: IO ()
@@ -14,4 +15,28 @@ main = do
         f = case L.parseMaybe parseFormula l of
             (Just formula) -> formula
             Nothing -> error "bad formula"
-    
+
+-- | Parameters for constraint solving
+defaultHornSolverParams = HornSolverParams {
+  pruneQuals = True,
+  isLeastFixpoint = False,
+  optimalValuationsStrategy = MarcoValuations,
+  semanticPrune = True,
+  agressivePrune = True,
+  candidatePickStrategy = InitializedWeakCandidate,
+  constraintPickStrategy = SmallSpaceConstraint,
+  solverLogLevel = 0
+}
+
+{-
+resolveTypeRefinement :: Sort -> Formula -> Resolver Formula
+toSpace :: Maybe Int -> [Formula] -> QSpace
+
+type HornSolver = FixPointSolver Z3State
+
+initHornSolver :: Environment -> s Candidate
+preprocessConstraint :: Formula -> s [Formula]
+
+-- remove extract assumptions
+refineCandidates :: [Formula] -> QMap -> ExtractAssumptions -> [Candidate] -> s [Candidate]
+-}
