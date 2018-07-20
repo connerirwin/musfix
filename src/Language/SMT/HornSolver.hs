@@ -36,8 +36,8 @@ import Debug.Trace
 
 -- | Strategies for picking the next candidate solution to strengthen
 data CandidatePickStrategy = FirstCandidate | ValidWeakCandidate | InitializedWeakCandidate
-      
--- | Strategies for picking the next constraint to solve      
+
+-- | Strategies for picking the next constraint to solve
 data ConstraintPickStrategy = FirstConstraint | SmallSpaceConstraint
 
 -- | MUS search strategies
@@ -55,7 +55,7 @@ data HornSolverParams = HornSolverParams {
   solverLogLevel :: Int                                   -- ^ How verbose logging is
 }
 
--- | Fix point solver execution 
+-- | Fix point solver execution
 type FixPointSolver s = ReaderT HornSolverParams s
 
 evalFixPointSolver = runReaderT
@@ -64,27 +64,27 @@ instance MonadSMT s => MonadHorn (FixPointSolver s) where
   initHornSolver env = do
     lift (initSolver env)
     return initialCandidate
-    
+
   preprocessConstraint = preprocess
-    
+
   checkCandidates = check
-    
+
   refineCandidates = refine
-  
-  pruneQualifiers quals = ifM (asks pruneQuals) (pruneQSpace quals) (return quals)  
-  
- 
+
+  pruneQualifiers quals = ifM (asks pruneQuals) (pruneQSpace quals) (return quals)
+
+
 {- Implementation -}
 
 initialSolution :: MonadSMT s => QMap -> FixPointSolver s Solution
-initialSolution qmap = ifM (asks isLeastFixpoint) (return $ botSolution qmap) (return $ topSolution qmap)  
+initialSolution qmap = ifM (asks isLeastFixpoint) (return $ botSolution qmap) (return $ topSolution qmap)
 
 preprocess :: MonadSMT s => Formula -> FixPointSolver s [Formula]
 preprocess (Binary Implies lhs rhs) = ifM (asks isLeastFixpoint) (return preprocessLFP) (return preprocessGFP)
   where
-    preprocessLFP = 
+    preprocessLFP =
       -- ToDo: split conjuncts
-      let 
+      let
         rDisjuncts = Set.fromList $ uDNF rhs
         (noUnknowns, withUnknowns) = Set.partition (Set.null . unknownsOf) rDisjuncts
       in if Set.size withUnknowns > 1
@@ -98,7 +98,7 @@ preprocess (Binary Implies lhs rhs) = ifM (asks isLeastFixpoint) (return preproc
           in map (lhs' |=>|) rhss
 
     preprocessGFP = map (|=>| rhs) (uDNF lhs) -- Remove disjunctions of unknowns on the left
-    
+
 preprocess fml = error $ unwords ["preprocess: encountered ill-formed constraint", show fml]
 
 -- | 'refine' @constraints quals extractAssumptions cands@ : solve @constraints@ using @quals@ starting from initial candidates @cands@;
@@ -114,9 +114,9 @@ refine constraints quals extractAssumptions cands = do
       Nothing -> ifM (asks isLeastFixpoint)
                     (leastFixPoint extractAssumptions cands')
                     (greatestFixPoint quals extractAssumptions cands')
-  where      
+  where
     isNew c = not (c `Set.member` validConstraints (head cands)) && not (c `Set.member` invalidConstraints (head cands))
-      
+
     addConstraints constraints (Candidate sol valids invalids label) = do
       initSol <- initialSolution quals
       let sol' = Map.union sol initSol -- Add new unknowns (since map-union is left-biased, old solutions are preserved for old unknowns)
@@ -126,15 +126,15 @@ refine constraints quals extractAssumptions cands = do
 -- | 'check' @consistency fmls extractAssumptions cands@ : return those candidates from @cands@ under which all @fmls@ are either valid or satisfiable, depending on @consistency@;
 -- use @extractAssumptions@ to extract axiom instantiations from formulas
 check :: MonadSMT s => Bool -> [Formula] ->  ExtractAssumptions -> [Candidate] -> FixPointSolver s [Candidate]
-check consistency fmls extractAssumptions cands = do    
+check consistency fmls extractAssumptions cands = do
     writeLog 3 (vsep [
-      nest 2 $ (if consistency then text "Checking consistency" else text "Checking validity") $+$ vsep (map pretty fmls), 
+      nest 2 $ (if consistency then text "Checking consistency" else text "Checking validity") $+$ vsep (map pretty fmls),
       nest 2 $ text "Candidates" <+> parens (pretty $ length cands) $+$ (vsep $ map pretty cands)])
     cands' <- filterM checkCand cands
     writeLog 3 (nest 2 $ text "Remaining Candidates" <+> parens (pretty $ length cands') $+$ (vsep $ map pretty cands'))
     return cands'
   where
-    apply sol fml = let fml' = applySolution sol fml in fml' |&| conjunction (extractAssumptions fml')      
+    apply sol fml = let fml' = applySolution sol fml in fml' |&| conjunction (extractAssumptions fml')
     checkCand (Candidate sol valids invalids label) = if consistency
       then allM isSatFml (map (apply sol) fmls)
       else allM isValidFml (map (hornApplySolution extractAssumptions sol) fmls)
@@ -145,9 +145,9 @@ greatestFixPoint _ _ [] = return []
 greatestFixPoint quals extractAssumptions candidates = do
     (cand@(Candidate sol _ _ _), rest) <- pickCandidate candidates <$> asks candidatePickStrategy
     fml <- asks constraintPickStrategy >>= pickConstraint cand
-    let modifiedConstraint = instantiateRhs sol fml 
+    let modifiedConstraint = instantiateRhs sol fml
     debugOutput candidates cand fml modifiedConstraint
-    diffs <- strengthen quals extractAssumptions modifiedConstraint sol                        
+    diffs <- strengthen quals extractAssumptions modifiedConstraint sol
     (newCandidates, rest') <- if length diffs == 1
       then do -- Propagate the diff to all equivalent candidates
         let unknowns = Set.map unknownName $ unknownsOf fml
@@ -163,7 +163,7 @@ greatestFixPoint quals extractAssumptions candidates = do
 
   where
     instantiateRhs sol (Binary Implies lhs rhs) = Binary Implies lhs (applySolution sol rhs)
-              
+
     -- | Re-evaluate affected clauses in @valids@ and @otherInvalids@ after solution has been strengthened from @sol@ to @sol'@ in order to fix @fml@
     updateCandidate fml (Candidate sol valids invalids label) diffs diff = do
       let sol' = merge sol diff
@@ -173,39 +173,39 @@ greatestFixPoint quals extractAssumptions candidates = do
       (newValids, newInvalids) <- setPartitionM (isValidFml . hornApplySolution extractAssumptions sol') $ affectedValids `Set.union` affectedInvalids
       let newLabel = if length diffs == 1 then label else label ++ "." ++ show (fromJust $ elemIndex diff diffs)
       return $ Candidate sol' (unaffectedValids `Set.union` newValids) (unaffectedInvalids `Set.union` newInvalids) newLabel
-      
+
     nontrivCount = Map.size . Map.filter (not . Set.null) -- number of unknowns with a non-top valuation
     totalQCount = sum . map Set.size . Map.elems          -- total number of qualifiers in a solution
-          
+
     pickCandidate :: [Candidate] -> CandidatePickStrategy -> (Candidate, [Candidate])
     pickCandidate (cand:rest) FirstCandidate = (cand, rest)
-    pickCandidate cands ValidWeakCandidate = let 
+    pickCandidate cands ValidWeakCandidate = let
         res = maximumBy (mappedCompare $ \(Candidate s valids invalids _) -> (- Set.size invalids, - totalQCount s, nontrivCount s)) cands  -- maximize correctness and minimize strength
       in (res, delete res cands)
-    pickCandidate cands InitializedWeakCandidate = let 
+    pickCandidate cands InitializedWeakCandidate = let
         res = maximumBy (mappedCompare $ \(Candidate s valids invalids _) -> (nontrivCount s, - totalQCount s)) cands  -- maximize the number of initialized unknowns and minimize strength
       in (res, delete res cands)
-      
+
     pickConstraint (Candidate sol valids invalids _) strategy = case strategy of
       FirstConstraint -> return $ Set.findMin invalids
       SmallSpaceConstraint -> do
         let spaceSize fml = maxValSize quals sol (unknownsOf (leftHandSide fml))
         return $ minimumBy (\x y -> compare (spaceSize x) (spaceSize y)) (Set.toList invalids)
-        
+
     debugOutput cands cand inv modified =
       writeLog 3 (vsep [
-        nest 2 $ text "Candidates" <+> parens (pretty $ length cands) $+$ (vsep $ map pretty cands), 
+        nest 2 $ text "Candidates" <+> parens (pretty $ length cands) $+$ (vsep $ map pretty cands),
         text "Chosen candidate:" <+> pretty cand,
         text "Invalid Constraint:" <+> pretty inv,
-        text "Strengthening:" <+> pretty modified])        
-        
-hornApplySolution extractAssumptions sol (Binary Implies lhs rhs) = 
+        text "Strengthening:" <+> pretty modified])
+
+hornApplySolution extractAssumptions sol (Binary Implies lhs rhs) =
     let
      lhs' = applySolution sol lhs
      rhs' = applySolution sol rhs
      assumptions = extractAssumptions lhs' `Set.union` extractAssumptions rhs'
     in Binary Implies (lhs' `andClean` conjunction assumptions) rhs'
-    
+
 -- | 'strengthen' @qmap fml sol@: all minimal strengthenings of @sol@ using qualifiers from @qmap@ that make @fml@ valid;
 -- | @fml@ must have the form "/\ u_i ==> const".
 strengthen :: MonadSMT s => QMap -> ExtractAssumptions -> Formula -> Solution -> FixPointSolver s [Solution]
@@ -214,9 +214,9 @@ strengthen qmap extractAssumptions fml@(Binary Implies lhs rhs) sol = do
     writeLog 3 (text "Instantiated axioms:" $+$ commaSep (map pretty $ Set.toList assumptions))
     let allAssumptions = usedLhsQuals `Set.union` assumptions
     lhsValuations <- optimalValuations n (lhsQuals Set.\\ usedLhsQuals) allAssumptions rhs -- all minimal valid valuations of the whole antecedent
-    writeLog 3 (text "Optimal valuations:" $+$ vsep (map pretty lhsValuations))    
-    let splitVals vals = nub $ concatMap splitLhsValuation vals 
-    pruned <- ifM (asks semanticPrune) 
+    writeLog 3 (text "Optimal valuations:" $+$ vsep (map pretty lhsValuations))
+    let splitVals vals = nub $ concatMap splitLhsValuation vals
+    pruned <- ifM (asks semanticPrune)
       (ifM (asks agressivePrune)
         (do
           let pruneAssumptions = if rhs == ffalse then Set.empty else allAssumptions -- TODO: is this dangerous??? the result might not cover the pruned alternatives in a different context!
@@ -237,15 +237,15 @@ strengthen qmap extractAssumptions fml@(Binary Implies lhs rhs) sol = do
     assumptions = setConcatMap extractAssumptions lhsQuals `Set.union`
                   setConcatMap extractAssumptions knownConjuncts `Set.union`
                   extractAssumptions rhs
-        
+
       -- | All possible additional valuations of @u@ that are subsets of $lhsVal@.
-    singleUnknownCandidates lhsVal u = let           
+    singleUnknownCandidates lhsVal u = let
           qs = lookupQualsSubst qmap u
           max = lookupQuals qmap maxCount u
           used = valuation sol u
           n = Set.size used
       in Set.toList $ boundedSubsets (max - n) $ (Set.fromList qs Set.\\ used) `Set.intersection` lhsVal
-    
+
       -- | All valid partitions of @lhsVal@ into solutions for multiple unknowns.
     splitLhsValuation :: Valuation -> [Solution]
     splitLhsValuation lhsVal = do
@@ -259,36 +259,36 @@ strengthen qmap extractAssumptions fml@(Binary Implies lhs rhs) sol = do
     unsubst u@(Unknown s name) val = do
       option <- mapM (unsubstQual u) (Set.toList val)
       return (name, Set.fromList option)
-    
+
     unsubstQual :: Formula -> Formula -> [Formula]
     unsubstQual u@(Unknown s name) qual = [q | q <- lookupQuals qmap qualifiers u, substitute s q == qual]
 
--- | 'maxValSize' @qmap sol unknowns@: Upper bound on the size of valuations of a conjunction of @unknowns@ when strengthening @sol@ 
-maxValSize :: QMap -> Solution -> Set Formula -> Int 
-maxValSize qmap sol unknowns = let 
+-- | 'maxValSize' @qmap sol unknowns@: Upper bound on the size of valuations of a conjunction of @unknowns@ when strengthening @sol@
+maxValSize :: QMap -> Solution -> Set Formula -> Int
+maxValSize qmap sol unknowns = let
     usedQuals = setConcatMap (valuation sol) unknowns
   in Set.foldl (\n u -> n + lookupQuals qmap maxCount u) 0 unknowns - Set.size usedQuals
-  
+
 optimalValuations :: MonadSMT s => Int -> Set Formula -> Set Formula -> Formula -> FixPointSolver s [Valuation]
 optimalValuations maxSize quals lhs rhs = do
   strategy <- asks optimalValuationsStrategy
   case strategy of
     BFSValuations -> optimalValuationsBFS maxSize quals lhs rhs
-    MarcoValuations -> optimalValuationsMarco quals lhs rhs    
-    
+    MarcoValuations -> optimalValuationsMarco quals lhs rhs
+
 -- | 'optimalValuations' @quals check@: all smallest subsets of @quals@ for which @check@ returns a solution.
 optimalValuationsBFS :: MonadSMT s => Int -> Set Formula -> Set Formula -> Formula -> FixPointSolver s [Valuation]
 optimalValuationsBFS maxSize quals lhs rhs = map qualsAt <$> filterSubsets (check . qualsAt) (length qualsList)
   where
     qualsList = Set.toList quals
     qualsAt = Set.map (qualsList !!)
-    check val = let 
-                  n = Set.size val 
-                  lhs' = conjunction lhs `andClean` conjunction val                  
+    check val = let
+                  n = Set.size val
+                  lhs' = conjunction lhs `andClean` conjunction val
       in if 1 <= n && n <= maxSize
           then isValidFml $ lhs' |=>| rhs
           else return False
-    
+
 optimalValuationsMarco :: MonadSMT s => Set Formula -> Set Formula -> Formula -> FixPointSolver s [Valuation]
 optimalValuationsMarco quals lhs rhs = map Set.fromList <$> lift (allUnsatCores assumption mustHave qualsList)
   where
@@ -296,20 +296,20 @@ optimalValuationsMarco quals lhs rhs = map Set.fromList <$> lift (allUnsatCores 
     fixedLhs = conjunction lhs
     fixedRhs = fnot rhs
     (assumption, mustHave) = if rhs == ffalse then (ftrue, fixedLhs) else (fixedLhs, fixedRhs) -- When RHS is literally false, then inconsistent LHSs are acceptable
-                            
+
 -- | 'filterSubsets' @check n@: all minimal subsets of indexes from [0..@n@) that satisfy @check@,
 -- where @check@ is monotone (if a set satisfies @check@, then every superset also satisfies @check@);
 -- performs breadth-first search.
 filterSubsets :: MonadSMT s => (Set Int -> FixPointSolver s Bool) -> Int -> FixPointSolver s [Set Int]
 filterSubsets check n = go [] [Set.empty]
   where
-    go solutions candidates = if null candidates 
+    go solutions candidates = if null candidates
       then return solutions
       else let new = filter (\c -> not $ any (`Set.isSubsetOf` c) solutions) candidates
         in do
           results <- zip new <$> mapM check new
           let (valids, invalids) = partition snd results
-          go (solutions ++ map fst valids) (concatMap children (map fst invalids))      
+          go (solutions ++ map fst valids) (concatMap children (map fst invalids))
     children idxs = let lower = if Set.null idxs then 0 else Set.findMax idxs + 1
       in map (`Set.insert` idxs) [lower..(n - 1)]
 
@@ -321,9 +321,9 @@ leastFixPoint extractAssumptions (cand@(Candidate sol _ _ _):rest) = do
     fml@(Binary Implies lhs rhs) <- asks constraintPickStrategy >>= pickConstraint cand
     let lhs' = applySolution sol lhs
     let assumptions = extractAssumptions lhs' `Set.union` extractAssumptions (applySolution sol rhs)
-    
+
     let modifiedConstraint = Binary Implies (conjunction $ Set.insert lhs' assumptions) rhs
-    
+
     debugOutput cand fml modifiedConstraint
     solMb' <- weaken modifiedConstraint sol
     case solMb' of
@@ -344,39 +344,39 @@ leastFixPoint extractAssumptions (cand@(Candidate sol _ _ _):rest) = do
       let (unaffectedInvalids, affectedInvalids) = Set.partition (\fml -> posUnknowns fml `disjoint` modifiedUnknowns) (Set.delete fml invalids)
       (newValids, newInvalids) <- setPartitionM (isValidFml . hornApplySolution extractAssumptions sol') $ affectedValids `Set.union` affectedInvalids
       return $ Candidate sol' (unaffectedValids `Set.union` newValids) (unaffectedInvalids `Set.union` newInvalids) label
-      
-      
+
+
     pickConstraint (Candidate sol valids invalids _) strategy = case strategy of
       FirstConstraint -> return $ Set.findMin invalids
       SmallSpaceConstraint -> do
         let spaceSize fml = Set.size (unknownsOf (rightHandSide fml))
-        return $ minimumBy (\x y -> compare (spaceSize x) (spaceSize y)) (Set.toList invalids)              
-        
+        return $ minimumBy (\x y -> compare (spaceSize x) (spaceSize y)) (Set.toList invalids)
+
     debugOutput cand inv modified =
       writeLog 3 (vsep [
         text "Candidate:" <+> pretty cand,
         text "Invalid Constraint:" <+> pretty inv,
-        text "Weakening:" <+> pretty modified])        
-        
+        text "Weakening:" <+> pretty modified])
+
 -- | 'weaken' @fml sol@: a minimal weakening of @sol@ that make @fml@ valid;
 -- | @fml@ must have the form "const ==> const && /\ Ui" or "const ==> Ui".
 weaken :: MonadSMT s => Formula -> Solution -> FixPointSolver s (Maybe Solution)
 weaken (Binary Implies lhs (Unknown subst u)) sol = do
   let quals = Set.toList (sol Map.! u)
-  quals' <- filterM (\q -> isValidFml (Binary Implies lhs (substitute subst q))) quals  
+  quals' <- filterM (\q -> isValidFml (Binary Implies lhs (substitute subst q))) quals
   writeLog 3 (text "Weakened" <+> text u <+> text "to" <+> pretty quals')
   return (Just $ Map.insert u (Set.fromList quals') sol)
 weaken (Binary Implies lhs _) sol = return Nothing
-            
--- | 'pruneSolutions' @sols@: eliminate from @sols@ all solutions that are semantically stronger on all unknowns than another solution in @sols@ 
+
+-- | 'pruneSolutions' @sols@: eliminate from @sols@ all solutions that are semantically stronger on all unknowns than another solution in @sols@
 pruneSolutions :: MonadSMT s => [Formula] -> [Solution] -> FixPointSolver s [Solution]
-pruneSolutions unknowns solutions = 
+pruneSolutions unknowns solutions =
   let isSubsumed sol sols = anyM (\s -> allM (\u -> isValidFml $ (conjunction $ valuation sol u) |=>| (conjunction $ valuation s u)) unknowns) sols
   in prune isSubsumed solutions
-  
--- | 'pruneValuations' @vals@: eliminate from @vals@ all valuations that are semantically stronger than another pValuation in @vals@   
-pruneValuations :: MonadSMT s => Formula -> [Valuation] -> FixPointSolver s [Valuation] 
-pruneValuations assumption vals = 
+
+-- | 'pruneValuations' @vals@: eliminate from @vals@ all valuations that are semantically stronger than another pValuation in @vals@
+pruneValuations :: MonadSMT s => Formula -> [Valuation] -> FixPointSolver s [Valuation]
+pruneValuations assumption vals =
   let
       strictlyImplies ls rs = do
         let l = conjunction ls
@@ -386,23 +386,23 @@ pruneValuations assumption vals =
         return $ (res1 && (not res2 || (Set.size ls > Set.size rs)))
       isSubsumed val vals = anyM (\v -> strictlyImplies val v) vals
   in prune isSubsumed vals
-  
+
 -- | 'pruneQualifiers' @quals@: eliminate logical duplicates from @quals@
-pruneQSpace :: MonadSMT s => QSpace -> FixPointSolver s QSpace 
+pruneQSpace :: MonadSMT s => QSpace -> FixPointSolver s QSpace
 pruneQSpace qSpace = let isSubsumed qual quals = anyM (\q -> isValidFml $ qual |<=>| q) quals
   in do
-    quals' <- filterM (\q -> ifM (isValidFml q) (return False) (not <$> isValidFml (fnot q))) (qSpace ^. qualifiers) 
+    quals' <- filterM (\q -> ifM (isValidFml q) (return False) (not <$> isValidFml (fnot q))) (qSpace ^. qualifiers)
     quals <- prune isSubsumed quals'
     return $ set qualifiers quals qSpace
-  
--- | 'prune' @isSubsumed xs@ : prune all elements of @xs@ subsumed by another element according to @isSubsumed@  
+
+-- | 'prune' @isSubsumed xs@ : prune all elements of @xs@ subsumed by another element according to @isSubsumed@
 prune :: MonadSMT s => (a -> [a] -> FixPointSolver s Bool) -> [a] -> FixPointSolver s [a]
 prune _ [] = return []
 prune isSubsumed (x:xs) = prune' [] x xs
   where
     prune' lefts x [] = ifM (isSubsumed x lefts) (return lefts) (return $ x:lefts)
     prune' lefts x rights@(y:ys) = ifM (isSubsumed x (lefts ++ rights)) (prune' lefts y ys) (prune' (lefts ++ [x]) y ys)
-    
+
 -- | 'isValid' @fml@: is @fml@ valid (free variables are implicitly universally quantified)?
 isValidFml :: MonadSMT s => Formula -> FixPointSolver s Bool
 isValidFml fml = not <$> lift (isSat $ fnot fml)
@@ -414,4 +414,3 @@ isSatFml = lift . isSat
 writeLog level msg = do
   maxLevel <- asks solverLogLevel
   if level <= maxLevel then traceShow (plain msg) $ return () else return ()
-
