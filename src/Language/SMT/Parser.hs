@@ -61,7 +61,7 @@ instance FromLisp InputExpr where
             var <- parseFormula x
             case var of
                 (Var s i) -> return $ UnknownPredicate n var
-                _ -> fail "not a variable"
+                _ -> fail "predicate parameter is not a variable"
     parseLisp _ = fail "unknown top-level construct"
     
 parseInputExpr :: Lisp -> Parser InputExpr
@@ -69,29 +69,36 @@ parseInputExpr = parseLisp
 
 {- Formulas -}
 instance FromLisp Formula where
+    -- basic literals
     parseLisp (Symbol "False")          = pure $ BoolLit False
     parseLisp (Symbol "True")           = pure $ BoolLit True
     parseLisp (Number n)                = case S.floatingOrInteger n of
                                             Left f -> fail $ "non-integral value not supported " ++ (show n)
                                             Right i -> pure $ IntLit i
     parseLisp (Symbol v)                = pure $ Var AnyS (T.unpack v)
+    -- for all
     parseLisp (List [(Symbol "forall"), x, y])  = do
             xExpr <- parseFormula x
             yExpr <- parseFormula y
             return $ All xExpr yExpr
-    -- unary operation (symbol expr)
+    -- unary operation
     parseLisp (List [(Symbol f), a])
         | Map.member f unaryOps     = do
             let op = unaryOps ! f
             expr <- parseFormula a
             return $ Unary op expr
-    -- if not a unary token, interpret as a variable assignment
+    -- logical predicate application
+    parseLisp (List [(Symbol p), x])
+        | T.head p == '$'             = do
+            arg <- parseFormula x
+            return $ Pred AnyS (T.unpack p) []
+    -- variable sort assignment
     parseLisp (List [(Symbol v), (Symbol s)])
         | Map.member s sorts        = do
             let sort = sorts ! s
             return $ Var sort (T.unpack v)
         | otherwise                 = fail $ "unrecognized sort " ++ (T.unpack s)
-    -- binary operation (symbol expr expr)
+    -- binary operation
     parseLisp (List [(Symbol f), x, y]) = do
         let maybeOp = Map.lookup f binaryOps
         case maybeOp of
