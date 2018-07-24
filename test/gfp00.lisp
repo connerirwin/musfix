@@ -1,9 +1,9 @@
 (qualif Pos   ((v int)) (<= 0 v))
 (qualif Neg   ((v int)) (<= v 0))
 (qualif NeqZ  ((v int)) (not (= v 0)))
-(qualif False ((v int)) (= 66 77))
+(qualif False ((v int)(b int)) (= 66 77))
 
-(wf $k0 (v0 int))
+(wf $k0 ((v0 int)))
 
 (constraint
  (forall (v1 int)
