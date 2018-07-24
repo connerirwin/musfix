@@ -51,8 +51,8 @@ bothM f (x1, x2) = do
   y1 <- f x1
   y2 <- f x2
   return (y1, y2)
-  
-setCompare :: Ord a => Set a -> Set a -> Ordering  
+
+setCompare :: Ord a => Set a -> Set a -> Ordering
 setCompare x y = case compare (Set.size x) (Set.size y) of
                   EQ -> compare x y
                   res -> res
@@ -88,7 +88,7 @@ boundedSubsets n s
   | Set.null s = Set.singleton Set.empty
   | otherwise = let (x, xs) = Set.deleteFindMin s in
       Set.map (Set.insert x) (boundedSubsets (n - 1) xs) `Set.union` boundedSubsets n xs -- x is in or x is out
-      
+
 -- | Partition a set-valued map into sub-maps where value non-disjoint value sets are grouped together
 toDisjointGroups :: (Ord k, Ord v) => Map k (Set v) -> [(Set k, Set v)]
 toDisjointGroups m = toDisjointGroups' m []
@@ -100,15 +100,15 @@ toDisjointGroups m = toDisjointGroups' m []
                       let (keys', vals') = close (Set.singleton key) vals m' in
                       let m'' = removeDomain keys' m' in
                       toDisjointGroups' m'' ((keys', vals'):acc)
-         
+
     close :: (Ord k, Ord v) => Set k -> Set v -> Map k (Set v) -> (Set k, Set v)
-    close keys vals m = 
+    close keys vals m =
       let (mDisj, mNonDisj) = Map.partition (disjoint vals) m in
       if Map.null mNonDisj
         then (keys, vals)
         else close (keys `Set.union` Map.keysSet mNonDisj) (vals `Set.union` (Set.unions $ Map.elems mNonDisj)) mDisj
-    
-      
+
+
 -- | Monadic equivalent of 'partition'
 partitionM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
 partitionM f [] = return ([], [])
@@ -116,23 +116,23 @@ partitionM f (x:xs) = do
   res <- f x
   (ys, zs) <- partitionM f xs
   return (if res then (x:ys, zs) else (ys, x:zs))
-  
+
 -- | Monadic version of 'any'
 anyM :: (Functor m, Monad m) => (a -> m Bool) -> [a] -> m Bool
 anyM pred xs = isJust <$> findM pred xs
-  
+
 -- | Monadic version of 'all'
 allM :: (Functor m, Monad m) => (a -> m Bool) -> [a] -> m Bool
 allM pred xs = isNothing <$> findM (\x -> not <$> pred x) xs
-  
--- | Monadic version of 'find' (finds the first element in a list for which a computation evaluates to True) 
+
+-- | Monadic version of 'find' (finds the first element in a list for which a computation evaluates to True)
 findM :: (Functor m, Monad m) => (a -> m Bool) -> [a] -> m (Maybe a)
 findM _ [] = return Nothing
 findM pred (x : xs) = do
   res <- pred x
-  if res then return (Just x) else findM pred xs  
-  
--- | Monadic version of 'find' (finds the first element in a list for which a computation evaluates to True) 
+  if res then return (Just x) else findM pred xs
+
+-- | Monadic version of 'find' (finds the first element in a list for which a computation evaluates to True)
 findJustM :: (Functor m, Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
 findJustM _ [] = return Nothing
 findJustM f (x : xs) = do
@@ -140,10 +140,10 @@ findJustM f (x : xs) = do
   case resMb of
     Nothing -> findJustM f xs
     Just res -> return $ Just res
-    
--- | Monadic version of if-then-else  
+
+-- | Monadic version of if-then-else
 ifM :: Monad m => m Bool -> m a -> m a -> m a
-ifM cond t e = cond >>= (\res -> if res then t else e)  
+ifM cond t e = cond >>= (\res -> if res then t else e)
 
 -- | Monadic equivalent of 'Set.partition'
 setPartitionM :: (Ord a, Monad m) => (a -> m Bool) -> Set a -> m (Set a, Set a)
@@ -160,5 +160,5 @@ asInteger s = if all isDigit s then Just $ read s else Nothing
 -- | 'debugOutLevel' : Level above which debug output is ignored
 debugOutLevel = 1
 
--- | 'debug' @level msg@ : output @msg@ at level @level@ 
+-- | 'debug' @level msg@ : output @msg@ at level @level@
 debug level msg = if level <= debugOutLevel then traceShow msg else id

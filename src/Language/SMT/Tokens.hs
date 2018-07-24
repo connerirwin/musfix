@@ -1,4 +1,4 @@
--- | Lexems of the Synquid language
+-- | Lexems of the Language.SMT language
 module Language.SMT.Tokens where
 
 import Language.SMT.Logic
@@ -9,18 +9,18 @@ import Data.Char
 
 -- | Keywords
 keywords :: [String]
-keywords = ["Bool", "data", "else", "error", "False", "if", "in", "inline", 
+keywords = ["Bool", "data", "else", "error", "False", "if", "in", "inline",
   "Int", "let", "match", "measure", "predicate", "qualifier", "Set", "termination",
   "then", "True", "type", "with", "where"
   ]
 
--- | Names of unary operators    
+-- | Names of unary operators
 unOpTokens :: Map UnOp String
 unOpTokens = fromList [ (Neg, "-")
                       , (Not, "!")
                       ]
-                           
--- | Names of binary operators             
+
+-- | Names of binary operators
 binOpTokens :: Map BinOp String
 binOpTokens = fromList [ (Times,     "*")
                        , (Plus,      "+")
@@ -41,10 +41,10 @@ binOpTokens = fromList [ (Times,     "*")
                        , (Member,    "in")
                        , (Subset,    "<=")
                        ]
-                        
--- | Other operators         
+
+-- | Other operators
 otherOps :: [String]
-otherOps = ["::", ":", "->", "|", "=", "??", ",", ".", "\\"] 
+otherOps = ["::", ":", "->", "|", "=", "??", ",", ".", "\\"]
 
 -- | Characters allowed in identifiers (in addition to letters and digits)
 identifierChars = "_'"

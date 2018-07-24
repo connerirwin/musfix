@@ -63,4 +63,3 @@ topInputs ls = map p ls
     p l = case L.parse parseInputExpr l of
         L.Success i -> i
         L.Error r -> error $ "bad input: " ++ r ++ "\n while attempting to parse lisp:" ++ (show l)
-    
