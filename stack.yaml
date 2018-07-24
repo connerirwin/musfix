@@ -39,7 +39,7 @@ packages:
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
 extra-deps:
-- git: git@github.com:connerirwin/atto-lisp.git
+- git: https://github.com/connerirwin/atto-lisp.git
   commit: 39f336ae75d25ee1f8114fab370ad8581bf225dc
 - z3-4.3.1
 

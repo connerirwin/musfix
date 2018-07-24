@@ -106,7 +106,7 @@ instance FromLisp Formula where
   parseLisp (List [(Symbol p), x])
       | T.head p == '$'             = do
           arg <- parseFormula x
-          return $ Pred AnyS (T.unpack p) []
+          return $ Pred AnyS (T.unpack p) [] -- should be unknown
   -- variable sort assignment
   parseLisp (List [(Symbol v), (Symbol s)])
       | Map.member s sorts        = do
