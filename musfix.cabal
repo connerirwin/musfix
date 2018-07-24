@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6b40ab6ce73622f4284641ccc7726bf6bfd9a441240783e1b3b38a86b9e9876e
+-- hash: 29694e630975e1b1591f83200fa8bb21e8a69d09dd0849addd6c775ac44f1300
 
 name:           musfix
 version:        0.1.0.0
@@ -41,6 +41,7 @@ library
     , attoparsec >=0.10 && <0.14
     , base >=4.6 && <4.9
     , bimap >=0.2
+    , bytestring >=0.10
     , containers >=0.5 && <0.6
     , lens >=3.7
     , mtl >=2.2 && <2.3
@@ -77,6 +78,7 @@ executable musfix
     , attoparsec >=0.10 && <0.14
     , base >=4.6 && <4.9
     , bimap >=0.2
+    , bytestring >=0.10
     , containers >=0.5 && <0.6
     , lens >=3.7
     , mtl >=2.2 && <2.3

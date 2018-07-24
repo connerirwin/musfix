@@ -15,6 +15,7 @@ dependencies:
 - attoparsec >= 0.10 && <0.14
 - base >=4.6 && <4.9
 - bimap >= 0.2
+- bytestring >= 0.10
 - containers >=0.5 && <0.6
 - lens >=3.7
 - mtl >=2.2 && <2.3
