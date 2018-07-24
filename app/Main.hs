@@ -22,18 +22,19 @@ defaultHornSolverParams = HornSolverParams {
   constraintPickStrategy = SmallSpaceConstraint,
   solverLogLevel = 0
   }
-  
+
+data ProgramOptions = ProgramOptions { 
+  printResult :: Bool,
+  outputFile :: String 
+} deriving (Show, Eq)
+
 version = putStrLn "musfix 0.1.0.0"
 usage   = putStrLn "Usage: musfix [file ...]"
 
 main :: IO ()
 main = do
-    args <- getArgs
-    parseArgs args
-    print $ is
-    where
-        ls = topSExprs "(qualif Neg ((v1 int) (v2 int)) (+ v1 23))\n(qualif Neg ((v int))   (<= v 0))"
-        is = topInputs ls
+  args <- getArgs
+  parseArgs args
         
 parseArgs :: [String] -> IO ()
 parseArgs as    = mapM_ parseArg as
@@ -42,6 +43,14 @@ parseArg :: String -> IO ()
 parseArg "-h"   = usage     >> exitSuccess
 parseArg "-v"   = version   >> exitSuccess
 parseArg f      = readConstraints f
+
+readConstraints :: String -> IO ()
+readConstraints f = do
+    s <- ByteString.readFile f
+    let lisp = topSExprs $ s in 
+      let ins = topInputs lisp in
+      putStrLn $ show ins 
+      
                 
 topSExprs :: ByteString -> [L.Lisp]
 topSExprs l = case A.parseOnly (A.many1 L.lisp) l of
@@ -50,8 +59,8 @@ topSExprs l = case A.parseOnly (A.many1 L.lisp) l of
     
 topInputs :: [L.Lisp] -> [InputExpr]
 topInputs ls = map p ls
-    where
-        p l = case L.parse parseInputExpr l of
-            L.Success i -> i
-            L.Error r -> error $ "bad input: " ++ r ++ "\n while attempting to parse lisp:" ++ (show l)
+  where
+    p l = case L.parse parseInputExpr l of
+        L.Success i -> i
+        L.Error r -> error $ "bad input: " ++ r ++ "\n while attempting to parse lisp:" ++ (show l)
     
