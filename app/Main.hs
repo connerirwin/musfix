@@ -25,7 +25,8 @@ defaultProgramOptions = ProgramOptions {
 }
 
 version = putStrLn "musfix 0.1.0.0"
-usage   = putStrLn "Usage: musfix [--help] [file ...]"
+usage   = putStrLn "Usage: musfix [--help] [-p] [--verbose] [--version] [file ...]"
+help    = putStrLn "\n\nAvailable options:\n--help\t\tShow this help text\n-p\t\tPrint results to standard out\n--version\tShow current version"
 debug   = resolverDebug
 
 main :: IO ()
@@ -40,7 +41,7 @@ parseArgs o (x:y:xs)
       o' = o { programOutputFile = y }
 parseArgs o (x:xs)
     | x == "-d"             = debug               >> continue o
-    | x == "--help"         = usage               >> exitSuccess
+    | x == "--help"         = usage >> help       >> exitSuccess
     | x == "-p"             = continue $ o { printProgramOutput = True }
     | x == "--version"      = version             >> exitSuccess
     | x == "--verbose"      = continue $ o { programVerboseLogging = True }
