@@ -4,6 +4,8 @@ import Data.List
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
+import Debug.Trace
+
 import Control.Lens
 import Control.Monad
 import Control.Monad.State
@@ -16,6 +18,8 @@ import Language.Synquid.Z3
 import Language.Synquid.ResolverSynq
 
 {- Debug Testing -}
+debugOut a = traceShow a a
+
 pos   = Binary Le (IntLit 0) (Var IntS "v")
 neg   = Binary Le (Var IntS "v") (IntLit 0)
 neqZ  = Unary Not (Binary Eq (Var BoolS "v") (IntLit 0))
@@ -56,10 +60,11 @@ generateQualifiers wfconstraints rawQualifiers = Map.fromList $ qualifiers
         actuals = functionFormals formalsMap -- vars in the wfconstraint
         -- TODO figure out what the environment is used for, populate enough so that it will work ('^')
         env = emptyEnv {
-          _boundTypeVars = map extractId formals
+          _boundTypeVars = nub $ map extractId formals `union` map extractId actuals
         }
 
-unify = foldr union []
+unifyWith f = foldr (union . f) []
+unify = unifyWith id
 
 extractVars :: Formula -> [Formula]
 extractVars (SetLit _ fs)  = unify $ map extractVars fs
@@ -81,7 +86,7 @@ allSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula
 allSubstitutions env qual formals actuals = do
   qual' <- allRawSubstitutions env qual formals actuals
   case resolveRefinement env qual' of
-    Left _ -> [] -- Variable sort mismatch
+    Left _ -> [Var AnyS "variable sort mismatch"] -- Variable sort mismatch
     Right resolved -> return resolved
 
 allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula]
