@@ -34,7 +34,7 @@ allWFConstraints ins = filter f ins
     f (WFConstraint _ _) = True
     f _ = False
 
--- | Gets all the well-formed constraints in an input expression list
+-- | Gets all the horn constraints in an input expression list
 allHornConstraints :: [InputExpr] -> [InputExpr]
 allHornConstraints ins = filter f ins
   where
@@ -50,6 +50,7 @@ wfFormals (WFConstraint _ formals) = formals
 
 qualifEq :: InputExpr -> Formula
 qualifEq (Qualifier _ _ eq) = eq
+
 -- | Sorts
 data Sort = BoolS | IntS | VarS Id | DataS Id [Sort] | SetS Sort | AnyS
   deriving (Show, Eq, Ord)
