@@ -281,7 +281,7 @@ substitute subst fml = case fml of
   SetLit b elems -> SetLit b $ map (substitute subst) elems
   Var s name -> case Map.lookup name subst of
     Just f -> case f of
-      var@(Var s' name') -> if (s' == s) then var else fml -- ensures that types match
+      -- var@(Var s' name') -> if (s' == s) then var else fml -- ensures that types match
       _                  -> f
     Nothing -> fml
   Unknown s name -> Unknown (s `composeSubstitutions` subst) name

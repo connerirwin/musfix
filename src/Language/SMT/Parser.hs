@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.SMT.Parser where
-    
+
 import Language.SMT.Logic
 import Language.SMT.Tokens
 
@@ -13,13 +13,13 @@ import Data.Map (Map, (!))
 import Data.Scientific as S
 
 -- | Unary operators
-unaryOps :: Map T.Text UnOp 
+unaryOps :: Map T.Text UnOp
 unaryOps = Map.fromList [ ("not",     Not)
                         , ("-",       Neg)
                         ]
-                       
--- | Binary operators 
-binaryOps :: Map T.Text BinOp 
+
+-- | Binary operators
+binaryOps :: Map T.Text BinOp
 binaryOps = Map.fromList [ ("*",    Times)
                          , ("+",     Plus)
                          , ("-",    Minus)
@@ -36,9 +36,9 @@ binaryOps = Map.fromList [ ("*",    Times)
                          , ("=>", Implies) -- TODO: Same as above
                          , ("<==>",   Iff)
                          ]
-                         
+
 -- | Variable sorts
-sorts :: Map T.Text Sort 
+sorts :: Map T.Text Sort
 sorts = Map.fromList [ ("int",   IntS),
                        ("bool", BoolS)
                      ]
@@ -46,10 +46,10 @@ sorts = Map.fromList [ ("int",   IntS),
 {- Top-level Statements -}
 data InputExpr =
     Qualifier T.Text [Formula] Formula          -- ^ Qualifier with name, variables and equation
-  | WFConstraint T.Text Formula                 -- ^ Well-formed predicate constraint
+  | WFConstraint T.Text [Formula]                 -- ^ Well-formed predicate constraint
   | HornConstraint Formula                      -- ^ Horn constraint
   deriving (Show, Eq, Ord)
-   
+
 checkVars :: [Formula] -> Bool
 checkVars fs = foldr check True fs
   where
@@ -71,16 +71,16 @@ instance FromLisp InputExpr where
   parseLisp (List [(Symbol "wf"), (Symbol n), x]) = do
     var <- parseFormula x
     case var of
-        (Var s i) -> return $ WFConstraint n var
+        (Var s i) -> return $ WFConstraint n [var] --TODO make this work
         _ -> fail "predicate parameter is not a variable"
   -- horn constraint
   parseLisp (List [(Symbol "constraint"), y]) = do
       formula <- parseFormula y
       return $ HornConstraint formula
   parseLisp _ = fail "unknown top-level construct"
-    
+
 parseInputExpr :: Lisp -> Parser InputExpr
-parseInputExpr = parseLisp 
+parseInputExpr = parseLisp
 
 {- Formulas -}
 instance FromLisp Formula where
@@ -122,8 +122,8 @@ instance FromLisp Formula where
             xExpr <- parseFormula x
             yExpr <- parseFormula y
             return $ Binary op xExpr yExpr
-      
+
   parseLisp f = fail $ "cannot read formula: " ++ (show f)
-        
+
 parseFormula :: Lisp -> Parser Formula
 parseFormula l = parseLisp l

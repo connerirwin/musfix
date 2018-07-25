@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Language.SMT.Parser
-import Language.SMT.HornSolver
+import Language.SMT.Resolver hiding (InputExpr)
 
 import Control.Monad
 import Data.ByteString (ByteString)
@@ -28,6 +28,7 @@ parseArgs :: [String] -> IO ()
 parseArgs as    = mapM_ parseArg as
 
 parseArg :: String -> IO ()
+parseArg "-d"   = debug
 parseArg "-h"   = usage     >> exitSuccess
 parseArg "-v"   = version   >> exitSuccess
 parseArg f      = readConstraints f
@@ -38,7 +39,6 @@ readConstraints f = do
     let lisp = topSExprs $ s in
       let ins = topInputs lisp in
       putStrLn $ show ins
-
 
 topSExprs :: ByteString -> [L.Lisp]
 topSExprs l = case A.parseOnly (A.many1 L.lisp) l of
@@ -51,3 +51,7 @@ topInputs ls = map p ls
     p l = case L.parse parseInputExpr l of
         L.Success i -> i
         L.Error r -> error $ "bad input: " ++ r ++ "\n while attempting to parse lisp:" ++ (show l)
+
+-- | A debug printing function designed to be as unobtrusive as possible
+debug :: IO ()
+debug = putStrLn "debug"

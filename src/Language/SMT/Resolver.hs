@@ -25,31 +25,74 @@ func  = Unknown [(Var IntS "v0"), (Var IntS "v1")] "$k0"
 qmap = generateQualifiers func [pos, neg, neqZ, false]
 -}
 
+-- | Hopefully the InputExpr can look like this
+data InputExpr = WFConstraint Id [Formula]
+
+functionName :: InputExpr -> Id
+functionName (WFConstraint name _) = name
+
+functionFormals :: InputExpr -> [Formula]
+functionFormals (WFConstraint _ formals) = formals
 
 -- | Create a qualifier (refinement) map from a set of possible qualifiers for a
 -- given unknown
-generateQualifiers :: Formula -> [Formula] -> QMap
-generateQualifiers (Unknown formalsMap functionName) rawQualifiers = Map.singleton functionName qualSpace
+generateQualifiers :: [InputExpr] -> [Formula] -> QMap
+generateQualifiers wfconstraints rawQualifiers = Map.fromList $ qualifiers
   where
-    qualSpace = toSpace Nothing subbedQualifiers
-    subbedQualifiers = substituteQualifiers formalsMap rawQualifiers
+    qualifiers = zip (map functionName wfconstraints) (map substituteQualifiers wfconstraints)
 
--- | Substitute the actual formal parameters into the Qualifiers
-substituteQualifiers :: Substitution -> [Formula] -> [Formula]
-substituteQualifiers formalsMap rawQualifiers = foldl (union) [] substitutedQualifiers
+    -- | Substitute the wfconstraint formal parameters into the qualifiers
+    substituteQualifiers :: InputExpr -> QSpace
+    substituteQualifiers formalsMap = toSpace Nothing subbedQualifiers
+      where
+        -- TODO figure out what the environment is used for
+        subbedQualifiers = foldr (union . \qualif -> allSubstitutions emptyEnv qualif formals actuals) [] rawQualifiers
+        formals = foldr (union . extractVars) [] rawQualifiers  -- vars in the rawQualifiers ALMOST THERE.... ('^')
+        actuals = functionFormals formalsMap -- vars in the wfconstraint
+
+unify = foldl union []
+
+extractVars :: Formula -> [Formula]
+extractVars (SetLit _ fs)  = unify $ map extractVars fs
+extractVars v@(Var _ _)    = [v]
+extractVars (Unary _ f)    = extractVars f
+extractVars (Binary _ x y) = unify $ map extractVars [x,y]
+extractVars (Ite x y z)    = unify $ map extractVars [x,y,z]
+extractVars (Pred _ _ fs)  = unify $ map extractVars fs
+extractVars (Cons _ _ fs)  = unify $ map extractVars fs
+extractVars (All x y)      = unify $ map extractVars [x,y]
+extractVars _              = []
+
+-- | 'allSubstitutions' @env qual formals actuals@:
+-- all well-typed substitutions of @actuals@ for @formals@ in a qualifier @qual@
+-- Generate a list of all substitutions of qualifiers with the actuals, this will be put into the qmap
+allSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula]
+allSubstitutions env qual formals actuals = do
+  qual' <- allRawSubstitutions env qual formals actuals [] [] -- TODO cleanly remove the fixed formals and actuals from these
+  case resolveRefinement env qual' of
+    Left _ -> [] -- Variable sort mismatch
+    Right resolved -> return resolved
+
+allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula] -> [Formula] -> [Formula]
+allRawSubstitutions _ (BoolLit True) _ _ _ _ = []
+allRawSubstitutions env qual formals actuals fixedFormals fixedActuals = do
+  let tvs = Set.fromList (env ^. boundTypeVars)
+  case unifySorts tvs (map sortOf fixedFormals) (map sortOf fixedActuals) of
+    Left _ -> []
+    Right fixedSortSubst -> do
+      let fixedSubst = Map.fromList $ zip (map varName fixedFormals) fixedActuals
+      let qual' = substitute fixedSubst qual
+      (sortSubst, subst, _) <- foldM (go tvs) (fixedSortSubst, Map.empty, actuals) formals
+      return $ substitute subst $ sortSubstituteFml sortSubst qual'
   where
-    individualFormals = map (Map.fromList . (:[])) (Map.toList formalsMap)
-    substitutedQualifiers = map (subFormals rawQualifiers) individualFormals
+    go tvs (sortSubst, subst, actuals) formal = do
+      let formal' = sortSubstituteFml sortSubst formal
+      actual <- actuals
+      case unifySorts tvs [sortOf formal'] [sortOf actual] of
+        Left _ -> mzero
+        Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
 
-    separateFormals :: Substitution -> [Substitution]
-    separateFormals allFormals = [allFormals]
-
-    subFormals :: [Formula] -> Substitution -> [Formula]
-    subFormals rawQualifiers formal = map (substitute formal) rawQualifiers
-
-instantiate :: Formula -> Formula
-instantiate fml = fml
-
+{-
 type HornSolver = FixPointSolver Z3State
 
 -- | Solves for the least fixpoint(s) and greatest fixpoint of a constraint
@@ -58,13 +101,6 @@ musfixpoint :: Id -> Sort -> Formula -> IO ()
 musfixpoint var sort fml = print "resolvedTypes eventually..."
   where
     resolvedTypes = resolveTypeRefinement sort fml
-
-
-{-
--- | Cleans up formulas
-
-allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula] -> [Formula] -> [Formula]
-allSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula] -> [Formula] -> [Formula]
 
 resolveTypeRefinement :: Sort -> Formula -> Resolver Formula
 we are trying to infer function pre-conditions (ie refinements on the params)
@@ -113,32 +149,3 @@ data Candidate = Candidate {
     label :: String
   } deriving (Show)
 -}
-
--- | 'allSubstitutions' @env qual nonsubstActuals formals actuals@:
--- all well-typed substitutions of @actuals@ for @formals@ in a qualifier @qual@
-allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula] -> [Formula] -> [Formula]
-allRawSubstitutions _ (BoolLit True) _ _ _ _ = []
-allRawSubstitutions env qual formals actuals fixedFormals fixedActuals = do
-  let tvs = Set.fromList (env ^. boundTypeVars)
-  case unifySorts tvs (map sortOf fixedFormals) (map sortOf fixedActuals) of
-    Left _ -> []
-    Right fixedSortSubst -> do
-      let fixedSubst = Map.fromList $ zip (map varName fixedFormals) fixedActuals
-      let qual' = substitute fixedSubst qual
-      (sortSubst, subst, _) <- foldM (go tvs) (fixedSortSubst, Map.empty, actuals) formals
-      return $ substitute subst $ sortSubstituteFml sortSubst qual'
-  where
-    go tvs (sortSubst, subst, actuals) formal = do
-      let formal' = sortSubstituteFml sortSubst formal
-      actual <- actuals
-      case unifySorts tvs [sortOf formal'] [sortOf actual] of
-        Left _ -> mzero
-        Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
-
---ignore fixed
-allSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula] -> [Formula] -> [Formula]
-allSubstitutions env qual formals actuals fixedFormals fixedActuals = do
-  qual' <- allRawSubstitutions env qual formals actuals fixedFormals fixedActuals
-  case resolveRefinement env qual' of
-    Left _ -> [] -- Variable sort mismatch
-    Right resolved -> return resolved
