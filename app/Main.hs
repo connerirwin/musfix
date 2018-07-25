@@ -36,9 +36,10 @@ main = do
 
 parseArgs :: ProgramOptions -> [String] -> IO ()
 parseArgs o (x:y:xs)
-    | x == "-o"   = parseArgs o' xs
+    | x == "-o"   = verboseLog o' m >> parseArgs o' xs
     where
       o' = o { programOutputFile = y }
+      m  = "Setting output file to " ++ y
 parseArgs o (x:xs)
     | x == "-d"             = debug               >> continue o
     | x == "--help"         = usage >> help       >> exitSuccess
@@ -53,9 +54,17 @@ parseArgs _ _               = exitSuccess
 readConstraints :: ProgramOptions -> String -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
-    let lisp = topSExprs $ s in
-      let ins = resolveSorts $ topInputs lisp in
-      putStrLn $ show ins
+    let lisp = topSExprs $ s
+        ins = resolveSorts $ topInputs lisp
+      in
+        putStrLn $ show ins
+        
+      
+verboseLog :: ProgramOptions -> String -> IO ()
+verboseLog o s = if programVerboseLogging o then
+    putStrLn $ s
+  else
+    return () 
 
 topSExprs :: ByteString -> [L.Lisp]
 topSExprs l = case A.parseOnly (A.many1 L.lisp) l of

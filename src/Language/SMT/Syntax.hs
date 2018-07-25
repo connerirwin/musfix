@@ -34,7 +34,7 @@ allWFConstraints ins = filter f ins
     f (WFConstraint _ _) = True
     f _ = False
     
--- | Gets all the well-formed constraints in an input expression list
+-- | Gets all the horn constraints in an input expression list
 allHornConstraints :: [InputExpr] -> [InputExpr]
 allHornConstraints ins = filter f ins
   where
