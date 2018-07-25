@@ -47,6 +47,7 @@ parseArgs o (x:xs)
     | otherwise   = readConstraints o x           >> continue o
     where
       continue o' = parseArgs o' xs
+parseArgs _ _               = exitSuccess
 
 readConstraints :: ProgramOptions -> String -> IO ()
 readConstraints o f = do
