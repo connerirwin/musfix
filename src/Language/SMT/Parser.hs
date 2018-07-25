@@ -63,11 +63,12 @@ instance FromLisp InputExpr where
           formula <- parseFormula y
           return $ Qualifier (T.unpack n) vars formula
   -- well-formed constraint
-  parseLisp (List [(Symbol "wf"), (Symbol n), x]) = do
-    var <- parseFormula x
-    case var of
-        (Var s i) -> return $ WFConstraint (T.unpack n) [var] --TODO make this work
-        _ -> fail "predicate parameter is not a variable"
+  parseLisp (List [(Symbol "wf"), (Symbol n), List xs]) = do
+      vars <- mapM parseFormula xs
+      if not $ checkVars vars then do
+          fail $ "invalid expressions in variable list"
+      else do
+        return $ WFConstraint (T.unpack n) vars
   -- horn constraint
   parseLisp (List [(Symbol "constraint"), y]) = do
       formula <- parseFormula y
