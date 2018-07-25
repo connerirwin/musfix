@@ -2,7 +2,7 @@
 
 module Language.SMT.Syntax where
 
-import Data.Map (Map)  
+import Data.Map (Map)
 import qualified Data.Map as Map
 
 -- | Identifiers
@@ -25,7 +25,7 @@ allQualifiers ins = filter f ins
     f :: InputExpr -> Bool
     f (Qualifier _ _ _) = True
     f _ = False
-    
+
 -- | Gets all the well-formed constraints in an input expression list
 allWFConstraints :: [InputExpr] -> [InputExpr]
 allWFConstraints ins = filter f ins
@@ -33,7 +33,7 @@ allWFConstraints ins = filter f ins
     f :: InputExpr -> Bool
     f (WFConstraint _ _) = True
     f _ = False
-    
+
 -- | Gets all the well-formed constraints in an input expression list
 allHornConstraints :: [InputExpr] -> [InputExpr]
 allHornConstraints ins = filter f ins
@@ -41,7 +41,15 @@ allHornConstraints ins = filter f ins
     f :: InputExpr -> Bool
     f (HornConstraint _) = True
     f _ = False
-  
+
+wfName :: InputExpr -> Id
+wfName (WFConstraint name _) = name
+
+wfFormals :: InputExpr -> [Formula]
+wfFormals (WFConstraint _ formals) = formals
+
+qualifEq :: InputExpr -> Formula
+qualifEq (Qualifier _ _ eq) = eq
 -- | Sorts
 data Sort = BoolS | IntS | VarS Id | DataS Id [Sort] | SetS Sort | AnyS
   deriving (Show, Eq, Ord)
