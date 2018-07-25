@@ -1,13 +1,13 @@
 {-# LANGUAGE TemplateHaskell, DeriveFunctor #-}
 
 -- | Executable programs
-module Language.SMT.Program where
+module Language.Synquid.Program where
 
-import Language.SMT.Logic
-import Language.SMT.Type as Type
-import Language.SMT.Tokens
-import Language.SMT.Util
-import Language.SMT.Error
+import Language.Synquid.Logic
+import Language.Synquid.Type as Type
+import Language.Synquid.Tokens
+import Language.Synquid.Util
+import Language.Synquid.Error
 
 import Data.Maybe
 import Data.Either

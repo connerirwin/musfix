@@ -18,6 +18,7 @@ data ProgramOptions = ProgramOptions {
 
 version = putStrLn "musfix 0.1.0.0"
 usage   = putStrLn "Usage: musfix [file ...]"
+debug   = resolverDebug
 
 main :: IO ()
 main = do
@@ -51,7 +52,3 @@ topInputs ls = map p ls
     p l = case L.parse parseInputExpr l of
         L.Success i -> i
         L.Error r -> error $ "bad input: " ++ r ++ "\n while attempting to parse lisp:" ++ (show l)
-
--- | A debug printing function designed to be as unobtrusive as possible
-debug :: IO ()
-debug = putStrLn "debug"

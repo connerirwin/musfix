@@ -1,8 +1,8 @@
--- | Interface to SMT solvers
-module Language.SMT.SolverMonad where
+-- | Interface to Synquid solvers
+module Language.Synquid.SolverMonad where
 
-import Language.SMT.Logic
-import Language.SMT.Program
+import Language.Synquid.Logic
+import Language.Synquid.Program
 import Data.Map
 import Data.Set
 import Control.Applicative

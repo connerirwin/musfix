@@ -2,8 +2,8 @@
 
 module Language.SMT.Parser where
 
-import Language.SMT.Logic
-import Language.SMT.Tokens
+import Language.Synquid.Logic
+import Language.Synquid.Tokens
 
 import Control.Monad
 import qualified Data.Text as T

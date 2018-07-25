@@ -1,4 +1,4 @@
-module Language.SMT.Error (
+module Language.Synquid.Error (
   Pos(..)
   ,SourcePos
   ,sourceLine

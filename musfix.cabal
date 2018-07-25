@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: af581ffe0df7045ece09bbe853f92921e5f3cc88497d3ee7f72dcc3385ef191c
+-- hash: 67907a39c68769ac8ba6b126a4b494dbcf1f23a14af4e5b11ea221505e2ce11a
 
 name:           musfix
 version:        0.1.0.0
@@ -18,19 +18,19 @@ cabal-version:  >= 1.10
 
 library
   exposed-modules:
-      Language.SMT.Error
-      Language.SMT.HornSolver
-      Language.SMT.Logic
       Language.SMT.Parser
-      Language.SMT.Pretty
-      Language.SMT.Program
       Language.SMT.Resolver
-      Language.SMT.ResolverSynq
-      Language.SMT.SolverMonad
-      Language.SMT.Tokens
-      Language.SMT.Type
-      Language.SMT.Util
-      Language.SMT.Z3
+      Language.Synquid.Error
+      Language.Synquid.HornSolver
+      Language.Synquid.Logic
+      Language.Synquid.Pretty
+      Language.Synquid.Program
+      Language.Synquid.ResolverSynq
+      Language.Synquid.SolverMonad
+      Language.Synquid.Tokens
+      Language.Synquid.Type
+      Language.Synquid.Util
+      Language.Synquid.Z3
   other-modules:
       Paths_musfix
   hs-source-dirs:
@@ -56,19 +56,19 @@ library
 executable musfix
   main-is: Main.hs
   other-modules:
-      Language.SMT.Error
-      Language.SMT.HornSolver
-      Language.SMT.Logic
       Language.SMT.Parser
-      Language.SMT.Pretty
-      Language.SMT.Program
       Language.SMT.Resolver
-      Language.SMT.ResolverSynq
-      Language.SMT.SolverMonad
-      Language.SMT.Tokens
-      Language.SMT.Type
-      Language.SMT.Util
-      Language.SMT.Z3
+      Language.Synquid.Error
+      Language.Synquid.HornSolver
+      Language.Synquid.Logic
+      Language.Synquid.Pretty
+      Language.Synquid.Program
+      Language.Synquid.ResolverSynq
+      Language.Synquid.SolverMonad
+      Language.Synquid.Tokens
+      Language.Synquid.Type
+      Language.Synquid.Util
+      Language.Synquid.Z3
       Paths_musfix
   hs-source-dirs:
       src

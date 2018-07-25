@@ -1,5 +1,5 @@
 -- | Common types and helper functions
-module Language.SMT.Util where
+module Language.Synquid.Util where
 
 import Data.Maybe
 import Data.Either

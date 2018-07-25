@@ -1,17 +1,17 @@
 {-# LANGUAGE TupleSections, FlexibleContexts, TemplateHaskell #-}
 
 -- | Functions for processing the AST created by the Parser (eg filling in unknown types, verifying that refinement formulas evaluate to a boolean, etc.)
-module Language.SMT.ResolverSynq (
+module Language.Synquid.ResolverSynq (
   resolveDecls, resolveRefinement, resolveRefinedType, resolveTypeRefinement,
   addAllVariables, ResolverState (..), instantiateSorts
   ) where
 
-import Language.SMT.Logic
-import Language.SMT.Type
-import Language.SMT.Program
-import Language.SMT.Error
-import Language.SMT.Pretty
-import Language.SMT.Util
+import Language.Synquid.Logic
+import Language.Synquid.Type
+import Language.Synquid.Program
+import Language.Synquid.Error
+import Language.Synquid.Pretty
+import Language.Synquid.Util
 import Control.Applicative
 import Control.Monad.Except
 import Control.Monad.State

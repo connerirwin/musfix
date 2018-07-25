@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, UndecidableInstances, FlexibleContexts #-}
 
-module Language.SMT.Pretty (
+module Language.Synquid.Pretty (
   -- * Interface
   Pretty (..),
   Doc,
@@ -53,12 +53,12 @@ module Language.SMT.Pretty (
   programNodeCount
 ) where
 
-import Language.SMT.Logic
-import Language.SMT.Type
-import Language.SMT.Error
-import Language.SMT.Program
-import Language.SMT.Tokens
-import Language.SMT.Util
+import Language.Synquid.Logic
+import Language.Synquid.Type
+import Language.Synquid.Error
+import Language.Synquid.Program
+import Language.Synquid.Tokens
+import Language.Synquid.Util
 
 import Text.PrettyPrint.ANSI.Leijen hiding ((<+>), (<$>), hsep, vsep)
 import qualified Text.PrettyPrint.ANSI.Leijen as L

@@ -8,22 +8,28 @@ import Control.Lens
 import Control.Monad
 import Control.Monad.State
 
-import Language.SMT.HornSolver
-import Language.SMT.Logic
-import Language.SMT.Program
-import Language.SMT.Util
-import Language.SMT.Z3
-import Language.SMT.ResolverSynq
+import Language.Synquid.HornSolver
+import Language.Synquid.Logic
+import Language.Synquid.Program
+import Language.Synquid.Util
+import Language.Synquid.Z3
+import Language.Synquid.ResolverSynq
 
-{-
+{- Debug Testing -}
 pos   = Binary Le (IntLit 0) (Var IntS "v")
 neg   = Binary Le (Var IntS "v") (IntLit 0)
 neqZ  = Unary Not (Binary Eq (Var BoolS "v") (IntLit 0))
 false = Binary Eq (IntLit 66) (IntLit 77)
-func  = Unknown [(Var IntS "v0"), (Var IntS "v1")] "$k0"
+func  = WFConstraint "$k0" [(Var IntS "v0"), (Var IntS "v1")]
 
-qmap = generateQualifiers func [pos, neg, neqZ, false]
--}
+qmap = generateQualifiers [func] [pos, neg, neqZ, false]
+
+-- | A debug printing function designed to be as unobtrusive as possible
+resolverDebug :: IO ()
+resolverDebug = do
+  print qmap
+
+
 
 -- | Hopefully the InputExpr can look like this
 data InputExpr = WFConstraint Id [Formula]
@@ -45,12 +51,15 @@ generateQualifiers wfconstraints rawQualifiers = Map.fromList $ qualifiers
     substituteQualifiers :: InputExpr -> QSpace
     substituteQualifiers formalsMap = toSpace Nothing subbedQualifiers
       where
-        -- TODO figure out what the environment is used for
-        subbedQualifiers = foldr (union . \qualif -> allSubstitutions emptyEnv qualif formals actuals) [] rawQualifiers
-        formals = foldr (union . extractVars) [] rawQualifiers  -- vars in the rawQualifiers ALMOST THERE.... ('^')
+        subbedQualifiers = foldr (union . \qualif -> allSubstitutions env qualif formals actuals) [] rawQualifiers
+        formals = foldr (union . extractVars) [] rawQualifiers  -- vars in the rawQualifiers
         actuals = functionFormals formalsMap -- vars in the wfconstraint
+        -- TODO figure out what the environment is used for, populate enough so that it will work ('^')
+        env = emptyEnv {
+          _boundTypeVars = map extractId formals
+        }
 
-unify = foldl union []
+unify = foldr union []
 
 extractVars :: Formula -> [Formula]
 extractVars (SetLit _ fs)  = unify $ map extractVars fs
@@ -63,27 +72,26 @@ extractVars (Cons _ _ fs)  = unify $ map extractVars fs
 extractVars (All x y)      = unify $ map extractVars [x,y]
 extractVars _              = []
 
+extractId :: Formula -> Id
+extractId (Var _ x) = x
+
 -- | 'allSubstitutions' @env qual formals actuals@:
 -- all well-typed substitutions of @actuals@ for @formals@ in a qualifier @qual@
--- Generate a list of all substitutions of qualifiers with the actuals, this will be put into the qmap
 allSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula]
 allSubstitutions env qual formals actuals = do
-  qual' <- allRawSubstitutions env qual formals actuals [] [] -- TODO cleanly remove the fixed formals and actuals from these
+  qual' <- allRawSubstitutions env qual formals actuals
   case resolveRefinement env qual' of
     Left _ -> [] -- Variable sort mismatch
     Right resolved -> return resolved
 
-allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula] -> [Formula] -> [Formula]
-allRawSubstitutions _ (BoolLit True) _ _ _ _ = []
-allRawSubstitutions env qual formals actuals fixedFormals fixedActuals = do
+allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula]
+allRawSubstitutions _ (BoolLit True) _ _ = []
+allRawSubstitutions env qual formals actuals = do
   let tvs = Set.fromList (env ^. boundTypeVars)
-  case unifySorts tvs (map sortOf fixedFormals) (map sortOf fixedActuals) of
-    Left _ -> []
-    Right fixedSortSubst -> do
-      let fixedSubst = Map.fromList $ zip (map varName fixedFormals) fixedActuals
-      let qual' = substitute fixedSubst qual
-      (sortSubst, subst, _) <- foldM (go tvs) (fixedSortSubst, Map.empty, actuals) formals
-      return $ substitute subst $ sortSubstituteFml sortSubst qual'
+  let fixedSortSubst = Map.empty
+  let fixedSubst = Map.empty
+  (sortSubst, subst, _) <- foldM (go tvs) (Map.empty, Map.empty, actuals) formals
+  return $ substitute subst $ sortSubstituteFml sortSubst qual
   where
     go tvs (sortSubst, subst, actuals) formal = do
       let formal' = sortSubstituteFml sortSubst formal
@@ -93,6 +101,25 @@ allRawSubstitutions env qual formals actuals fixedFormals fixedActuals = do
         Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
 
 {-
+data Environment = Environment {
+  -- | Variable part:
+  _symbols :: Map Int (Map Id RSchema),    -- ^ Variables and constants (with their refinement types), indexed by arity
+_boundTypeVars :: [Id],                  -- ^ Bound type variables
+  _boundPredicates :: [PredSig],           -- ^ Argument sorts of bound abstract refinements
+  _assumptions :: Set Formula,             -- ^ Unknown assumptions
+  _shapeConstraints :: Map Id SType,       -- ^ For polymorphic recursive calls, the shape their types must have
+  _usedScrutinees :: [RProgram],           -- ^ Program terms that has already been scrutinized
+  _unfoldedVars :: Set Id,                 -- ^ In eager match mode, datatype variables that can be scrutinized
+  _letBound :: Set Id,                     -- ^ Subset of symbols that are let-bound
+  -- | Constant part:
+  _constants :: Set Id,                    -- ^ Subset of symbols that are constants
+  _datatypes :: Map Id DatatypeDef,        -- ^ Datatype definitions
+  _globalPredicates :: Map Id [Sort],      -- ^ Signatures (resSort:argSorts) of module-level logic functions (measures, predicates)
+  _measures :: Map Id MeasureDef,          -- ^ Measure definitions
+  _typeSynonyms :: Map Id ([Id], RType),   -- ^ Type synonym definitions
+  _unresolvedConstants :: Map Id RSchema   -- ^ Unresolved types of components (used for reporting specifications with macros)
+} deriving (Show)
+
 type HornSolver = FixPointSolver Z3State
 
 -- | Solves for the least fixpoint(s) and greatest fixpoint of a constraint

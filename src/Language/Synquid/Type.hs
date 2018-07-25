@@ -1,9 +1,9 @@
 -- | Refinement Types
-module Language.SMT.Type where
+module Language.Synquid.Type where
 
-import Language.SMT.Logic
-import Language.SMT.Tokens
-import Language.SMT.Util
+import Language.Synquid.Logic
+import Language.Synquid.Tokens
+import Language.Synquid.Util
 
 import Data.Maybe
 import Data.Either

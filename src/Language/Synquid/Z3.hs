@@ -1,14 +1,14 @@
 {-# LANGUAGE TypeSynonymInstances, FlexibleInstances, TemplateHaskell #-}
 
 -- | Interface to Z3
-module Language.SMT.Z3 (Z3State, evalZ3State) where
+module Language.Synquid.Z3 (Z3State, evalZ3State) where
 
-import Language.SMT.Logic
-import Language.SMT.Type
-import Language.SMT.Program
-import Language.SMT.SolverMonad
-import Language.SMT.Util
-import Language.SMT.Pretty
+import Language.Synquid.Logic
+import Language.Synquid.Type
+import Language.Synquid.Program
+import Language.Synquid.SolverMonad
+import Language.Synquid.Util
+import Language.Synquid.Pretty
 import Z3.Monad hiding (Z3Env, newEnv, Sort)
 import qualified Z3.Base as Z3
 
