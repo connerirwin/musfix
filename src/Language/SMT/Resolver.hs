@@ -1,5 +1,7 @@
 module Language.SMT.Resolver where
 
+import Language.SMT.Syntax
+  
 import Data.List
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -32,11 +34,6 @@ qmap = generateQualifiers [func] [pos, neg, neqZ, false]
 resolverDebug :: IO ()
 resolverDebug = do
   print qmap
-
-
-
--- | Hopefully the InputExpr can look like this
-data InputExpr = WFConstraint Id [Formula]
 
 functionName :: InputExpr -> Id
 functionName (WFConstraint name _) = name

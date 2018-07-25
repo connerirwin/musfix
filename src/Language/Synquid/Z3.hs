@@ -3,6 +3,8 @@
 -- | Interface to Z3
 module Language.Synquid.Z3 (Z3State, evalZ3State) where
 
+import Language.SMT.Syntax
+  
 import Language.Synquid.Logic
 import Language.Synquid.Type
 import Language.Synquid.Program

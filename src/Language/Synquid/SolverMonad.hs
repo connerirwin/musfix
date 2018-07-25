@@ -1,6 +1,7 @@
 -- | Interface to Synquid solvers
 module Language.Synquid.SolverMonad where
 
+import Language.SMT.Syntax
 import Language.Synquid.Logic
 import Language.Synquid.Program
 import Data.Map

@@ -3,6 +3,7 @@
 -- | Executable programs
 module Language.Synquid.Program where
 
+import Language.SMT.Syntax
 import Language.Synquid.Logic
 import Language.Synquid.Type as Type
 import Language.Synquid.Tokens

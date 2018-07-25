@@ -1,6 +1,7 @@
 -- | Lexems of the Language.Synquid language
 module Language.Synquid.Tokens where
 
+import Language.SMT.Syntax
 import Language.Synquid.Logic
 import Language.Synquid.Util
 import Data.Maybe

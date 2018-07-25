@@ -1,6 +1,7 @@
 -- | Refinement Types
 module Language.Synquid.Type where
 
+import Language.SMT.Syntax
 import Language.Synquid.Logic
 import Language.Synquid.Tokens
 import Language.Synquid.Util

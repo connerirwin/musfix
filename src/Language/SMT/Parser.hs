@@ -2,6 +2,7 @@
 
 module Language.SMT.Parser where
 
+import Language.SMT.Syntax
 import Language.Synquid.Logic
 import Language.Synquid.Tokens
 
@@ -44,12 +45,6 @@ sorts = Map.fromList [ ("int",   IntS),
                      ]
 
 {- Top-level Statements -}
-data InputExpr =
-    Qualifier T.Text [Formula] Formula          -- ^ Qualifier with name, variables and equation
-  | WFConstraint T.Text [Formula]                 -- ^ Well-formed predicate constraint
-  | HornConstraint Formula                      -- ^ Horn constraint
-  deriving (Show, Eq, Ord)
-
 checkVars :: [Formula] -> Bool
 checkVars fs = foldr check True fs
   where
@@ -66,12 +61,12 @@ instance FromLisp InputExpr where
           fail $ "invalid expressions in variable list"
       else do
           formula <- parseFormula y
-          return $ Qualifier n vars formula
+          return $ Qualifier (T.unpack n) vars formula
   -- well-formed constraint
   parseLisp (List [(Symbol "wf"), (Symbol n), x]) = do
     var <- parseFormula x
     case var of
-        (Var s i) -> return $ WFConstraint n [var] --TODO make this work
+        (Var s i) -> return $ WFConstraint (T.unpack n) [var] --TODO make this work
         _ -> fail "predicate parameter is not a variable"
   -- horn constraint
   parseLisp (List [(Symbol "constraint"), y]) = do
