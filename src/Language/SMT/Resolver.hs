@@ -88,8 +88,6 @@ allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Form
 allRawSubstitutions _ (BoolLit True) _ _ = []
 allRawSubstitutions env qual formals actuals = do
   let tvs = Set.fromList (env ^. boundTypeVars)
-  let fixedSortSubst = Map.empty
-  let fixedSubst = Map.empty
   (sortSubst, subst, _) <- foldM (go tvs) (Map.empty, Map.empty, actuals) formals
   return $ substitute subst $ sortSubstituteFml sortSubst qual
   where
