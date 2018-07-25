@@ -100,11 +100,17 @@ allRawSubstitutions env qual formals actuals = do
       case unifySorts tvs [sortOf formal'] [sortOf actual] of
         Left _ -> mzero
         Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
-        
+
+-- | Resolves the sorts of all given inputs
+resolveSorts :: [InputExpr] -> [InputExpr]
+resolveSorts ins = map f ins
+  where
+    f (Qualifier n xs f) = resolveQualifierSorts $ Qualifier n xs f
+    f a = a
 
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
-resolveQualifierSorts :: InputExpr -> Formula
-resolveQualifierSorts (Qualifier n xs f) = updateSort xs f
+resolveQualifierSorts :: InputExpr -> InputExpr
+resolveQualifierSorts (Qualifier n xs f) = Qualifier n xs $ updateSort xs f
   where
     updateSort :: [Formula] -> Formula -> Formula
     updateSort xs (Var s n)

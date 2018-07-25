@@ -54,7 +54,7 @@ readConstraints :: ProgramOptions -> String -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
     let lisp = topSExprs $ s in
-      let ins = topInputs lisp in
+      let ins = resolveSorts $ topInputs lisp in
       putStrLn $ show ins
 
 topSExprs :: ByteString -> [L.Lisp]
