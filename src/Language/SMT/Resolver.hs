@@ -1,7 +1,7 @@
 module Language.SMT.Resolver where
 
 import Language.SMT.Syntax
-  
+
 import Data.List
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -22,11 +22,12 @@ import Language.Synquid.ResolverSynq
 {- Debug Testing -}
 debugOut a = traceShow a a
 
+-- | If the qualifiers reuse variable names, they must be the same type
 pos   = Binary Le (IntLit 0) (Var IntS "v")
 neg   = Binary Le (Var IntS "v") (IntLit 0)
-neqZ  = Unary Not (Binary Eq (Var BoolS "v") (IntLit 0))
+neqZ  = Unary Not (Binary Eq (Var IntS "v") (IntLit 0))
 false = Binary Eq (IntLit 66) (IntLit 77)
-func  = WFConstraint "$k0" [(Var IntS "v0"), (Var IntS "v1")]
+func  = WFConstraint "$k0" [(Var IntS "v0")]
 
 qmap = generateQualifiers [func] [pos, neg, neqZ, false]
 
@@ -82,9 +83,10 @@ extractId (Var _ x) = x
 allSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula]
 allSubstitutions env qual formals actuals = do
   qual' <- allRawSubstitutions env qual formals actuals
-  case resolveRefinement env qual' of
-    Left _ -> [Var AnyS "variable sort mismatch"] -- Variable sort mismatch
-    Right resolved -> return resolved
+  return qual'
+  -- case resolveRefinement env (debugOut qual') of
+  --   Left _ -> [Var AnyS "variable sort mismatch"] -- Variable sort mismatch
+  --   Right resolved -> return resolved
 
 allRawSubstitutions :: Environment -> Formula -> [Formula] -> [Formula] -> [Formula]
 allRawSubstitutions _ (BoolLit True) _ _ = []
@@ -104,7 +106,7 @@ allRawSubstitutions env qual formals actuals = do
 data Environment = Environment {
   -- | Variable part:
   _symbols :: Map Int (Map Id RSchema),    -- ^ Variables and constants (with their refinement types), indexed by arity
-_boundTypeVars :: [Id],                  -- ^ Bound type variables
+  _boundTypeVars :: [Id],                  -- ^ Bound type variables
   _boundPredicates :: [PredSig],           -- ^ Argument sorts of bound abstract refinements
   _assumptions :: Set Formula,             -- ^ Unknown assumptions
   _shapeConstraints :: Map Id SType,       -- ^ For polymorphic recursive calls, the shape their types must have
