@@ -3,6 +3,7 @@ module Language.SMT.Resolver where
 import Language.SMT.Syntax
   
 import Data.List
+import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
@@ -99,6 +100,35 @@ allRawSubstitutions env qual formals actuals = do
       case unifySorts tvs [sortOf formal'] [sortOf actual] of
         Left _ -> mzero
         Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
+        
+
+-- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
+resolveQualifierSorts :: InputExpr -> Formula
+resolveQualifierSorts (Qualifier n xs f) = updateSort xs f
+  where
+    updateSort :: [Formula] -> Formula -> Formula
+    updateSort xs (Var s n)
+      | s == AnyS   = Var s' n
+      | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
+      where
+        s' = varSort xs n
+    updateSort xs (Unary op f)      = Unary op $ updateSort xs f
+    updateSort xs (Binary op f1 f2) = Binary op f1' f2'
+      where
+        f1' = updateSort xs f1
+        f2' = updateSort xs f2
+    updateSort xs (Ite f1 f2 f3)    = Ite f1' f2' f3'
+      where
+        f1' = updateSort xs f1
+        f2' = updateSort xs f2
+        f3' = updateSort xs f3
+    updateSort _ f = f
+    varSort :: [Formula] -> Id -> Sort
+    varSort ((Var s n):xs) x
+      | n == x      = s
+      | otherwise   = varSort xs x
+    varSort _ x     = error $ "no sort found for " ++ x ++ " in qualifier (variable not declared)"
+resolveQualifierSorts _ = error "cannot resolve qualifier sorts: input expression is different type"
 
 {-
 data Environment = Environment {
