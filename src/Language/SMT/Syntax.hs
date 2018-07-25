@@ -17,6 +17,30 @@ data InputExpr =
   | WFConstraint Id [Formula]               -- ^ Well-formed predicate constraint
   | HornConstraint Formula                  -- ^ Horn constraint
   deriving (Show, Eq, Ord)
+
+-- | Gets all the qualifiers in an input expression list
+allQualifiers :: [InputExpr] -> [InputExpr]
+allQualifiers ins = filter f ins
+  where
+    f :: InputExpr -> Bool
+    f (Qualifier _ _ _) = True
+    f _ = False
+    
+-- | Gets all the well-formed constraints in an input expression list
+allWFConstraints :: [InputExpr] -> [InputExpr]
+allWFConstraints ins = filter f ins
+  where
+    f :: InputExpr -> Bool
+    f (WFConstraint _ _) = True
+    f _ = False
+    
+-- | Gets all the well-formed constraints in an input expression list
+allHornConstraints :: [InputExpr] -> [InputExpr]
+allHornConstraints ins = filter f ins
+  where
+    f :: InputExpr -> Bool
+    f (HornConstraint _) = True
+    f _ = False
   
 -- | Sorts
 data Sort = BoolS | IntS | VarS Id | DataS Id [Sort] | SetS Sort | AnyS
