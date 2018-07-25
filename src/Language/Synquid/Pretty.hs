@@ -53,6 +53,7 @@ module Language.Synquid.Pretty (
   programNodeCount
 ) where
 
+import Language.SMT.Syntax
 import Language.Synquid.Logic
 import Language.Synquid.Type
 import Language.Synquid.Error

@@ -3,6 +3,7 @@
 -- | Formulas of the refinement logic
 module Language.Synquid.Logic where
 
+import Language.SMT.Syntax
 import Language.Synquid.Util
 
 import Data.Tuple
@@ -16,10 +17,6 @@ import Control.Lens hiding (both)
 import Control.Monad
 
 {- Sorts -}
-
--- | Sorts
-data Sort = BoolS | IntS | VarS Id | DataS Id [Sort] | SetS Sort | AnyS
-  deriving (Show, Eq, Ord)
 
 isSetS (SetS _) = True
 isSetS _ = False
@@ -94,38 +91,6 @@ data PredSig = PredSig {
 } deriving (Show, Eq, Ord)
 
 {- Formulas of the refinement logic -}
-
--- | Unary operators
-data UnOp = Neg | Not
-  deriving (Show, Eq, Ord)
-
--- | Binary operators
-data BinOp =
-    Times | Plus | Minus |          -- ^ Int -> Int -> Int
-    Eq | Neq |                      -- ^ a -> a -> Bool
-    Lt | Le | Gt | Ge |             -- ^ Int -> Int -> Bool
-    And | Or | Implies | Iff |      -- ^ Bool -> Bool -> Bool
-    Union | Intersect | Diff |      -- ^ Set -> Set -> Set
-    Member | Subset                 -- ^ Int/Set -> Set -> Bool
-  deriving (Show, Eq, Ord)
-
--- | Variable substitution
-type Substitution = Map Id Formula
-
--- | Formulas of the refinement logic
-data Formula =
-  BoolLit Bool |                      -- ^ Boolean literal
-  IntLit Integer |                    -- ^ Integer literal
-  SetLit Sort [Formula] |             -- ^ Set literal ([1, 2, 3])
-  Var Sort Id |                       -- ^ Input variable (universally quantified first-order variable)
-  Unknown Substitution Id |           -- ^ Predicate unknown (with a pending substitution)
-  Unary UnOp Formula |                -- ^ Unary expression
-  Binary BinOp Formula Formula |      -- ^ Binary expression
-  Ite Formula Formula Formula |       -- ^ If-then-else expression
-  Pred Sort Id [Formula] |            -- ^ Logic function application
-  Cons Sort Id [Formula] |            -- ^ Constructor application
-  All Formula Formula                 -- ^ Universal quantification
-  deriving (Show, Eq, Ord)
 
 dontCare = "_"
 valueVarName = "_v"

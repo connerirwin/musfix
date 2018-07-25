@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+import Language.SMT.Syntax
 import Language.SMT.Parser
-import Language.SMT.Resolver hiding (InputExpr)
+import Language.SMT.Resolver
 
 import Control.Monad
 import Data.ByteString (ByteString)
@@ -12,30 +13,43 @@ import qualified Data.AttoLisp as L
 import qualified Data.ByteString as ByteString
 
 data ProgramOptions = ProgramOptions {
-  printResult :: Bool,
-  outputFile :: String
+  printProgramOutput :: Bool,
+  programOutputFile :: String,
+  programVerboseLogging :: Bool
 } deriving (Show, Eq)
 
+defaultProgramOptions = ProgramOptions {
+  printProgramOutput = False,
+  programOutputFile = "out.txt",
+  programVerboseLogging = False
+}
+
 version = putStrLn "musfix 0.1.0.0"
-usage   = putStrLn "Usage: musfix [file ...]"
+usage   = putStrLn "Usage: musfix [--help] [file ...]"
 debug   = resolverDebug
 
 main :: IO ()
 main = do
   args <- getArgs
-  parseArgs args
+  parseArgs defaultProgramOptions args
 
-parseArgs :: [String] -> IO ()
-parseArgs as    = mapM_ parseArg as
+parseArgs :: ProgramOptions -> [String] -> IO ()
+parseArgs o (x:y:xs)
+    | x == "-o"   = parseArgs o' xs
+    where
+      o' = o { programOutputFile = y }
+parseArgs o (x:xs)
+    | x == "-d"             = debug               >> continue o
+    | x == "--help"         = usage               >> exitSuccess
+    | x == "-p"             = continue $ o { printProgramOutput = True }
+    | x == "--version"      = version             >> exitSuccess
+    | x == "--verbose"      = continue $ o { programVerboseLogging = True }
+    | otherwise   = readConstraints o x           >> continue o
+    where
+      continue o' = parseArgs o' xs
 
-parseArg :: String -> IO ()
-parseArg "-d"   = debug
-parseArg "-h"   = usage     >> exitSuccess
-parseArg "-v"   = version   >> exitSuccess
-parseArg f      = readConstraints f
-
-readConstraints :: String -> IO ()
-readConstraints f = do
+readConstraints :: ProgramOptions -> String -> IO ()
+readConstraints o f = do
     s <- ByteString.readFile f
     let lisp = topSExprs $ s in
       let ins = topInputs lisp in

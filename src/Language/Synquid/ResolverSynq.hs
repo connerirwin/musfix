@@ -6,6 +6,8 @@ module Language.Synquid.ResolverSynq (
   addAllVariables, ResolverState (..), instantiateSorts
   ) where
 
+import Language.SMT.Syntax
+    
 import Language.Synquid.Logic
 import Language.Synquid.Type
 import Language.Synquid.Program
