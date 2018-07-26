@@ -61,9 +61,37 @@ generateQualifiers input = Map.fromList qualifiers
     substituteQualifiers :: InputExpr -> QSpace
     substituteQualifiers wfconstraint = toSpace Nothing subbedQualifiers
       where
-        subbedQualifiers = foldr (union . \qualif -> allSubstitutions qualif formals actuals) [] rawQualifiers
-        formals = foldr (union . extractVars) [] rawQualifiers -- ^ vars in the rawQualifiers
-        actuals = wfFormals wfconstraint -- ^ vars in the wfconstraint
+        subbedQualifiers = concat $ map substituteQualifier rawQualifiers
+        actuals = wfFormals wfconstraint
+
+        -- | The actuals being substituted into the formal parameters of the
+        -- qualifier are the formal parameters of the wfConstraint
+        substituteQualifier :: Formula -> [Formula]
+        substituteQualifier qualifier = map (flip substitute qualifier) substitutions
+          where
+            formals = extractVars qualifier
+            substitutions = generateSubstitutions formals actuals
+
+generateSubstitutions :: [Formula] -> [Formula] -> [Substitution]
+generateSubstitutions formals actuals = if length singleMappings /= length formals then [] else validMappings -- ^ unnecessary optimization?
+  where
+    singleMappings = groupBy keysMatch $ [[(fName, a)] | f@(Var _ fName) <- formals, a <- actuals, sameSort f a]
+    fullMappings = map Map.fromList $ foldAp (++) [[]] singleMappings
+    validMappings = filter (isSet . Map.elems) fullMappings -- TODO should they be one-to-one
+
+    sameSort :: Formula -> Formula -> Bool
+    sameSort (Var s1 _) (Var s2 _) = s1 == s2
+    sameSort _          _          = False
+
+    keysMatch :: Eq a => [(a, b)] -> [(a, c)] -> Bool
+    keysMatch [(x, _)] [(y, _)] = x == y
+
+    foldAp :: Applicative f => (a -> b -> a) -> f a -> [f b] -> f a
+    foldAp f acc [] = acc
+    foldAp f acc (x:xs) = foldAp f (f <$> acc <*> x) xs
+
+    isSet :: Eq a => [a] -> Bool
+    isSet a = nub a == a
 
 extractVars :: Formula -> [Formula]
 extractVars (SetLit _ fs)  = unify $ map extractVars fs
@@ -75,23 +103,6 @@ extractVars (Pred _ _ fs)  = unify $ map extractVars fs
 extractVars (Cons _ _ fs)  = unify $ map extractVars fs
 extractVars (All x y)      = unify $ map extractVars [x,y]
 extractVars _              = []
-
--- | 'allSubstitutions' @env qual formals actuals@:
--- all well-typed substitutions of @actuals@ for @formals@ in a qualifier @qual@
-allSubstitutions :: Formula -> [Formula] -> [Formula] -> [Formula]
-allSubstitutions (BoolLit True) _ _ = []
-allSubstitutions qual formals actuals = do
-  (sortSubst, subst, _) <- foldM (go Set.empty) (Map.empty, Map.empty, actuals) formals
-  return $ substitute subst $ sortSubstituteFml sortSubst qual
-  where
-    go tvs (sortSubst, subst, actuals) formal = do
-      let formal' = sortSubstituteFml sortSubst formal
-      actual <- actuals
-      case unifySorts tvs [sortOf formal'] [sortOf actual] of
-        -- if a qualifier can't be fully instantiated, it should just disregard the qualifier
-        -- Left _ -> trace "oh god why" mzero
-        Left _ -> trace "why doesn't this fix it" $ return (sortSubst, subst, delete actual actuals)
-        Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
 
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
 resolveInputSorts :: InputExpr -> InputExpr
