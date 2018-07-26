@@ -56,8 +56,12 @@ readConstraints o f = do
     s <- ByteString.readFile f
     let lisp = topSExprs $ s
         ins = resolveSorts $ topInputs lisp
-      in
+        qmap = generateQualifiers ins
+      in do
+        putStrLn "\n\nInputs\n--------"
         putStrLn $ show ins
+        putStrLn "\n\nQMAP\n--------"
+        putStrLn $ show qmap
         
       
 verboseLog :: ProgramOptions -> String -> IO ()
