@@ -34,12 +34,14 @@ input = [
   Qualifier "Neg" [Var IntS "v"] (Binary Le (Var AnyS "v") (IntLit 0)),
   Qualifier "NeqZ" [Var IntS "v"] (Unary Not (Binary Eq (Var AnyS "v") (IntLit 0))),
   Qualifier "False" [] (Binary Eq (IntLit 66) (IntLit 77)),
+  -- | if the qualifier contains a type not present in the wf constraint, it breaks
+  -- Qualifier "('^')" [Var BoolS "x"] (Binary Eq (Var AnyS "x") (Var AnyS "x")),
   WFConstraint "$k0" [Var IntS "v0"],
   HornConstraint (All (Var IntS "v1") (Binary Implies (Pred AnyS "$k0" []) (Binary Lt (IntLit 0) (Binary Plus (Var AnyS "v1") (IntLit 1))))),
   HornConstraint (All (Var IntS "v2") (Binary Implies (Binary Eq (Var AnyS "v2") (IntLit 10)) (Pred AnyS "$k0" [])))
   ]
 
-qmap = generateQualifiers input
+qmap = generateQualifiers $ resolveSorts input
 
 -- | A debug printing function designed to be as unobtrusive as possible
 resolverDebug :: IO ()
@@ -49,7 +51,7 @@ resolverDebug = do
 -- | Create a qualifier (refinement) map from a set of possible qualifiers for a
 -- given unknown
 generateQualifiers :: [InputExpr] -> QMap
-generateQualifiers input = Map.fromList $ qualifiers
+generateQualifiers input = Map.fromList qualifiers
   where
     wfconstraints = allWFConstraints input
     rawQualifiers = map qualifEq $ allQualifiers input
@@ -57,11 +59,11 @@ generateQualifiers input = Map.fromList $ qualifiers
 
     -- | Substitute the wfconstraint formal parameters into the qualifiers
     substituteQualifiers :: InputExpr -> QSpace
-    substituteQualifiers formalsMap = toSpace Nothing subbedQualifiers
+    substituteQualifiers wfconstraint = toSpace Nothing subbedQualifiers
       where
         subbedQualifiers = foldr (union . \qualif -> allSubstitutions qualif formals actuals) [] rawQualifiers
         formals = foldr (union . extractVars) [] rawQualifiers -- ^ vars in the rawQualifiers
-        actuals = wfFormals formalsMap -- ^ vars in the wfconstraint
+        actuals = wfFormals wfconstraint -- ^ vars in the wfconstraint
 
 extractVars :: Formula -> [Formula]
 extractVars (SetLit _ fs)  = unify $ map extractVars fs
@@ -86,7 +88,9 @@ allSubstitutions qual formals actuals = do
       let formal' = sortSubstituteFml sortSubst formal
       actual <- actuals
       case unifySorts tvs [sortOf formal'] [sortOf actual] of
-        Left _ -> mzero
+        -- if a qualifier can't be fully instantiated, it should just disregard the qualifier
+        -- Left _ -> trace "oh god why" mzero
+        Left _ -> trace "why doesn't this fix it" $ return (sortSubst, subst, delete actual actuals)
         Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
 
 -- | Resolves the sorts of all given inputs
