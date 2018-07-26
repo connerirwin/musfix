@@ -106,8 +106,11 @@ instance FromLisp Formula where
   -- logical predicate application
   parseLisp (List [(Symbol p), x])
       | T.head p == '$'             = do
-          arg <- parseFormula x
-          return $ Pred BoolS (T.unpack p) [arg]
+          arg@(Var s n) <- parseFormula x
+          let m = Map.fromList [("v0", Var IntS n)]
+            in do
+              return $ Unknown m (T.unpack p)
+          --return $ Pred BoolS (T.unpack p) [arg]
   -- variable sort assignment
   parseLisp (List [(Symbol v), (Symbol s)])
       | Map.member s sorts        = do

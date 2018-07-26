@@ -5,6 +5,8 @@ import Language.SMT.Solve
 import Language.SMT.Syntax
 import Language.SMT.Resolver
 
+import Language.Synquid.Pretty
+
 import Control.Monad
 import Data.ByteString (ByteString)
 import System.Environment
@@ -68,6 +70,8 @@ readConstraints o f = do
         verboseLog o "\nCandidates\n--------"
         candidates <- findFixPoint horns qmap
         verboseLog o $ show candidates
+        verboseLog o "\n\nFinal candidates:"
+        mapM_ ((verboseLog o) . show . pretty) candidates
     
 
 formulas :: InputExpr -> Formula
