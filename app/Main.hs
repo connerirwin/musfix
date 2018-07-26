@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Language.SMT.Syntax
 import Language.SMT.Parser
+import Language.SMT.Solve
+import Language.SMT.Syntax
 import Language.SMT.Resolver
 
 import Control.Monad
@@ -57,12 +58,20 @@ readConstraints o f = do
     let lisp = topSExprs $ s
         ins = resolveSorts $ topInputs lisp
         qmap = generateQualifiers ins
+        horns = map formulas $ allHornConstraints ins
       in do
-        putStrLn "\n\nInputs\n--------"
-        putStrLn $ show ins
-        putStrLn "\n\nQMAP\n--------"
-        putStrLn $ show qmap
-        
+        verboseLog o "Preparing to find fixpoint..."
+        verboseLog o "\nInputs\n--------"
+        verboseLog o $ show ins
+        verboseLog o "\nQMAP\n--------"
+        verboseLog o $ show qmap
+        verboseLog o "\nCandidates\n--------"
+        candidates <- findFixPoint horns qmap
+        verboseLog o $ show candidates
+
+formulas :: InputExpr -> Formula
+formulas (HornConstraint f) = f
+formulas _ = error "non-horn constraint in constraints"
       
 verboseLog :: ProgramOptions -> String -> IO ()
 verboseLog o s = if programVerboseLogging o then

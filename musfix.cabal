@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 58457ab1fc6df81f6061403cdee5f489c6ae3afe5e9b64418e17589ecca58ec9
+-- hash: cf1d54aef95aa1ac2b744e6a7f02b1a631fa4ad33703841221d3c50eebc4d987
 
 name:           musfix
 version:        0.1.0.0
@@ -20,6 +20,7 @@ library
   exposed-modules:
       Language.SMT.Parser
       Language.SMT.Resolver
+      Language.SMT.Solve
       Language.SMT.Syntax
       Language.Synquid.Error
       Language.Synquid.HornSolver
@@ -59,6 +60,7 @@ executable musfix
   other-modules:
       Language.SMT.Parser
       Language.SMT.Resolver
+      Language.SMT.Solve
       Language.SMT.Syntax
       Language.Synquid.Error
       Language.Synquid.HornSolver

@@ -206,6 +206,9 @@ hornApplySolution extractAssumptions sol (Binary Implies lhs rhs) =
      rhs' = applySolution sol rhs
      assumptions = extractAssumptions lhs' `Set.union` extractAssumptions rhs'
     in Binary Implies (lhs' `andClean` conjunction assumptions) rhs'
+    
+-- debug
+hornApplySolution _ _ n = error $ "attempting to apply solution " ++ (show n)
 
 -- | 'strengthen' @qmap fml sol@: all minimal strengthenings of @sol@ using qualifiers from @qmap@ that make @fml@ valid;
 -- | @fml@ must have the form "/\ u_i ==> const".

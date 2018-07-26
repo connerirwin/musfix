@@ -93,7 +93,7 @@ allSubstitutions qual formals actuals = do
 resolveSorts :: [InputExpr] -> [InputExpr]
 resolveSorts ins = map f ins
   where
-    f (Qualifier n xs f) = resolveQualifierSorts $ Qualifier n xs f
+    f q@(Qualifier _ _ _) = resolveQualifierSorts q
     f a = a
 
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
