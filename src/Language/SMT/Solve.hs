@@ -10,6 +10,7 @@ import Language.Synquid.Util
 import Language.Synquid.Z3
 
 import Control.Monad.Reader
+import Debug.Trace
 
 import qualified Data.Set as Set
 
@@ -35,10 +36,10 @@ findFixPoint constraints qmap = evalZ3State $ evalFixPointSolver (computeFixPoin
 computeFixPoints :: [Formula] -> QMap -> HornSolver [Candidate]
 computeFixPoints constraints qmap = do
     initCand <- initHornSolver emptyEnv
-    allCandidates <- refineCandidates constraints qmap nothing [initCand]
-    return allCandidates
-    --constraints' <- mapM preprocessConstraint constraints
-    --allCandidates <- refineCandidates constraints qmap nothing [initCand]
-    --return $ head allCandidates
+    procCons <- mapM preprocessConstraint constraints
+    let procCons' = foldl (++) [] procCons 
+      in do
+        allCandidates <- refineCandidates procCons' qmap nothing [initCand]
+        return allCandidates
   where
     nothing = \_ -> Set.empty

@@ -62,12 +62,13 @@ readConstraints o f = do
       in do
         verboseLog o "Preparing to find fixpoint..."
         verboseLog o "\nInputs\n--------"
-        verboseLog o $ show ins
+        mapM_ ((verboseLog o) . show) ins
         verboseLog o "\nQMAP\n--------"
         verboseLog o $ show qmap
         verboseLog o "\nCandidates\n--------"
         candidates <- findFixPoint horns qmap
         verboseLog o $ show candidates
+    
 
 formulas :: InputExpr -> Formula
 formulas (HornConstraint vs f) = f

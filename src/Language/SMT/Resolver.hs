@@ -121,6 +121,11 @@ resolveSorts xs (Ite f1 f2 f3)    = Ite f1' f2' f3'
     f1' = resolveSorts xs f1
     f2' = resolveSorts xs f2
     f3' = resolveSorts xs f3
+resolveSorts _ (Pred s n args) = Pred BoolS n args' -- TODO: handle this correctly!
+  where
+    args' = map intify args
+    intify (Var s n) = Var IntS n
+    intify f = f
 resolveSorts _ f = f
 
 

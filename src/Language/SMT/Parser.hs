@@ -90,6 +90,7 @@ instance FromLisp Formula where
   parseLisp (Number n)                = case S.floatingOrInteger n of
       Left f -> fail $ "non-integral value not supported " ++ (show n)
       Right i -> pure $ IntLit i
+  -- variable
   parseLisp (Symbol v)                = pure $ Var AnyS (T.unpack v)
   -- for all
   parseLisp (List [(Symbol "forall"), x, y])  = do
@@ -106,7 +107,7 @@ instance FromLisp Formula where
   parseLisp (List [(Symbol p), x])
       | T.head p == '$'             = do
           arg <- parseFormula x
-          return $ Pred AnyS (T.unpack p) [] -- should be unknown
+          return $ Pred BoolS (T.unpack p) [arg]
   -- variable sort assignment
   parseLisp (List [(Symbol v), (Symbol s)])
       | Map.member s sorts        = do
