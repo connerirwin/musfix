@@ -15,7 +15,7 @@ type Id = String
 data InputExpr =
     Qualifier Id [Formula] Formula          -- ^ Qualifier with name, variables and equation
   | WFConstraint Id [Formula]               -- ^ Well-formed predicate constraint
-  | HornConstraint Formula                  -- ^ Horn constraint
+  | HornConstraint [Formula] Formula                  -- ^ Horn constraint
   deriving (Show, Eq, Ord)
 
 -- | Gets all the qualifiers in an input expression list
@@ -39,7 +39,7 @@ allHornConstraints :: [InputExpr] -> [InputExpr]
 allHornConstraints ins = filter f ins
   where
     f :: InputExpr -> Bool
-    f (HornConstraint _) = True
+    f (HornConstraint _ _) = True
     f _ = False
 
 wfName :: InputExpr -> Id

@@ -56,7 +56,7 @@ readConstraints :: ProgramOptions -> String -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
     let lisp = topSExprs $ s
-        ins = resolveSorts $ topInputs lisp
+        ins = map resolveInputSorts $ topInputs lisp
         qmap = generateQualifiers ins
         horns = map formulas $ allHornConstraints ins
       in do
@@ -70,7 +70,7 @@ readConstraints o f = do
         verboseLog o $ show candidates
 
 formulas :: InputExpr -> Formula
-formulas (HornConstraint f) = f
+formulas (HornConstraint vs f) = f
 formulas _ = error "non-horn constraint in constraints"
       
 verboseLog :: ProgramOptions -> String -> IO ()

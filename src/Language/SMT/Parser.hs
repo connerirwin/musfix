@@ -68,11 +68,15 @@ instance FromLisp InputExpr where
       if not $ checkVars vars then do
           fail $ "invalid expressions in variable list"
       else do
-        return $ WFConstraint (T.unpack n) vars
+          return $ WFConstraint (T.unpack n) vars
   -- horn constraint
-  parseLisp (List [(Symbol "constraint"), y]) = do
-      formula <- parseFormula y
-      return $ HornConstraint formula
+  parseLisp (List [(Symbol "constraint"), List [(Symbol "forall"), x, y]]) = do
+      var <- parseFormula x
+      if not $ checkVars [var] then do
+          fail $ "invalid variable in constraint for all"
+      else do
+          formula <- parseFormula y
+          return $ HornConstraint [var] formula
   parseLisp _ = fail "unknown top-level construct"
 
 parseInputExpr :: Lisp -> Parser InputExpr

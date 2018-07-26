@@ -36,12 +36,12 @@ input = [
   Qualifier "False" [] (Binary Eq (IntLit 66) (IntLit 77)),
   -- | if the qualifier contains a type not present in the wf constraint, it breaks
   -- Qualifier "('^')" [Var BoolS "x"] (Binary Eq (Var AnyS "x") (Var AnyS "x")),
-  WFConstraint "$k0" [Var IntS "v0"],
-  HornConstraint (All (Var IntS "v1") (Binary Implies (Pred AnyS "$k0" []) (Binary Lt (IntLit 0) (Binary Plus (Var AnyS "v1") (IntLit 1))))),
-  HornConstraint (All (Var IntS "v2") (Binary Implies (Binary Eq (Var AnyS "v2") (IntLit 10)) (Pred AnyS "$k0" [])))
+  WFConstraint "$k0" [Var IntS "v0"]
+  --HornConstraint (All (Var IntS "v1") (Binary Implies (Pred AnyS "$k0" []) (Binary Lt (IntLit 0) (Binary Plus (Var AnyS "v1") (IntLit 1))))),
+  --HornConstraint (All (Var IntS "v2") (Binary Implies (Binary Eq (Var AnyS "v2") (IntLit 10)) (Pred AnyS "$k0" [])))
   ]
 
-qmap = generateQualifiers $ resolveSorts input
+qmap = generateQualifiers $ map resolveInputSorts input
 
 -- | A debug printing function designed to be as unobtrusive as possible
 resolverDebug :: IO ()
@@ -93,40 +93,36 @@ allSubstitutions qual formals actuals = do
         Left _ -> trace "why doesn't this fix it" $ return (sortSubst, subst, delete actual actuals)
         Right sortSubst' -> return (sortSubst `Map.union` sortSubst', Map.insert (varName formal) actual subst, delete actual actuals)
 
--- | Resolves the sorts of all given inputs
-resolveSorts :: [InputExpr] -> [InputExpr]
-resolveSorts ins = map f ins
-  where
-    f q@(Qualifier _ _ _) = resolveQualifierSorts q
-    f a = a
-
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
-resolveQualifierSorts :: InputExpr -> InputExpr
-resolveQualifierSorts (Qualifier n xs f) = Qualifier n xs $ updateSort xs f
+resolveInputSorts :: InputExpr -> InputExpr
+resolveInputSorts (Qualifier n xs f) = Qualifier n xs $ resolveSorts xs f
+resolveInputSorts (HornConstraint xs f) = HornConstraint xs $ resolveSorts xs f
+resolveInputSorts i = i
+
+-- | Updates the sorts in a formula using the given variables
+resolveSorts :: [Formula] -> Formula -> Formula
+resolveSorts xs (Var s n)
+  | s == AnyS   = Var s' n
+  | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
   where
-    updateSort :: [Formula] -> Formula -> Formula
-    updateSort xs (Var s n)
-      | s == AnyS   = Var s' n
-      | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
-      where
-        s' = varSort xs n
-    updateSort xs (Unary op f)      = Unary op $ updateSort xs f
-    updateSort xs (Binary op f1 f2) = Binary op f1' f2'
-      where
-        f1' = updateSort xs f1
-        f2' = updateSort xs f2
-    updateSort xs (Ite f1 f2 f3)    = Ite f1' f2' f3'
-      where
-        f1' = updateSort xs f1
-        f2' = updateSort xs f2
-        f3' = updateSort xs f3
-    updateSort _ f = f
+    s' = varSort xs n
     varSort :: [Formula] -> Id -> Sort
     varSort ((Var s n):xs) x
       | n == x      = s
       | otherwise   = varSort xs x
     varSort _ x     = error $ "no sort found for " ++ x ++ " in qualifier (variable not declared)"
-resolveQualifierSorts _ = error "cannot resolve qualifier sorts: input expression is different type"
+resolveSorts xs (Unary op f)      = Unary op $ resolveSorts xs f
+resolveSorts xs (Binary op f1 f2) = Binary op f1' f2'
+  where
+    f1' = resolveSorts xs f1
+    f2' = resolveSorts xs f2
+resolveSorts xs (Ite f1 f2 f3)    = Ite f1' f2' f3'
+  where
+    f1' = resolveSorts xs f1
+    f2' = resolveSorts xs f2
+    f3' = resolveSorts xs f3
+resolveSorts _ f = f
+
 
 {-
 type HornSolver = FixPointSolver Z3State
