@@ -1,4 +1,5 @@
-(qualif Discard ((b bool))        (= b b)) ; this causes unifySorts to fail
+; This is only for testing the qMap
+(qualif Discard ((b bool))        (= b b))
 (qualif Partial ((v int)(b bool)) (not (= v b)))
 (qualif Accept  ((v int))         (<= v 0))
 
