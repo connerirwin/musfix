@@ -18,7 +18,6 @@ import Language.Synquid.Logic
 import Language.Synquid.Program
 import Language.Synquid.Util
 import Language.Synquid.Z3
-import Language.Synquid.ResolverSynq
 
 {- Util -}
 debugOut a = traceShow a a
@@ -29,24 +28,11 @@ unify = unifyWith id
 {- Debug Testing -}
 -- | If the qualifiers reuse variable names, they must be the same type
 
-input = [
-  Qualifier "Pos" [Var IntS "v"] (Binary Le (IntLit 0) (Var AnyS "v")),
-  Qualifier "Neg" [Var IntS "v"] (Binary Le (Var AnyS "v") (IntLit 0)),
-  Qualifier "NeqZ" [Var IntS "v"] (Unary Not (Binary Eq (Var AnyS "v") (IntLit 0))),
-  Qualifier "False" [] (Binary Eq (IntLit 66) (IntLit 77)),
-  -- | if the qualifier contains a type not present in the wf constraint, it breaks
-  -- Qualifier "('^')" [Var BoolS "x"] (Binary Eq (Var AnyS "x") (Var AnyS "x")),
-  WFConstraint "$k0" [Var IntS "v0"]
-  --HornConstraint (All (Var IntS "v1") (Binary Implies (Pred AnyS "$k0" []) (Binary Lt (IntLit 0) (Binary Plus (Var AnyS "v1") (IntLit 1))))),
-  --HornConstraint (All (Var IntS "v2") (Binary Implies (Binary Eq (Var AnyS "v2") (IntLit 10)) (Pred AnyS "$k0" [])))
-  ]
-
-qmap = generateQualifiers $ map resolveInputSorts input
 
 -- | A debug printing function designed to be as unobtrusive as possible
 resolverDebug :: IO ()
 resolverDebug = do
-  print qmap
+  print "nothing for now"
 
 -- | Create a qualifier (refinement) map from a set of possible qualifiers for a
 -- given unknown

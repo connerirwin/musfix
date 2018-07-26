@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cf1d54aef95aa1ac2b744e6a7f02b1a631fa4ad33703841221d3c50eebc4d987
+-- hash: 1629c7018f20e4c20ab1e43267a3aaca9c32314f5e58b70e4d2d13d089ba7ce7
 
 name:           musfix
 version:        0.1.0.0
@@ -27,7 +27,6 @@ library
       Language.Synquid.Logic
       Language.Synquid.Pretty
       Language.Synquid.Program
-      Language.Synquid.ResolverSynq
       Language.Synquid.SolverMonad
       Language.Synquid.Tokens
       Language.Synquid.Type
@@ -67,7 +66,6 @@ executable musfix
       Language.Synquid.Logic
       Language.Synquid.Pretty
       Language.Synquid.Program
-      Language.Synquid.ResolverSynq
       Language.Synquid.SolverMonad
       Language.Synquid.Tokens
       Language.Synquid.Type

@@ -1,4 +1,4 @@
-; This is only for testing the qMap
+; Not all qualifiers need to be used by each wf constraint
 (qualif Discard ((b bool))        (= b b))
 (qualif Partial ((v int)(b bool)) (not (= v b)))
 (qualif Accept  ((v int))         (<= v 0))
