@@ -96,23 +96,28 @@ prepareInputs ins = resolveUnknownParameters $ map resolveInputSorts ins
 resolveUnknownParameters :: [InputExpr] -> [InputExpr]
 resolveUnknownParameters ins = map update ins
   where
-    formals :: Map Id [Formula]
-    formals = Map.fromList $ map varMap (allWFConstraints ins)
+    allFormals :: Map Id [Formula]
+    allFormals = Map.fromList $ map varMap (allWFConstraints ins)
     
     varMap :: InputExpr -> (Id, [Formula])
     varMap (WFConstraint k fmls) = (k, fmls)
     
     update :: InputExpr -> InputExpr
-    update (HornConstraint xs f) = HornConstraint xs $ updateSubs formals f 
+    update (HornConstraint xs f) = HornConstraint xs $ updateSubs allFormals f 
     update a = a
     
     updateSubs :: Map Id [Formula] -> Formula -> Formula
-    updateSubs m (Unknown s n) = Unknown s' n
+    updateSubs formalMap (Unknown sub name) = Unknown sub' name
       where
-        s' = Map.fromList $ [(fmlName, v)]
-        x = head $ m ! n
-        (Var fmlSort fmlName) = x
-        v = s ! "a0"
+        sub' = Map.fromList $ renameVar 0 sub (formalMap ! name)
+        
+        -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
+        renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
+        renameVar n s ((Var fmlSort fmlName):xs) = (fmlName, Var fmlSort actlName):(renameVar (n + 1) s xs)
+          where
+            (Var actlSort actlName) = s ! ("a" ++ (show n))
+        renameVar _ _ [] = []
+        
     updateSubs m (Unary op f)      = Unary op $ updateSubs m f
     updateSubs m (Binary op f1 f2) = Binary op f1' f2'
       where

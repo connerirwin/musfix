@@ -70,13 +70,13 @@ instance FromLisp InputExpr where
       else do
           return $ WFConstraint (T.unpack n) vars
   -- horn constraint
-  parseLisp (List [(Symbol "constraint"), List [(Symbol "forall"), x, y]]) = do
-      var <- parseFormula x
-      if not $ checkVars [var] then do
+  parseLisp (List [(Symbol "constraint"), List [(Symbol "forall"), List xs, y]]) = do
+      vars <- mapM parseFormula xs
+      if not $ checkVars vars then do
           fail $ "invalid variable in constraint for all"
       else do
           formula <- parseFormula y
-          return $ HornConstraint [var] formula
+          return $ HornConstraint vars formula
   parseLisp _ = fail "unknown top-level construct"
 
 parseInputExpr :: Lisp -> Parser InputExpr
@@ -103,14 +103,16 @@ instance FromLisp Formula where
           let op = unaryOps ! f
           expr <- parseFormula a
           return $ Unary op expr
-  -- logical predicate application
-  parseLisp (List [(Symbol p), x])
+  -- unknown application
+  parseLisp (List ((Symbol p):x:xs))
       | T.head p == '$'             = do
-          arg@(Var s n) <- parseFormula x
-          let m = Map.fromList [("a0", Var IntS n)]
+          args <- mapM parseFormula (x:xs)
+          let subs = Map.fromList $ toPairs 0 args
             in do
-              return $ Unknown m (T.unpack p)
-          --return $ Pred BoolS (T.unpack p) [arg]
+              return $ Unknown subs (T.unpack p)
+        where
+          toPairs n (x:xs) = ("a" ++ (show n), x):(toPairs (n + 1) xs)
+          toPairs _ [] = []
   -- variable sort assignment
   parseLisp (List [(Symbol v), (Symbol s)])
       | Map.member s sorts        = do
@@ -118,14 +120,19 @@ instance FromLisp Formula where
           return $ Var sort (T.unpack v)
       | otherwise                 = fail $ "unrecognized sort " ++ (T.unpack s)
   -- binary operation
-  parseLisp (List [(Symbol f), x, y]) = do
-      let maybeOp = Map.lookup f binaryOps
-      case maybeOp of
-        Nothing -> fail $ "invalid binary op " ++ (T.unpack f)
-        Just (op) -> do
-            xExpr <- parseFormula x
-            yExpr <- parseFormula y
-            return $ Binary op xExpr yExpr
+  parseLisp (List [(Symbol f), x, y])
+      | Map.member f binaryOps    = do
+          let maybeOp = Map.lookup f binaryOps
+          case maybeOp of
+            Nothing -> fail $ "invalid binary op " ++ (T.unpack f)
+            Just (op) -> do
+                xExpr <- parseFormula x
+                yExpr <- parseFormula y
+                return $ Binary op xExpr yExpr
+  -- logical predicate application
+  parseLisp (List ((Symbol p):x:xs)) = do
+      args <- mapM parseFormula (x:xs)
+      return $ Pred AnyS (T.unpack p) args
 
   parseLisp f = fail $ "cannot read formula: " ++ (show f)
 
