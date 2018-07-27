@@ -30,8 +30,13 @@ defaultProgramOptions = ProgramOptions {
 }
 
 version = putStrLn "musfix 0.1.0.0"
-usage   = putStrLn "Usage: musfix [--help] [-p] [--verbose] [--version] [file ...]"
-help    = putStrLn "\n\nAvailable options:\n--help\t\tShow this help text\n-p\t\tPrint results to standard out\n--version\tShow current version"
+usage   = putStrLn "Usage: musfix [-p] [-l] [--verbose] [--help] [--version] [file ...]"
+help    = putStrLn "\n\nAvailable options:\n\
+                   \  -p\t\tPrint results to standard out\n\
+                   \  -l\t\tUse a least fixpoint solver (default is greatest fixpoint)\n\
+                   \  --verbose\tOutput additional logging\n\
+                   \  --help\tShow this help text\n\
+                   \  --version\tShow current version"
 debug   = resolverDebug
 
 main :: IO ()
@@ -47,11 +52,11 @@ parseArgs o (x:y:xs)
       m  = "Setting output file to " ++ y
 parseArgs o (x:xs)
     | x == "-d"             = debug               >> continue o
-    | x == "--help"         = usage >> help       >> exitSuccess
     | x == "-p"             = continue $ o { printProgramOutput = True }
-    | x == "--version"      = version             >> exitSuccess
-    | x == "--verbose"      = continue $ o { programVerboseLogging = True }
     | x == "-l"             = continue $ o { programUsesLeastFixpoint = True }
+    | x == "--verbose"      = continue $ o { programVerboseLogging = True }
+    | x == "--help"         = usage >> help       >> exitSuccess
+    | x == "--version"      = version             >> exitSuccess
     | otherwise   = readConstraints o x           >> continue o
     where
       continue o' = parseArgs o' xs
@@ -75,7 +80,7 @@ readConstraints o f = do
         verboseLog o $ show candidates
         verboseLog o "\n\nFinal candidates:"
         mapM_ ((finalOutput o) . show . pretty) candidates
-    
+
 
 formulas :: InputExpr -> Formula
 formulas (HornConstraint vs f) = f
@@ -83,12 +88,12 @@ formulas _ = error "non-horn constraint in constraints"
 
 finalOutput :: ProgramOptions -> String -> IO ()
 finalOutput o s = putStrLn s
-      
+
 verboseLog :: ProgramOptions -> String -> IO ()
 verboseLog o s = if programVerboseLogging o then
     putStrLn $ s
   else
-    return () 
+    return ()
 
 topSExprs :: ByteString -> [L.Lisp]
 topSExprs l = case A.parseOnly (A.many1 L.lisp) l of
