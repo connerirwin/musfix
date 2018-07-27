@@ -17,3 +17,7 @@
 (constraint
   (forall (v2 int)
           (=> (= v2 9) ($k0 v2))))
+          
+(constraint
+  (forall (v4 int)
+        (=> (&& (< v4 9) (> v4 3)) ($k0 v4))))
