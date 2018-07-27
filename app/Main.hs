@@ -73,7 +73,7 @@ readConstraints o f = do
         verboseLog o "\nCandidates\n--------"
         candidates <- findFixPoint (programUsesLeastFixpoint o) horns qmap
         verboseLog o $ show candidates
-        finalOutput o "\n\nFinal candidates:"
+        verboseLog o "\n\nFinal candidates:"
         mapM_ ((finalOutput o) . show . pretty) candidates
     
 
