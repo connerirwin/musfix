@@ -26,8 +26,6 @@ unifyWith f = foldr (union . f) []
 unify = unifyWith id
 
 {- Debug Testing -}
--- | If the qualifiers reuse variable names, they must be the same type
-
 
 -- | A debug printing function designed to be as unobtrusive as possible
 resolverDebug :: IO ()
@@ -59,7 +57,7 @@ generateQualifiers input = Map.fromList qualifiers
             substitutions = generateSubstitutions formals actuals
 
 generateSubstitutions :: [Formula] -> [Formula] -> [Substitution]
-generateSubstitutions formals actuals = if length singleMappings /= length formals then [] else validMappings -- ^ unnecessary optimization?
+generateSubstitutions formals actuals = if length singleMappings /= length formals then [] else validMappings -- ^ rejects incomplete qualifier mappings
   where
     singleMappings = groupBy keysMatch $ [[(fName, a)] | f@(Var _ fName) <- formals, a <- actuals, sameSort f a]
     fullMappings = map Map.fromList $ foldAp (++) [[]] singleMappings

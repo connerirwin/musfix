@@ -206,7 +206,7 @@ hornApplySolution extractAssumptions sol (Binary Implies lhs rhs) =
      rhs' = applySolution sol rhs
      assumptions = extractAssumptions lhs' `Set.union` extractAssumptions rhs'
     in Binary Implies (lhs' `andClean` conjunction assumptions) rhs'
-    
+
 -- debug
 hornApplySolution _ _ n = error $ "attempting to apply solution " ++ (show n)
 
@@ -242,7 +242,7 @@ strengthen qmap extractAssumptions fml@(Binary Implies lhs rhs) sol = do
                   setConcatMap extractAssumptions knownConjuncts `Set.union`
                   extractAssumptions rhs
 
-      -- | All possible additional valuations of @u@ that are subsets of $lhsVal@.
+    -- | All possible additional valuations of @u@ that are subsets of $lhsVal@.
     singleUnknownCandidates lhsVal u = let
           qs = lookupQualsSubst qmap u
           max = lookupQuals qmap maxCount u
