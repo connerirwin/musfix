@@ -107,7 +107,7 @@ instance FromLisp Formula where
   parseLisp (List [(Symbol p), x])
       | T.head p == '$'             = do
           arg@(Var s n) <- parseFormula x
-          let m = Map.fromList [("v0", Var IntS n)]
+          let m = Map.fromList [("a0", Var IntS n)]
             in do
               return $ Unknown m (T.unpack p)
           --return $ Pred BoolS (T.unpack p) [arg]

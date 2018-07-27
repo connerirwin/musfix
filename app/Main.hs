@@ -18,13 +18,15 @@ import qualified Data.ByteString as ByteString
 data ProgramOptions = ProgramOptions {
   printProgramOutput :: Bool,
   programOutputFile :: String,
-  programVerboseLogging :: Bool
+  programVerboseLogging :: Bool,
+  programUsesLeastFixpoint :: Bool
 } deriving (Show, Eq)
 
 defaultProgramOptions = ProgramOptions {
   printProgramOutput = False,
   programOutputFile = "out.txt",
-  programVerboseLogging = False
+  programVerboseLogging = False,
+  programUsesLeastFixpoint = False
 }
 
 version = putStrLn "musfix 0.1.0.0"
@@ -49,6 +51,7 @@ parseArgs o (x:xs)
     | x == "-p"             = continue $ o { printProgramOutput = True }
     | x == "--version"      = version             >> exitSuccess
     | x == "--verbose"      = continue $ o { programVerboseLogging = True }
+    | x == "-l"             = continue $ o { programUsesLeastFixpoint = True }
     | otherwise   = readConstraints o x           >> continue o
     where
       continue o' = parseArgs o' xs
@@ -58,7 +61,7 @@ readConstraints :: ProgramOptions -> String -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
     let lisp = topSExprs $ s
-        ins = map resolveInputSorts $ topInputs lisp
+        ins = prepareInputs $ topInputs lisp
         qmap = generateQualifiers ins
         horns = map formulas $ allHornConstraints ins
       in do
@@ -68,15 +71,18 @@ readConstraints o f = do
         verboseLog o "\nQMAP\n--------"
         verboseLog o $ show qmap
         verboseLog o "\nCandidates\n--------"
-        candidates <- findFixPoint horns qmap
+        candidates <- findFixPoint (programUsesLeastFixpoint o) horns qmap
         verboseLog o $ show candidates
-        verboseLog o "\n\nFinal candidates:"
-        mapM_ ((verboseLog o) . show . pretty) candidates
+        finalOutput o "\n\nFinal candidates:"
+        mapM_ ((finalOutput o) . show . pretty) candidates
     
 
 formulas :: InputExpr -> Formula
 formulas (HornConstraint vs f) = f
 formulas _ = error "non-horn constraint in constraints"
+
+finalOutput :: ProgramOptions -> String -> IO ()
+finalOutput o s = putStrLn s
       
 verboseLog :: ProgramOptions -> String -> IO ()
 verboseLog o s = if programVerboseLogging o then

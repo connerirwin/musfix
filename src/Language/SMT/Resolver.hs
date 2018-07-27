@@ -3,7 +3,7 @@ module Language.SMT.Resolver where
 import Language.SMT.Syntax
 
 import Data.List
-import Data.Map (Map)
+import Data.Map (Map, (!))
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
@@ -90,6 +90,44 @@ extractVars (Cons _ _ fs)  = unify $ map extractVars fs
 extractVars (All x y)      = unify $ map extractVars [x,y]
 extractVars _              = []
 
+-- | Resolve
+prepareInputs :: [InputExpr] -> [InputExpr]
+prepareInputs ins = resolveUnknownParameters $ map resolveInputSorts ins
+
+-- | Resolves parameter substitutions for unknowns
+resolveUnknownParameters :: [InputExpr] -> [InputExpr]
+resolveUnknownParameters ins = map update ins
+  where
+    formals :: Map Id [Formula]
+    formals = Map.fromList $ map varMap (allWFConstraints ins)
+    
+    varMap :: InputExpr -> (Id, [Formula])
+    varMap (WFConstraint k fmls) = (k, fmls)
+    
+    update :: InputExpr -> InputExpr
+    update (HornConstraint xs f) = HornConstraint xs $ updateSubs formals f 
+    update a = a
+    
+    updateSubs :: Map Id [Formula] -> Formula -> Formula
+    updateSubs m (Unknown s n) = Unknown s' n
+      where
+        s' = Map.fromList $ [(fmlName, v)]
+        x = head $ m ! n
+        (Var fmlSort fmlName) = x
+        v = s ! "a0"
+    updateSubs m (Unary op f)      = Unary op $ updateSubs m f
+    updateSubs m (Binary op f1 f2) = Binary op f1' f2'
+      where
+        f1' = updateSubs m f1
+        f2' = updateSubs m f2
+    updateSubs m (Ite f1 f2 f3)    = Ite f1' f2' f3'
+      where
+        f1' = updateSubs m f1
+        f2' = updateSubs m f2
+        f3' = updateSubs m f3
+    updateSubs _ f = f
+        
+
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
 resolveInputSorts :: InputExpr -> InputExpr
 resolveInputSorts (Qualifier n xs f) = Qualifier n xs $ resolveSorts xs f
@@ -103,11 +141,6 @@ resolveSorts xs (Var s n)
   | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
   where
     s' = varSort xs n
-    varSort :: [Formula] -> Id -> Sort
-    varSort ((Var s n):xs) x
-      | n == x      = s
-      | otherwise   = varSort xs x
-    varSort _ x     = error $ "no sort found for " ++ x ++ " in qualifier (variable not declared)"
 resolveSorts xs (Unary op f)      = Unary op $ resolveSorts xs f
 resolveSorts xs (Binary op f1 f2) = Binary op f1' f2'
   where
@@ -118,12 +151,15 @@ resolveSorts xs (Ite f1 f2 f3)    = Ite f1' f2' f3'
     f1' = resolveSorts xs f1
     f2' = resolveSorts xs f2
     f3' = resolveSorts xs f3
-resolveSorts _ (Pred s n args) = Pred BoolS n args' -- TODO: handle this correctly!
-  where
-    args' = map intify args
-    intify (Var s n) = Var IntS n
-    intify f = f
+resolveSorts xs (Pred s n args) = Pred s n $ map (resolveSorts xs) args
 resolveSorts _ f = f
+
+-- | Gets the sort of a var from a list of vars
+varSort :: [Formula] -> Id -> Sort
+varSort ((Var s n):xs) x
+    | n == x      = s
+    | otherwise   = varSort xs x
+varSort _ x     = error $ "no sort found for " ++ x ++ " in qualifier (variable not declared)"
 
 
 {-
