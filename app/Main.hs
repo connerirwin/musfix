@@ -70,8 +70,9 @@ readConstraints o f = do
         qmap = generateQualifiers ins
         horns = map formulas $ allHornConstraints ins
       in do
-        verboseLog o "Preparing to find fixpoint..."
+        verboseLog o $ "Preparing to find " ++ (fixPointType o) ++ " fixpoint..."
         verboseLog o "\nInputs\n--------"
+        verboseLog o $ "Reading from file " ++ f
         mapM_ ((verboseLog o) . show) ins
         verboseLog o "\nQMAP\n--------"
         verboseLog o $ show qmap
@@ -94,6 +95,9 @@ verboseLog o s = if programVerboseLogging o then
     putStrLn $ s
   else
     return ()
+
+fixPointType :: ProgramOptions -> String
+fixPointType o = if programUsesLeastFixpoint o then "least" else "greatest"
 
 topSExprs :: ByteString -> [L.Lisp]
 topSExprs l = case A.parseOnly (A.many1 L.lisp) l of
