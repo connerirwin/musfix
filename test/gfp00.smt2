@@ -8,8 +8,8 @@
 
 (constraint
   (forall ((v1 int))
-          (=> ($k0 v1) (< 1 (+ v1 1)))))
+          (=> ($k0 v1) (< 0 (+ v1 1)))))
 
-;(constraint
- ; (forall (v2 int)
-  ;        (=> (= v2 10) ($k0 v2))))
+(constraint
+  (forall ((v2 int))
+          (=> (= v2 10) ($k0 v2))))
