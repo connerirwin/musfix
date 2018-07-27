@@ -19,6 +19,7 @@ type HornSolver = FixPointSolver Z3State
 defaultHornSolverParams = HornSolverParams {
   pruneQuals = True,
   isLeastFixpoint = False,
+  --isLeastFixpoint = True,
   optimalValuationsStrategy = MarcoValuations,
   semanticPrune = True,
   agressivePrune = True,
