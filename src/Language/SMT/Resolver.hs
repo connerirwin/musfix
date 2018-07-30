@@ -61,6 +61,7 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
   where
     singleMappings = groupBy keysMatch $ [[(fName, a)] | f@(Var _ fName) <- formals, a <- actuals, sameSort f a]
     fullMappings = map Map.fromList $ foldAp (++) [[]] singleMappings
+    -- TODO convert to map at end, make a set at beginning
     validMappings = filter (isSet . Map.elems) fullMappings -- TODO should they be one-to-one
 
     sameSort :: Formula -> Formula -> Bool
@@ -77,6 +78,7 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     isSet :: Eq a => [a] -> Bool
     isSet a = nub a == a
 
+-- TODO replace with sets, convert to list at end
 extractVars :: Formula -> [Formula]
 extractVars (SetLit _ fs)  = unify $ map extractVars fs
 extractVars v@(Var _ _)    = [v]
@@ -98,26 +100,26 @@ resolveUnknownParameters ins = map update ins
   where
     allFormals :: Map Id [Formula]
     allFormals = Map.fromList $ map varMap (allWFConstraints ins)
-    
+
     varMap :: InputExpr -> (Id, [Formula])
     varMap (WFConstraint k fmls) = (k, fmls)
-    
+
     update :: InputExpr -> InputExpr
-    update (HornConstraint xs f) = HornConstraint xs $ updateSubs allFormals f 
+    update (HornConstraint xs f) = HornConstraint xs $ updateSubs allFormals f
     update a = a
-    
+
     updateSubs :: Map Id [Formula] -> Formula -> Formula
     updateSubs formalMap (Unknown sub name) = Unknown sub' name
       where
         sub' = Map.fromList $ renameVar 0 sub (formalMap ! name)
-        
+
         -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
         renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
         renameVar n s ((Var fmlSort fmlName):xs) = (fmlName, Var fmlSort actlName):(renameVar (n + 1) s xs)
           where
             (Var actlSort actlName) = s ! ("a" ++ (show n))
         renameVar _ _ [] = []
-        
+
     updateSubs m (Unary op f)      = Unary op $ updateSubs m f
     updateSubs m (Binary op f1 f2) = Binary op f1' f2'
       where
@@ -129,7 +131,7 @@ resolveUnknownParameters ins = map update ins
         f2' = updateSubs m f2
         f3' = updateSubs m f3
     updateSubs _ f = f
-        
+
 
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
 resolveInputSorts :: InputExpr -> InputExpr

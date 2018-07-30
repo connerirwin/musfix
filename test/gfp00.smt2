@@ -1,5 +1,4 @@
 (qualif Pos   ((v int)) (<= 0 v))
-(qualif Stuff ((v int)) (<  0 v))
 (qualif Neg   ((v int)) (<= v 0))
 (qualif NeqZ  ((v int)) (not (= v 0)))
 (qualif False ()        (= 66 77))
