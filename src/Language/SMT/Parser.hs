@@ -7,13 +7,14 @@ import Language.Synquid.Logic
 import Language.Synquid.Tokens
 
 import Control.Monad
-import qualified Data.Text as T
+
 import Data.AttoLisp
 import qualified Data.Map as Map
-import Data.Map (Map, (!))
+import Data.Map (Map)
 import Data.Scientific as S
 import qualified Data.Set as Set
 import Data.Set (Set)
+import qualified Data.Text as T
 
 -- | Unary operators
 unaryOps :: Map T.Text UnOp
@@ -152,11 +153,12 @@ parseFormula = parseLisp
 
 {- Sorts -}
 instance FromLisp Sort where
-  parseLisp (Symbol s)
-    | Map.member s sorts = do
-      let sort = sorts ! s
-      return $ sort
-    | otherwise          = fail $ "unrecognized sort " ++ T.unpack s
+  parseLisp (Symbol s) = do
+    let maybeSort = Map.lookup s sorts
+    case maybeSort of
+      Nothing -> fail $ "unrecognized sort " ++ T.unpack s
+      Just sort -> do
+        return $ sort
 
 parseSort :: Lisp -> Parser Sort
 parseSort = parseLisp
