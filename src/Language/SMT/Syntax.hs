@@ -15,7 +15,8 @@ type Id = String
 data InputExpr =
     Qualifier Id [Formula] Formula          -- ^ Qualifier with name, variables and equation
   | WFConstraint Id [Formula]               -- ^ Well-formed predicate constraint
-  | HornConstraint [Formula] Formula                  -- ^ Horn constraint
+  | HornConstraint [Formula] Formula        -- ^ Horn constraint
+  | UninterpFunction Id [Sort] Sort          -- ^ Uninterpreted function with input types and a return type (this is the way that z3 does it)
   deriving (Show, Eq, Ord)
 
 -- | Gets all the qualifiers in an input expression list
