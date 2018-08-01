@@ -1,3 +1,3 @@
 ; Parsing of uniterpreted functions
-(uninterp len (int int) int)
-(uninterp foo (bool int) int)
+(uninterp len (Int Int) Int)
+(uninterp foo (Bool Int) Int)

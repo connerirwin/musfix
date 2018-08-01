@@ -1,4 +1,4 @@
 ; Constraints can generate multiple variants
-(qualif Less ((a int)(b int)) (< a b))
+(qualif Less ((a Int)(b Int)) (< a b))
 
-(wf $k0 ((v0 int)(v1 int)))
+(wf $k0 ((v0 Int)(v1 Int)))

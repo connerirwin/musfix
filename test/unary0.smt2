@@ -1,6 +1,6 @@
 ; Distinguish between unary ops
-(qualif Neg     ((b bool))  (- b))
-(qualif Not     ((b bool))  (not b))
+(qualif Neg     ((b Bool))  (- b))
+(qualif Not     ((b Bool))  (not b))
 
 ; This should throw an error, invalid unary op
-; (qualif Invalid ((v int))   (+ v))
+; (qualif Invalid ((v Int))   (+ v))

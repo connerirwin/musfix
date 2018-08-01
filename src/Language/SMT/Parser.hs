@@ -44,8 +44,8 @@ binaryOps = Map.fromList [ ("*",    Times)
 
 -- | Variable sorts
 sorts :: Map Text Sort
-sorts = Map.fromList [ ("int",   IntS),
-                       ("bool", BoolS)
+sorts = Map.fromList [ ("Int",   IntS),
+                       ("Bool", BoolS)
                      ]
 
 reserved :: Set Text
@@ -168,10 +168,10 @@ parseSortM = parseLisp
 parseSort :: Lisp -> Maybe Sort
 parseSort (Symbol s)
   | T.head s == '[' && T.last s == ']' = do
-        sort <- parseSort subsort -- ^ TODO make sure that this is working properly
-        return $ SetS sort
-  where
-    subsort = Symbol $ (T.drop 1 . T.dropEnd 1) s
+      sort <- parseSort subsort -- ^ TODO make sure that this is working properly
+      return $ SetS sort
+    where
+      subsort = Symbol $ (T.drop 1 . T.dropEnd 1) s
 
 parseSort (Symbol s) = Map.lookup s sorts
 

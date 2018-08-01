@@ -1,7 +1,7 @@
 ; Formal parameter names can collide in qualifiers
-(qualif Less ((a int) (b int))   (< a b))
-(qualif Or   ((a bool)(b bool)) (|| a b))
+(qualif Less ((a Int) (b Int))   (< a b))
+(qualif Or   ((a Bool)(b Bool)) (|| a b))
 
 ; And also in the wf constaints
-(wf $k0 ((v0 int) (v1 int)))
-(wf $k1 ((v0 bool)(v1 bool)))
+(wf $k0 ((v0 Int) (v1 Int)))
+(wf $k1 ((v0 Bool)(v1 Bool)))

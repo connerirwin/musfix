@@ -1,8 +1,8 @@
 ; Not all qualifiers need to be used by each wf constraint
-(qualif Discard ((b bool))        (= b b))
-(qualif Partial ((v int)(b bool)) (not (= v b)))
-(qualif Accept  ((v int))         (<= v 0))
+(qualif Discard ((b Bool))        (= b b))
+(qualif Partial ((v Int)(b Bool)) (not (= v b)))
+(qualif Accept  ((v Int))         (<= v 0))
 
-(wf $k0 ((v0 int)))
-(wf $k1 ((b0 bool)))
-(wf $k2 ((v1 int)(b1 bool)))
+(wf $k0 ((v0 Int)))
+(wf $k1 ((b0 Bool)))
+(wf $k2 ((v1 Int)(b1 Bool)))
