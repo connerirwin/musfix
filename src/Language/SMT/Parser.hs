@@ -15,15 +15,16 @@ import Data.Scientific as S
 import qualified Data.Set as Set
 import Data.Set (Set)
 import qualified Data.Text as T
+import Data.Text (Text)
 
 -- | Unary operators
-unaryOps :: Map T.Text UnOp
+unaryOps :: Map Text UnOp
 unaryOps = Map.fromList [ ("not",     Not)
                         , ("-",       Neg)
                         ]
 
 -- | Binary operators
-binaryOps :: Map T.Text BinOp
+binaryOps :: Map Text BinOp
 binaryOps = Map.fromList [ ("*",    Times)
                          , ("+",     Plus)
                          , ("-",    Minus)
@@ -42,12 +43,12 @@ binaryOps = Map.fromList [ ("*",    Times)
                          ]
 
 -- | Variable sorts
-sorts :: Map T.Text Sort
+sorts :: Map Text Sort
 sorts = Map.fromList [ ("int",   IntS),
                        ("bool", BoolS)
                      ]
 
-reserved :: Set T.Text
+reserved :: Set Text
 reserved = collectKeys [Map.keys unaryOps, Map.keys binaryOps, Map.keys sorts]
   where
     collectKeys = foldr (Set.union . Set.fromList) Set.empty
@@ -61,7 +62,7 @@ checkVars fs = foldr ((&&) . isVar) True fs
     isVar _         = False
 
 instance FromLisp InputExpr where
-  -- qualifiers
+  -- | Qualifiers
   parseLisp (List [(Symbol "qualif"), (Symbol n), List xs, y]) = do
       vars <- mapM parseFormula xs
       if not $ checkVars vars then
@@ -69,14 +70,14 @@ instance FromLisp InputExpr where
       else do
           formula <- parseFormula y
           return $ Qualifier (T.unpack n) vars formula
-  -- well-formed constraint
+  -- | Well-formed constraint
   parseLisp (List [(Symbol "wf"), (Symbol n), List xs]) = do
       vars <- mapM parseFormula xs
       if not $ checkVars vars then
         fail "invalid expressions in variable list"
       else
         return $ WFConstraint (T.unpack n) vars
-  -- horn constraint
+  -- | Horn constraint
   parseLisp (List [(Symbol "constraint"), List [(Symbol "forall"), List xs, y]]) = do
     vars <- mapM parseFormula xs
     if not $ checkVars vars then
@@ -84,10 +85,10 @@ instance FromLisp InputExpr where
     else do
         formula <- parseFormula y
         return $ HornConstraint vars formula
-  -- uninterpreted function declaration
+  -- | Uninterpreted function declaration
   parseLisp (List [(Symbol "uninterp"), (Symbol n), List ps, rt]) = do
-    params <- mapM parseSort ps
-    output <- parseSort rt
+    params <- mapM parseSortM ps
+    output <- parseSortM rt
     return $ UninterpFunction (T.unpack n) params output
 
   parseLisp _ = fail "unknown top-level construct"
@@ -97,49 +98,53 @@ parseInputExpr = parseLisp
 
 {- Formulas -}
 instance FromLisp Formula where
-  -- basic literals
+  -- | Basic literals
   parseLisp (Symbol "False")          = pure $ BoolLit False
   parseLisp (Symbol "True")           = pure $ BoolLit True
   parseLisp (Number n)                = case S.floatingOrInteger n of
     Left  f -> fail $ "non-integral value not supported " ++ (show n)
     Right i -> pure $ IntLit i
-  -- variable
+  -- | Variable
   parseLisp (Symbol v)                = pure $ Var AnyS (T.unpack v)
-  -- for all
+  -- | Variable sort assignment
+  -- This needs to be incredibly strict, otherwise it overlaps with unary uninterpreted function applications
+  parseLisp (List [(Symbol v), s])
+    | Set.notMember v reserved      -- ^ Variable name is not a reserved keyword
+      && T.head v /= '$'            -- ^ Variable name is not an unknown application
+      && isSort s                   -- ^ Sort is valid
+      = do
+        sort <- parseSortM s
+        return $ Var sort $ T.unpack v
+  -- | For all
   parseLisp (List [(Symbol "forall"), x, y]) = do
       xExpr <- parseFormula x
       yExpr <- parseFormula y
       return $ All xExpr yExpr
-  -- uninterpreted function application
-  parseLisp (List ((Symbol p):x:xs))
-    | T.head p == '$' = do
-        args <- mapM parseFormula (x:xs)
-        let subs = Map.fromList $ toPairs 0 args
-        return $ Unknown subs $ T.unpack p
-      where
-        toPairs n (x:xs) = ("a" ++ (show n), x):(toPairs (n + 1) xs)
-        toPairs _ [] = []
-  -- variable sort assignment
-  parseLisp (List [(Symbol v), (Symbol s)])
-    | not $ Set.member v reserved = do
-        sort <- parseSort (Symbol s)
-        return $ Var sort $ T.unpack v
-  -- unary operation
+  -- | unary operation
   parseLisp (List [(Symbol f), a])
     | Map.member f unaryOps = do
         let op = unaryOps ! f
         expr <- parseFormula a
         return $ Unary op expr
-  -- binary operation
+  -- | binary operation
   parseLisp (List [(Symbol f), x, y])
     | Map.member f binaryOps = do
         let op = binaryOps ! f
         xExpr <- parseFormula x
         yExpr <- parseFormula y
         return $ Binary op xExpr yExpr
-  -- logical predicate application
-  parseLisp (List ((Symbol p):x:xs)) = do
-      args <- mapM parseFormula (x:xs)
+  -- | unknown application
+  parseLisp (List ((Symbol p):xs))
+    | T.head p == '$' = do
+        args <- mapM parseFormula xs
+        let subs = Map.fromList $ toPairs 0 args
+        return $ Unknown subs $ T.unpack p
+      where
+        toPairs n (x:xs) = ("a" ++ (show n), x):(toPairs (n + 1) xs)
+        toPairs _ []     = []
+  -- | uninterpreted function application
+  parseLisp (List ((Symbol p):xs)) = do
+      args <- mapM parseFormula xs
       return $ Pred AnyS (T.unpack p) args
 
   parseLisp f = fail $ "cannot read formula: " ++ show f
@@ -149,13 +154,28 @@ parseFormula = parseLisp
 
 {- Sorts -}
 instance FromLisp Sort where
+  -- | list
   parseLisp (Symbol s) = do
-      let maybeSort = Map.lookup s sorts
-      case maybeSort of
-        Nothing -> fail $ "unrecognized sort " ++ T.unpack s
-        Just sort -> return sort
-  -- parseLisp (List [(Symbol "["), (Symbol s), (Symbol "]")]) = do
-  --   return SetS $ parseLisp (Symbol s)
+    let maybeSort = parseSort (Symbol s)
+    case maybeSort of
+      Nothing -> fail $ "unrecognized sort " ++ T.unpack s
+      Just sort -> return sort
 
-parseSort :: Lisp -> Parser Sort
-parseSort = parseLisp
+parseSortM :: Lisp -> Parser Sort
+parseSortM = parseLisp
+
+-- TODO cleanup, there is a better way to forward the nothing using monads, but this works for now
+parseSort :: Lisp -> Maybe Sort
+parseSort (Symbol s)
+  | T.head s == '[' && T.last s == ']' = do
+        sort <- parseSort subsort -- ^ TODO make sure that this is working properly
+        return $ SetS sort
+  where
+    subsort = Symbol $ (T.drop 1 . T.dropEnd 1) s
+
+parseSort (Symbol s) = Map.lookup s sorts
+
+isSort :: Lisp -> Bool
+isSort s = case parseSort s of
+    Nothing -> False
+    Just _  -> True

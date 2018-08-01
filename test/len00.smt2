@@ -1,7 +1,8 @@
 ; Polymorphic parameters are currently replaced with ints
 
 ; (qualif ListZ ((v [@0]) (>= (len v) 0)))
-(qualif ListZ ((v [int]) (>= (len v) 0)))
+(qualif ListZ ((v [int])) (>= (len v) 0))
+; (qualif ListZ ((v [a])) (>= (len v) 0))
 
 ; uninterpreted function len that takes 2 polymorphic parameters,
 ; @(0) and @(1) and returns an int
