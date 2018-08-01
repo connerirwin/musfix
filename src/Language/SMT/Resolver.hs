@@ -27,6 +27,7 @@ unify = unifyWith id
 
 {- Debug Testing -}
 
+
 -- | A debug printing function designed to be as unobtrusive as possible
 resolverDebug :: IO ()
 resolverDebug = do
@@ -62,7 +63,7 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     singleMappings = groupBy keysMatch $ [[(fName, a)] | f@(Var _ fName) <- formals, a <- actuals, sameSort f a]
     fullMappings = map Map.fromList $ foldAp (++) [[]] singleMappings
     -- TODO convert to map at end, make a set at beginning
-    validMappings = filter (isSet . Map.elems) fullMappings -- TODO should they be one-to-one
+    validMappings = filter (isSet . Map.elems) fullMappings
 
     sameSort :: Formula -> Formula -> Bool
     sameSort (Var s1 _) (Var s2 _) = s1 == s2
