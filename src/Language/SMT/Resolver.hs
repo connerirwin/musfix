@@ -66,7 +66,9 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     validMappings = filter (isSet . Map.elems) fullMappings
 
     sameSort :: Formula -> Formula -> Bool
-    sameSort (Var s1 _) (Var s2 _) = s1 == s2
+    -- | TODO This is a hack that allows for polymorphic qualifiers in the worst
+    -- way possible. This should actually use a map
+    sameSort (Var s1 _) (Var s2 _) = s1 == s2 || s1 == AnyS || s2 == AnyS
     sameSort _          _          = False
 
     keysMatch :: Eq a => [(a, b)] -> [(a, c)] -> Bool

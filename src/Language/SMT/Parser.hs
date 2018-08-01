@@ -17,6 +17,9 @@ import Data.Set (Set)
 import qualified Data.Text as T
 import Data.Text (Text)
 
+-- TODO support polymorphic types in qualifiers (try just using type any)
+-- @some_name
+
 -- | Unary operators
 unaryOps :: Map Text UnOp
 unaryOps = Map.fromList [ ("not",     Not)
@@ -164,8 +167,8 @@ instance FromLisp Sort where
 parseSortM :: Lisp -> Parser Sort
 parseSortM = parseLisp
 
--- TODO cleanup, there is a better way to forward the nothing using monads, but this works for now
 parseSort :: Lisp -> Maybe Sort
+-- | List sort
 parseSort (Symbol s)
   | T.head s == '[' && T.last s == ']' = do
       sort <- parseSort subsort -- ^ TODO make sure that this is working properly
@@ -173,6 +176,15 @@ parseSort (Symbol s)
     where
       subsort = Symbol $ (T.drop 1 . T.dropEnd 1) s
 
+-- | Polymorphic sort (currently does the dumbest thing), what about case when the sorts are the same?
+-- TODO this currently is a hack that doesn't actually ensure that all
+-- polymorphic types are the same, but rather just allows the instantiation of
+-- anything for each type. To implement this fully, a map of the types needs to
+-- be constructed that is then used by the resolver.
+parseSort (Symbol s)
+  | T.head s == '@' = pure AnyS
+
+-- | Sort literal
 parseSort (Symbol s) = Map.lookup s sorts
 
 isSort :: Lisp -> Bool

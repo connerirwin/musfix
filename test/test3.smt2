@@ -1,6 +1,4 @@
-; TODO support polymorphic sorts?
-; (qualif Zog ((v a)(z b)) (= v z))
-(qualif Zog ((v Int)(z Int)) (= v z))
+(qualif Zog ((v @a)(z @b)) (= v z))
 
 (wf $k0 ((v Int)(x Int)))
 
