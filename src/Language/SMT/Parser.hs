@@ -17,9 +17,6 @@ import Data.Set (Set)
 import qualified Data.Text as T
 import Data.Text (Text)
 
--- TODO support polymorphic types in qualifiers (try just using type any)
--- @some_name
-
 -- | Unary operators
 unaryOps :: Map Text UnOp
 unaryOps = Map.fromList [ ("not",     Not)
