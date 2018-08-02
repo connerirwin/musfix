@@ -9,9 +9,10 @@ import Language.Synquid.Tokens
 import Control.Monad
 
 import Data.AttoLisp
+import qualified Data.Char as Char
 import qualified Data.Map as Map
 import Data.Map (Map, (!))
-import Data.Scientific as S
+import qualified Data.Scientific as S
 import qualified Data.Set as Set
 import Data.Set (Set)
 import qualified Data.Text as T
@@ -110,6 +111,7 @@ instance FromLisp Formula where
   -- This needs to be incredibly strict, otherwise it overlaps with unary uninterpreted function applications
   parseLisp (List [(Symbol v), s])
     | Set.notMember v reserved      -- ^ Variable name is not a reserved keyword
+      && (Char.isLower . T.head) v
       && T.head v /= '$'            -- ^ Variable name is not an unknown application
       && isSort s                   -- ^ Sort is valid
       = do
@@ -134,17 +136,17 @@ instance FromLisp Formula where
         yExpr <- parseFormula y
         return $ Binary op xExpr yExpr
   -- | unknown application
-  parseLisp (List ((Symbol p):xs))
+  parseLisp (List ((Symbol p):x:xs))
     | T.head p == '$' = do
-        args <- mapM parseFormula xs
+        args <- mapM parseFormula (x:xs)
         let subs = Map.fromList $ toPairs 0 args
         return $ Unknown subs $ T.unpack p
       where
         toPairs n (x:xs) = ("a" ++ (show n), x):(toPairs (n + 1) xs)
         toPairs _ []     = []
   -- | uninterpreted function application
-  parseLisp (List ((Symbol p):xs)) = do
-      args <- mapM parseFormula xs
+  parseLisp (List ((Symbol p):x:xs)) = do
+      args <- mapM parseFormula (x:xs)
       return $ Pred AnyS (T.unpack p) args
 
   parseLisp f = fail $ "cannot read formula: " ++ show f
