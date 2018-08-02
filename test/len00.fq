@@ -2,6 +2,9 @@
 // This qualifier saves the day; solve constraints WITHOUT IT
 //qualif ListZ(v : [@(0)]): (len v >= 0)
 
+// uninterpreted function len that takes 2 polymorphic parameters,
+// @(0) and @(1) and returns an Int
+// number is the # of polymorphic params
 constant len : (func(2, [(@(0)  @(1)); int]))
 
 bind 0 y : {v : [(Tuple int a)] | [len v >= 0]}

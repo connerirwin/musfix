@@ -1,3 +1,4 @@
--Update the readme
 -Improve error message reporting in the parser
+-Add support for Constructors
 -Improve bash script
+-Improve the cmd parser (try using optparse-applicative)

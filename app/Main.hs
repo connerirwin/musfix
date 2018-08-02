@@ -30,12 +30,12 @@ defaultProgramOptions = ProgramOptions {
 }
 
 version = putStrLn "musfix 0.1.0.0"
-usage   = putStrLn "Usage: musfix [-p] [-l] [--verbose] [--help] [--version] [file ...]"
-help    = putStrLn "\n\nAvailable options:\n\
+usage   = putStrLn "Usage: musfix [-p] [-l] [--verbose] [-h|--help] [--version] [file...]"
+help    = putStrLn "\nOptions:\n\
                    \  -p\t\tPrint results to standard out\n\
                    \  -l\t\tUse a least fixpoint solver (default is greatest fixpoint)\n\
                    \  --verbose\tOutput additional logging\n\
-                   \  --help\tShow this help text\n\
+                   \  -h, --help\tShow this help text\n\
                    \  --version\tShow current version"
 debug   = resolverDebug
 
@@ -55,6 +55,7 @@ parseArgs o (x:xs)
     | x == "-p"             = continue $ o { printProgramOutput = True }
     | x == "-l"             = continue $ o { programUsesLeastFixpoint = True }
     | x == "--verbose"      = continue $ o { programVerboseLogging = True }
+    | x == "-h"             = usage >> help       >> exitSuccess
     | x == "--help"         = usage >> help       >> exitSuccess
     | x == "--version"      = version             >> exitSuccess
     | otherwise   = readConstraints o x           >> continue o
