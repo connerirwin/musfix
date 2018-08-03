@@ -60,8 +60,21 @@ qualifEq :: InputExpr -> Formula
 qualifEq (Qualifier _ _ eq) = eq
 
 -- | Sorts
-data Sort = BoolS | IntS | VarS Id | DataS Id [Sort] | SetS Sort | AnyS
+data Sort = BoolS | IntS | VarS Id | DataS Id [Sort] | SetS Sort | MapS Sort Sort | AnyS
   deriving (Show, Eq, Ord)
+
+isSetS (SetS _) = True
+isSetS _ = False
+elemSort (SetS s) = s
+
+isMapS (MapS _ _) = True
+isMapS _ = False
+keySort (MapS s _) = s
+valueSort (MapS _ s) = s
+isData (DataS _ _) = True
+isData _ = False
+sortArgsOf (DataS _ sArgs) = sArgs
+varSortName (VarS name) = name
 
 -- | Unary operators
 data UnOp = Neg | Not
@@ -85,6 +98,9 @@ data Formula =
   BoolLit Bool |                      -- ^ Boolean literal
   IntLit Integer |                    -- ^ Integer literal
   SetLit Sort [Formula] |             -- ^ Set literal ([1, 2, 3])
+  SetComp Formula Formula |           -- ^ Set comprehension ([x | x > 3])
+  MapSel Formula Formula |            -- ^ Map select
+  MapUpd Formula Formula Formula |    -- ^ Map update
   Var Sort Id |                       -- ^ Input variable (universally quantified first-order variable)
   Unknown Substitution Id |           -- ^ Predicate unknown (with a pending substitution)
   Unary UnOp Formula |                -- ^ Unary expression

@@ -142,6 +142,7 @@ instance Pretty Sort where
   pretty IntS = text "Int"
   pretty BoolS = text "Bool"
   pretty (SetS el) = text "Set" <+> pretty el
+  pretty (MapS k v) = text "Map" <+> pretty k <+> pretty v
   pretty (VarS name) = text name
   pretty (DataS name args) = text name <+> hsep (map (hlParens . pretty) args)
   pretty AnyS = operator "?"

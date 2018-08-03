@@ -92,6 +92,7 @@ extractVars _              = []
 
 -- | Resolve
 -- TODO add error checking if passed in types are wrong
+-- enforceSame
 prepareInputs :: [InputExpr] -> [InputExpr]
 prepareInputs ins = map (update . resolveInputSorts) ins
   where

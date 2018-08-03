@@ -18,19 +18,12 @@ import Control.Monad
 
 {- Sorts -}
 
-isSetS (SetS _) = True
-isSetS _ = False
-elemSort (SetS s) = s
-isData (DataS _ _) = True
-isData _ = False
-sortArgsOf (DataS _ sArgs) = sArgs
-varSortName (VarS name) = name
-
 -- | 'typeVarsOfSort' @s@ : all type variables in @s@
 typeVarsOfSort :: Sort -> Set Id
 typeVarsOfSort (VarS name) = Set.singleton name
 typeVarsOfSort (DataS _ sArgs) = Set.unions (map typeVarsOfSort sArgs)
 typeVarsOfSort (SetS s) = typeVarsOfSort s
+typeVarsOfSort (MapS k v) = typeVarsOfSort k `Set.union` typeVarsOfSort v
 typeVarsOfSort _ = Set.empty
 
 -- Mapping from type variables to sorts
@@ -42,6 +35,7 @@ sortSubstitute subst s@(VarS a) = case Map.lookup a subst of
   Nothing -> s
 sortSubstitute subst (DataS name args) = DataS name (map (sortSubstitute subst) args)
 sortSubstitute subst (SetS el) = SetS (sortSubstitute subst el)
+sortSubstitute subst (MapS k v) = MapS (sortSubstitute subst k) (sortSubstitute subst v)
 sortSubstitute _ s = s
 
 distinctTypeVars = map (\i -> "A" ++ show i) [0..]
@@ -60,6 +54,8 @@ unifySorts boundTvs = unifySorts' Map.empty
       = unifySorts' subst xs ys
     unifySorts' subst (SetS x : xs) (SetS y : ys)
       = unifySorts' subst (x:xs) (y:ys)
+    unifySorts' subst (MapS k v : xs) (MapS k' v' : ys)
+      = unifySorts' subst (k:v:xs) (k':v':ys)
     unifySorts' subst (DataS name args : xs) (DataS name' args' :ys)
       = if name == name'
           then unifySorts' subst (args ++ xs) (args' ++ ys)
@@ -150,6 +146,8 @@ infix 4 |<=>|
 -- | 'varsOf' @fml@ : set of all input variables of @fml@
 varsOf :: Formula -> Set Formula
 varsOf (SetLit _ elems) = Set.unions $ map varsOf elems
+varsOf (MapSel m k) = Set.unions $ map varsOf [m, k]
+varsOf (MapUpd m k v) = Set.unions $ map varsOf [m, k, v]
 varsOf v@(Var _ _) = Set.singleton v
 varsOf (Unary _ e) = varsOf e
 varsOf (Binary _ e1 e2) = varsOf e1 `Set.union` varsOf e2
@@ -195,14 +193,18 @@ posNegPreds _ = (Set.empty, Set.empty)
 posPreds = fst . posNegPreds
 negPreds = snd . posNegPreds
 
+predSigsOf :: Formula -> Set PredSig
+predSigsOf (Pred r p es) = Set.insert (PredSig p (map sortOf es) r) (Set.unions $ map predSigsOf es)
+predSigsOf (SetLit _ elems) = Set.unions $ map predSigsOf elems
+predSigsOf (MapSel m k) = Set.unions $ map predSigsOf [m, k]
+predSigsOf (MapUpd m k v) = Set.unions $ map predSigsOf [m, k, v]
+predSigsOf (Unary _ e) = predSigsOf e
+predSigsOf (Binary _ e1 e2) = Set.unions $ map predSigsOf [e1, e2]
+predSigsOf (Ite e0 e1 e2) = Set.unions $ map predSigsOf [e0, e1, e2]
+predSigsOf _ = Set.empty
+
 predsOf :: Formula -> Set Id
-predsOf (Pred _ p es) = Set.insert p (Set.unions $ map predsOf es)
-predsOf (SetLit _ elems) = Set.unions $ map predsOf elems
-predsOf (Unary _ e) = predsOf e
-predsOf (Binary _ e1 e2) = predsOf e1 `Set.union` predsOf e2
-predsOf (Ite e0 e1 e2) = predsOf e0 `Set.union` predsOf e1 `Set.union` predsOf e2
-predsOf (All x e) = predsOf e
-predsOf _ = Set.empty
+predsOf fml = Set.map predSigName $ predSigsOf fml
 
 -- | 'leftHandSide' @fml@ : left-hand side of a binary expression
 leftHandSide (Binary _ l _) = l
@@ -217,6 +219,8 @@ sortOf :: Formula -> Sort
 sortOf (BoolLit _)                               = BoolS
 sortOf (IntLit _)                                = IntS
 sortOf (SetLit s _)                              = SetS s
+sortOf (MapSel m _)                              = valueSort (sortOf m)
+sortOf (MapUpd m _ _)                            = sortOf m
 sortOf (Var s _ )                                = s
 sortOf (Unknown _ _)                             = BoolS
 sortOf (Unary op _)
@@ -233,6 +237,8 @@ sortOf (All _ _)                                 = BoolS
 
 isExecutable :: Formula -> Bool
 isExecutable (SetLit _ _) = False
+isExecutable (MapSel _ _) = False
+isExecutable (MapUpd _ _ _) = False
 isExecutable (Unary _ e) = isExecutable e
 isExecutable (Binary _ e1 e2) = isExecutable e1 && isExecutable e2
 isExecutable (Ite e0 e1 e2) = False
@@ -244,6 +250,8 @@ isExecutable _ = True
 substitute :: Substitution -> Formula -> Formula
 substitute subst fml = case fml of
   SetLit b elems -> SetLit b $ map (substitute subst) elems
+  MapSel m k -> MapSel (substitute subst m) (substitute subst k)
+  MapUpd m k v -> MapUpd (substitute subst m) (substitute subst k) (substitute subst v)
   Var s name -> case Map.lookup name subst of
     Just f -> case f of
       -- var@(Var s' name') -> if (s' == s) then var else fml -- ensures that types match
@@ -273,6 +281,8 @@ deBrujns = map (\i -> dontCare ++ show i) [0..]
 sortSubstituteFml :: SortSubstitution -> Formula -> Formula
 sortSubstituteFml subst fml = case fml of
   SetLit el es -> SetLit (sortSubstitute subst el) (map (sortSubstituteFml subst) es)
+  MapSel m k -> MapSel (sortSubstituteFml subst m) (sortSubstituteFml subst k)
+  MapUpd m k v -> MapUpd (sortSubstituteFml subst m) (sortSubstituteFml subst k) (sortSubstituteFml subst v)
   Var s name -> Var (sortSubstitute subst s) name
   Unknown s name -> Unknown (Map.map (sortSubstituteFml subst) s) name
   Unary op e -> Unary op (sortSubstituteFml subst e)
@@ -296,6 +306,8 @@ substitutePredicate pSubst fml = case fml of
   Unary op e -> Unary op (substitutePredicate pSubst e)
   Binary op e1 e2 -> Binary op (substitutePredicate pSubst e1) (substitutePredicate pSubst e2)
   Ite e0 e1 e2 -> Ite (substitutePredicate pSubst e0) (substitutePredicate pSubst e1) (substitutePredicate pSubst e2)
+  MapSel m k -> MapSel (substitutePredicate pSubst m) (substitutePredicate pSubst k)
+  MapUpd m k v -> Ite (substitutePredicate pSubst m) (substitutePredicate pSubst k) (substitutePredicate pSubst v)
   All v e -> All v (substitutePredicate pSubst e)
   _ -> fml
 
@@ -348,6 +360,8 @@ splitByPredicate preds arg fmls = foldM (\m fml -> checkFml fml m fml) Map.empty
           then return $ Map.insertWith Set.union name (Set.singleton whole) m
           else foldM (checkFml whole) m args
       SetLit _ args -> foldM (checkFml whole) m args
+      MapSel m' k -> foldM (checkFml whole) m [m', k]
+      MapUpd m' k v -> foldM (checkFml whole) m [m', k, v]
       Unary _ f -> checkFml whole m f
       Binary _ l r -> foldM (checkFml whole) m [l, r]
       Ite c t e -> foldM (checkFml whole) m [c, t, e]

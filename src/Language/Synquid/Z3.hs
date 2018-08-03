@@ -4,7 +4,7 @@
 module Language.Synquid.Z3 (Z3State, evalZ3State) where
 
 import Language.SMT.Syntax
-  
+
 import Language.Synquid.Logic
 import Language.Synquid.Type
 import Language.Synquid.Program
@@ -159,6 +159,10 @@ toZ3Sort s = do
         -- DataS name args -> mkStringSymbol name >>= mkUninterpretedSort
         DataS name args -> mkIntSort
         SetS el -> toZ3Sort el >>= mkSetSort
+        MapS k v -> do
+                      k' <- toZ3Sort k
+                      v' <- toZ3Sort v
+                      mkArraySort k' v'
         AnyS -> mkIntSort
       sorts %= Map.insert s z3s
       return z3s
@@ -319,6 +323,7 @@ toAST expr = case expr of
       VarS _ -> IntS
       DataS _ (_:_) -> IntS
       SetS el -> SetS (asZ3Sort el)
+      MapS k v -> MapS (asZ3Sort k) (asZ3Sort v)
       _ -> s
 
 
