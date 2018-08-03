@@ -22,9 +22,6 @@ import Language.Synquid.Z3
 {- Util -}
 debugOut a = traceShow a a
 
-unifyWith f = foldr (union . f) []
-unify = unifyWith id
-
 {- Debug Testing -}
 resolverDebug :: IO ()
 resolverDebug = do
@@ -51,15 +48,17 @@ generateQualifiers input = Map.fromList qualifiers
         substituteQualifier :: Formula -> [Formula]
         substituteQualifier qualifier = map (flip substitute qualifier) substitutions
           where
-            formals = extractVars qualifier
+            formals = Set.toList $ varsOf qualifier
             substitutions = generateSubstitutions formals actuals
 
 generateSubstitutions :: [Formula] -> [Formula] -> [Substitution]
 generateSubstitutions formals actuals = if length singleMappings /= length formals then [] else validMappings -- ^ rejects incomplete qualifier mappings
   where
+    -- | Generate all individual mappings that type check
     singleMappings = groupBy keysMatch $ [[(fName, a)] | f@(Var _ fName) <- formals, a <- actuals, sameSort f a]
+    -- | Create all complete combinations of variable mappings
     fullMappings = map Map.fromList $ foldAp (++) [[]] singleMappings
-    -- TODO convert to map at end, make a set at beginning
+    -- | ensures that all mappings are one-to-one
     validMappings = filter (isSet . Map.elems) fullMappings
 
     sameSort :: Formula -> Formula -> Bool
@@ -77,18 +76,6 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
 
     isSet :: Eq a => [a] -> Bool
     isSet a = nub a == a
-
--- TODO replace with sets, convert to list at end
-extractVars :: Formula -> [Formula]
-extractVars (SetLit _ fs)  = unify $ map extractVars fs
-extractVars v@(Var _ _)    = [v]
-extractVars (Unary _ f)    = extractVars f
-extractVars (Binary _ x y) = unify $ map extractVars [x,y]
-extractVars (Ite x y z)    = unify $ map extractVars [x,y,z]
-extractVars (Pred _ _ fs)  = unify $ map extractVars fs
-extractVars (Cons _ _ fs)  = unify $ map extractVars fs
-extractVars (All x y)      = unify $ map extractVars [x,y]
-extractVars _              = []
 
 -- | Resolve
 -- TODO add error checking if passed in types are wrong

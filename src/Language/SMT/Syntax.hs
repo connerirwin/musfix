@@ -19,36 +19,29 @@ data InputExpr =
   | UninterpFunction Id [Sort] Sort         -- ^ Uninterpreted function with input types and a return type (this is the way that z3 does it)
   deriving (Show, Eq, Ord)
 
+isQualifier (Qualifier _ _ _) = True
+isQualifier _ = False
+isWFConstraint (WFConstraint _ _) = True
+isWFConstraint _ = False
+isHornConstraint (HornConstraint _ _) = True
+isHornConstraint _ = False
+isUninterpFunction (UninterpFunction _ _ _) = True
+isUninterpFunction _ = False
+
 -- | Gets all the qualifiers in an input expression list
 allQualifiers :: [InputExpr] -> [InputExpr]
-allQualifiers ins = filter f ins
-  where
-    f :: InputExpr -> Bool
-    f (Qualifier _ _ _) = True
-    f _ = False
+allQualifiers = filter isQualifier
 
 -- | Gets all the well-formed constraints in an input expression list
 allWFConstraints :: [InputExpr] -> [InputExpr]
-allWFConstraints ins = filter f ins
-  where
-    f :: InputExpr -> Bool
-    f (WFConstraint _ _) = True
-    f _ = False
+allWFConstraints = filter isWFConstraint
 
 -- | Gets all the horn constraints in an input expression list
 allHornConstraints :: [InputExpr] -> [InputExpr]
-allHornConstraints ins = filter f ins
-  where
-    f :: InputExpr -> Bool
-    f (HornConstraint _ _) = True
-    f _ = False
+allHornConstraints = filter isHornConstraint
 
 allUninterpFunction :: [InputExpr] -> [InputExpr]
-allUninterpFunction ins = filter f ins
-  where
-    f :: InputExpr -> Bool
-    f (UninterpFunction _ _ _) = True
-    f _ = False
+allUninterpFunction = filter isUninterpFunction
 
 wfName :: InputExpr -> Id
 wfName (WFConstraint name _) = name
@@ -98,7 +91,6 @@ data Formula =
   BoolLit Bool |                      -- ^ Boolean literal
   IntLit Integer |                    -- ^ Integer literal
   SetLit Sort [Formula] |             -- ^ Set literal ([1, 2, 3])
-  SetComp Formula Formula |           -- ^ Set comprehension ([x | x > 3])
   MapSel Formula Formula |            -- ^ Map select
   MapUpd Formula Formula Formula |    -- ^ Map update
   Var Sort Id |                       -- ^ Input variable (universally quantified first-order variable)
@@ -118,6 +110,15 @@ mapFormula func i@(IntLit  _)       = func i
 mapFormula func   (SetLit s fs)     = func $ SetLit s fs'
   where
     fs' = map (mapFormula func) fs
+mapFormula func   (MapSel f1 f2)    = func $ MapSel f1' f2'
+  where
+    f1' = mapFormula func f1
+    f2' = mapFormula func f2
+mapFormula func   (MapUpd f1 f2 f3) = func $ MapUpd f1' f2' f3'
+  where
+    f1' = mapFormula func f1
+    f2' = mapFormula func f2
+    f3' = mapFormula func f3
 mapFormula func v@(Var _ _)         = func v
 mapFormula func u@(Unknown _ _)     = func u
 mapFormula func   (Unary op f)      = func $ Unary op f'
