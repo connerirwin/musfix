@@ -1,3 +1,4 @@
+-Parse in maps
 -Improve error message reporting in the parser
 -Stricter compile flags (cabal)
 -Add support for Constructors

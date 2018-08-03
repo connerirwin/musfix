@@ -1,0 +1,25 @@
+(declare-fun len (List) Int)
+(declare-fun elems (List) Set)
+
+; [] empty set
+; [x] singleton set
+; + on sets is union
+; the weakest solution is `$k0 -> len v0 == 1 + len nil, elems v0 == v1 + elems nil`
+(qualif LenZ  ((x List))                 (= (len x) 0))
+(qualif Empty ((x List))                 (= (elems x) []))
+(qualif Plus1 ((x List)(y List))         (= (len x) (+ 1 (len y))))
+(qualif SumL  ((x List)(y List)(z @0)) (= (elems x) (+ [z] (elems y)))) ; plus on sets is union
+
+(wf $k0 (nil List) (v0 List) (v1 Int))
+
+(constraint
+  (forall (nil List) (x4 List) (_v List))
+    (=> (&& (= (elems nil) []) (&& (= (len nil) 0) (&& ($k0 nil x4 x)
+          (&& (= (len _v) (+ 1 (len x4))) (>= (len x4) 0)))))
+        (= (len _v) 2))
+
+(constraint
+  (forall (nil List) (x4 List) (_v List))
+  (=> (&& (= (elems nil) []) (&& (= (len nil) 0) (&& ($k0 nil x4 x)
+        (&& (= (elems _v) (+ [x] (elems x4))) (>= (len x4) 0)))))
+      (= (elems _v) [x]))

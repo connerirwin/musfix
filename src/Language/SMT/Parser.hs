@@ -62,6 +62,7 @@ checkVars fs = foldr ((&&) . isVar) True fs
     isVar (Var _ _) = True
     isVar _         = False
 
+-- | TODO replace parseFormula with parseVars
 instance FromLisp InputExpr where
   -- | Qualifiers
   parseLisp (List [(Symbol "qualif"), (Symbol n), List xs, y]) = do
@@ -98,6 +99,8 @@ parseInputExpr :: Lisp -> Parser InputExpr
 parseInputExpr = parseLisp
 
 -- TODO Cons (DataS ...) ...
+-- add constants as uninterpreted functions that take no args
+-- (declare-const name val)
 {- Formulas -}
 instance FromLisp Formula where
   -- | Basic literals
@@ -106,6 +109,20 @@ instance FromLisp Formula where
   parseLisp (Number n)                = case S.floatingOrInteger n of
     Left  f -> fail $ "non-integral value not supported " ++ (show n)
     Right i -> pure $ IntLit i
+  -- | Map literals
+  parseLisp (List [(Symbol "Map_select"), m, k]) = do
+      mapExpr <- parseFormula m
+      key     <- parseFormula k
+      return $ MapSel mapExpr key
+  parseLisp (List [(Symbol "Map_store"), m, k, v ]) = do
+      mapExpr <- parseFormula m
+      key     <- parseFormula k
+      val     <- parseFormula v
+      return $ MapUpd mapExpr key val
+  parseLisp (List [(Symbol "Map_default"), v]) = do
+      defVal  <- parseFormula v
+      pure $ Var (MapS AnyS AnyS) $ "map default value: " ++ show defVal
+      -- TODO look up map literals
   -- | Variable
   parseLisp (Symbol v)                = pure $ Var AnyS (T.unpack v)
   -- | Variable sort assignment
@@ -118,11 +135,6 @@ instance FromLisp Formula where
       = do
         sort <- parseSortM s
         return $ Var sort $ T.unpack v
-  -- | For all
-  parseLisp (List [(Symbol "forall"), x, y]) = do
-      xExpr <- parseFormula x
-      yExpr <- parseFormula y
-      return $ All xExpr yExpr
   -- | unary operation
   parseLisp (List [(Symbol f), a])
     | Map.member f unaryOps = do
@@ -156,11 +168,11 @@ parseFormula = parseLisp
 
 {- Sorts -}
 instance FromLisp Sort where
-  -- | list
-  parseLisp (Symbol s) = do
-    let maybeSort = parseSort (Symbol s)
+  -- | Sorts can be multiple symbols
+  parseLisp s = do
+    let maybeSort = parseSort s
     case maybeSort of
-      Nothing -> fail $ "unrecognized sort " ++ T.unpack s
+      Nothing -> fail $ "unrecognized sort " ++ show s
       Just sort -> return sort
 
 parseSortM :: Lisp -> Parser Sort
@@ -170,12 +182,18 @@ parseSort :: Lisp -> Maybe Sort
 -- | List sort
 parseSort (Symbol s)
   | T.head s == '[' && T.last s == ']' = do
-      sort <- parseSort subsort -- ^ TODO make sure that this is working properly
+      sort <- parseSort subsort
       return $ SetS sort
     where
       subsort = Symbol $ (T.drop 1 . T.dropEnd 1) s
 
--- | Polymorphic sort (currently does the dumbest thing), what about case when the sorts are the same?
+-- | Map
+parseSort (List [(Symbol "Map_t"), k, v]) = do
+    keySort <- parseSort k
+    valSort <- parseSort v
+    return $ MapS keySort valSort
+
+-- | Polymorphic sort
 -- TODO this currently is a hack that doesn't actually ensure that all
 -- polymorphic types are the same, but rather just allows the instantiation of
 -- anything for each type. To implement this fully, a map of the types needs to

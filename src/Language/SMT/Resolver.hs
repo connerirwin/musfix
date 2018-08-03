@@ -81,7 +81,7 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
 -- TODO add error checking if passed in types are wrong
 -- enforceSame
 prepareInputs :: [InputExpr] -> [InputExpr]
-prepareInputs ins = map (update . resolveInputSorts) ins
+prepareInputs ins = map (update) ins
   where
     varMap :: Map Id [Formula]
     varMap = Map.fromList $ map boxWF $ allWFConstraints ins
@@ -96,10 +96,22 @@ prepareInputs ins = map (update . resolveInputSorts) ins
         boxUf (UninterpFunction name formals result) = (name, result)
 
     update :: InputExpr -> InputExpr
+    update (Qualifier n xs f)    = Qualifier n xs f'
+      where
+        f' = mapFormula (updateVar xs) f
     update (HornConstraint xs f) = HornConstraint xs f'
       where
-        f' = mapFormula (updatePred . updateUnknown) f
+        f' = mapFormula (updatePred . updateUnknown . (updateVar xs)) f
     update a = a
+
+    -- | Updates the sorts in a formula using the given variables
+    updateVar :: [Formula] -> Formula -> Formula
+    updateVar xs (Var s n)
+      | s == AnyS   = Var s' n
+      | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
+      where
+        s' = varSort xs n
+    updateVar _ a = a
 
     -- | Resolves parameter substitutions for unknowns
     updateUnknown :: Formula -> Formula
@@ -131,34 +143,6 @@ prepareInputs ins = map (update . resolveInputSorts) ins
     updatePred (Pred s p fs) = Pred s' p fs
       where s' = sortMap ! p
     updatePred a = a
-
--- TODO can this be elegantly ported over to be similary to updateUnknown / updatePred
--- possible called updateVar
--- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
-resolveInputSorts :: InputExpr -> InputExpr
-resolveInputSorts (Qualifier n xs f) = Qualifier n xs $ resolveSorts xs f
-resolveInputSorts (HornConstraint xs f) = HornConstraint xs $ resolveSorts xs f
-resolveInputSorts i = i
-
--- | Updates the sorts in a formula using the given variables
-resolveSorts :: [Formula] -> Formula -> Formula
-resolveSorts xs (Var s n)
-  | s == AnyS   = Var s' n
-  | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
-  where
-    s' = varSort xs n
-resolveSorts xs (Unary op f)      = Unary op $ resolveSorts xs f
-resolveSorts xs (Binary op f1 f2) = Binary op f1' f2'
-  where
-    f1' = resolveSorts xs f1
-    f2' = resolveSorts xs f2
-resolveSorts xs (Ite f1 f2 f3)    = Ite f1' f2' f3'
-  where
-    f1' = resolveSorts xs f1
-    f2' = resolveSorts xs f2
-    f3' = resolveSorts xs f3
-resolveSorts xs (Pred s n args) = Pred s n $ map (resolveSorts xs) args
-resolveSorts _ f = f
 
 -- | Gets the sort of a var from a list of vars
 varSort :: [Formula] -> Id -> Sort
