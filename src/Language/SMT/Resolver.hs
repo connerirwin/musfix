@@ -80,9 +80,22 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
 -- | Resolve
 -- TODO add error checking if passed in types are wrong
 -- enforceSame
+
 prepareInputs :: [InputExpr] -> [InputExpr]
-prepareInputs ins = map (update) ins
+prepareInputs ins = map update ins
   where
+    -- | These maps are of the totally raw input. In the future, they might break
+    -- if updates vars actually cleans them. Replace calls to ins with sortResolvedIns.
+    -- updateSorts :: InputExpr -> InputExpr
+    -- updateSorts (Qualifier n xs f)    = Qualifier n xs f'
+    --   where
+    --     f' = mapFormula (updateVar xs) f
+    -- updateSorts (HornConstraint xs f) = HornConstraint xs f'
+    --   where
+    --     f' = mapFormula (updatePred . updateUnknown . (updateVar xs)) f
+    -- updateSorts a = a
+    --
+    -- sortResolvedIns = map updateSorts ins
     varMap :: Map Id [Formula]
     varMap = Map.fromList $ map boxWF $ allWFConstraints ins
       where
@@ -95,6 +108,7 @@ prepareInputs ins = map (update) ins
         boxUf :: InputExpr -> (Id, Sort)
         boxUf (UninterpFunction name formals result) = (name, result)
 
+    -- | Target specific input expressions for updates
     update :: InputExpr -> InputExpr
     update (Qualifier n xs f)    = Qualifier n xs f'
       where
