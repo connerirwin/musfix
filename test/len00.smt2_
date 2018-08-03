@@ -1,6 +1,6 @@
 (qualif ListZ ((v [@0])) (>= (len v) 0))
 
-(uninterp len (@0 @1) Int)
+(define-fun len (@0 @1) Int)
 
 (wf [$k0] ((v [(Tuple Int a)])))
 

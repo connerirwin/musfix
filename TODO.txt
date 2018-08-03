@@ -1,5 +1,6 @@
 -Improve error message reporting in the parser
 -Stricter compile flags (cabal)
 -Add support for Constructors
+-Figure out funding verification
 -Improve bash script
 -Improve the cmd parser (try using optparse-applicative)
