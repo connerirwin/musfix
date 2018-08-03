@@ -97,21 +97,7 @@ extractVars _              = []
 prepareInputs :: [InputExpr] -> [InputExpr]
 prepareInputs ins = resolveUnknownParameters $ map resolveInputSorts ins
 
--- | Substitute in actual types for uninterpreted functions
-resolveUFunctionSorts :: [InputExpr] -> [InputExpr]
-resolveUFunctionSorts ins = map update ins
-  where
-    sortMap :: Map Id Sort
-    sortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
-
-    boxUf :: InputExpr -> (Id, Sort)
-    boxUf (UninterpFunction name formals result) = (name, result)
-
-    update :: InputExpr -> InputExpr
-    update a = a
-
--- | Resolves parameter substitutions for unknowns
--- TODO replace uninterpreted function sort, add error checking if passed in types are wrong
+-- TODO add error checking if passed in types are wrong
 resolveUnknownParameters :: [InputExpr] -> [InputExpr]
 resolveUnknownParameters ins = map update ins
   where
@@ -121,10 +107,19 @@ resolveUnknownParameters ins = map update ins
         boxWF :: InputExpr -> (Id, [Formula])
         boxWF (WFConstraint k fmls) = (k, fmls)
 
+    sortMap :: Map Id Sort
+    sortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
+      where
+        boxUf :: InputExpr -> (Id, Sort)
+        boxUf (UninterpFunction name formals result) = (name, result)
+
     update :: InputExpr -> InputExpr
-    update (HornConstraint xs f) = HornConstraint xs $ mapFormula updateUnknown f
+    update (HornConstraint xs f) = HornConstraint xs f'
+      where
+        f' = mapFormula (updatePred . updateUnknown) f
     update a = a
 
+    -- | Resolves parameter substitutions for unknowns
     updateUnknown :: Formula -> Formula
     updateUnknown (Unknown sub name) = Unknown sub' name
       where
@@ -148,6 +143,12 @@ resolveUnknownParameters ins = map update ins
         --     actlNames = map (varName . (m !)) keys
         --     keys = map (("a" ++) . show) [0..]
     updateUnknown a = a
+
+    -- | Substitute in actual types for uninterpreted functions
+    updatePred :: Formula -> Formula
+    updatePred (Pred s p fs) = Pred s' p fs
+      where s' = sortMap ! p
+    updatePred a = a
 
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
 resolveInputSorts :: InputExpr -> InputExpr
