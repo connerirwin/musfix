@@ -117,7 +117,6 @@ prepareInputs ins = map (update . resolveInputSorts) ins
     updateUnknown :: Formula -> Formula
     updateUnknown (Unknown sub name) = Unknown sub' name
       where
-        -- TODO look into Map.mapKeys
         sub' = Map.fromList $ renameVar 0 sub (varMap ! name)
 
         -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
@@ -126,17 +125,18 @@ prepareInputs ins = map (update . resolveInputSorts) ins
           where
             (Var actlSort actlName) = s ! ("a" ++ (show n))
         renameVar _ _ [] = []
-
-        -- | Takes a call-site substitution map and a list of formals
-        -- renameVar :: Map Id Formula -> [Formula] -> [(Id, Formula)]
-        -- renameVar m xs = zip fmlNames substitutions
-        --   where
-        --     substitutions = zipWith (\s n -> Var s n) fmlSorts actlNames
-        --     fmlSorts = map varType xs
-        --     fmlNames = map varName xs
-        --     actlNames = map (varName . (m !)) keys
-        --     keys = map (("a" ++) . show) [0..]
     updateUnknown a = a
+
+    -- TODO look into Map.mapKeys
+    -- | Takes a call-site substitution map and a list of formals
+    -- renameVar :: Map Id Formula -> [Formula] -> [(Id, Formula)]
+    -- renameVar m xs = zip fmlNames substitutions
+    --   where
+    --     substitutions = zipWith (\s n -> Var s n) fmlSorts actlNames
+    --     fmlSorts = map varType xs
+    --     fmlNames = map varName xs
+    --     actlNames = map (varName . (m !)) keys
+    --     keys = map (("a" ++) . show) [0..]
 
     -- | Substitute in actual types for uninterpreted functions
     updatePred :: Formula -> Formula
@@ -144,6 +144,8 @@ prepareInputs ins = map (update . resolveInputSorts) ins
       where s' = sortMap ! p
     updatePred a = a
 
+-- TODO can this be elegantly ported over to be similary to updateUnknown / updatePred
+-- possible called updateVar
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
 resolveInputSorts :: InputExpr -> InputExpr
 resolveInputSorts (Qualifier n xs f) = Qualifier n xs $ resolveSorts xs f
