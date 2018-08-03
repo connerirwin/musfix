@@ -1,3 +1,4 @@
+; What if we allow uninterpreted functions that take no args, and are just constants?
 (constraint
   (forall ((v Int)(m1 Map_t Int Int))
           (=> (&& (= v (Map_select m1 100))(= m1 (Map_default 0)))

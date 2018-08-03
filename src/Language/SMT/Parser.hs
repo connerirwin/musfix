@@ -139,11 +139,10 @@ instance FromLisp Formula where
   parseLisp (List ((Symbol p):x:xs))
     | T.head p == '$' = do
         args <- mapM parseFormula (x:xs)
-        let subs = Map.fromList $ toPairs 0 args
+        let subs = Map.fromList $ toPairs args
         return $ Unknown subs $ T.unpack p
       where
-        toPairs n (x:xs) = ("a" ++ (show n), x):(toPairs (n + 1) xs)
-        toPairs _ []     = []
+        toPairs xs = zip (map (("a" ++) . show) [0..]) xs
   -- | uninterpreted function application
   parseLisp (List ((Symbol p):x:xs)) = do
       args <- mapM parseFormula (x:xs)

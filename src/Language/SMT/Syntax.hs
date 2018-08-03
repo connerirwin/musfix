@@ -16,7 +16,7 @@ data InputExpr =
     Qualifier Id [Formula] Formula          -- ^ Qualifier with name, variables and equation
   | WFConstraint Id [Formula]               -- ^ Well-formed predicate constraint
   | HornConstraint [Formula] Formula        -- ^ Horn constraint
-  | UninterpFunction Id [Sort] Sort          -- ^ Uninterpreted function with input types and a return type (this is the way that z3 does it)
+  | UninterpFunction Id [Sort] Sort         -- ^ Uninterpreted function with input types and a return type (this is the way that z3 does it)
   deriving (Show, Eq, Ord)
 
 -- | Gets all the qualifiers in an input expression list
@@ -41,6 +41,13 @@ allHornConstraints ins = filter f ins
   where
     f :: InputExpr -> Bool
     f (HornConstraint _ _) = True
+    f _ = False
+
+allUninterpFunction :: [InputExpr] -> [InputExpr]
+allUninterpFunction ins = filter f ins
+  where
+    f :: InputExpr -> Bool
+    f (UninterpFunction _ _ _) = True
     f _ = False
 
 wfName :: InputExpr -> Id
@@ -87,3 +94,35 @@ data Formula =
   Cons Sort Id [Formula] |            -- ^ Constructor application
   All Formula Formula                 -- ^ Universal quantification
   deriving (Show, Eq, Ord)
+
+-- | Perform recursive traversal of formulas
+mapFormula :: (Formula -> Formula) -> Formula -> Formula
+mapFormula func b@(BoolLit _)       = func b
+mapFormula func i@(IntLit  _)       = func i
+mapFormula func   (SetLit s fs)     = func $ SetLit s fs'
+  where
+    fs' = map (mapFormula func) fs
+mapFormula func v@(Var _ _)         = func v
+mapFormula func u@(Unknown _ _)     = func u
+mapFormula func   (Unary op f)      = func $ Unary op f'
+  where
+    f' = mapFormula func f
+mapFormula func   (Binary op f1 f2) = func $ Binary op f1' f2'
+  where
+    f1' = mapFormula func f1
+    f2' = mapFormula func f2
+mapFormula func   (Ite f1 f2 f3)    = func $ Ite f1' f2' f3'
+  where
+    f1' = mapFormula func f1
+    f2' = mapFormula func f2
+    f3' = mapFormula func f3
+mapFormula func   (Pred s p fs)     = func $ Pred s p fs'
+  where
+    fs' = map (mapFormula func) fs
+mapFormula func   (Cons s c fs)     = func $ Cons s c fs'
+  where
+    fs' = map (mapFormula func) fs
+mapFormula func   (All f1 f2)       = func $ All f1' f2'
+  where
+    f1' = mapFormula func f1
+    f2' = mapFormula func f2

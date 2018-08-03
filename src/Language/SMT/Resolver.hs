@@ -3,8 +3,8 @@ module Language.SMT.Resolver where
 import Language.SMT.Syntax
 
 import Data.List
-import Data.Map (Map, (!))
 import qualified Data.Map as Map
+import Data.Map (Map, (!))
 import qualified Data.Set as Set
 
 import Debug.Trace
@@ -97,24 +97,39 @@ extractVars _              = []
 prepareInputs :: [InputExpr] -> [InputExpr]
 prepareInputs ins = resolveUnknownParameters $ map resolveInputSorts ins
 
+-- | Substitute in actual types for uninterpreted functions
+resolveUFunctionSorts :: [InputExpr] -> [InputExpr]
+resolveUFunctionSorts ins = map update ins
+  where
+    sortMap :: Map Id Sort
+    sortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
+
+    boxUf :: InputExpr -> (Id, Sort)
+    boxUf (UninterpFunction name formals result) = (name, result)
+
+    update :: InputExpr -> InputExpr
+    update a = a
+
 -- | Resolves parameter substitutions for unknowns
+-- TODO replace uninterpreted function sort, add error checking if passed in types are wrong
 resolveUnknownParameters :: [InputExpr] -> [InputExpr]
 resolveUnknownParameters ins = map update ins
   where
-    allFormals :: Map Id [Formula]
-    allFormals = Map.fromList $ map varMap (allWFConstraints ins)
-
-    varMap :: InputExpr -> (Id, [Formula])
-    varMap (WFConstraint k fmls) = (k, fmls)
+    varMap :: Map Id [Formula]
+    varMap = Map.fromList $ map boxWF (allWFConstraints ins)
+      where
+        boxWF :: InputExpr -> (Id, [Formula])
+        boxWF (WFConstraint k fmls) = (k, fmls)
 
     update :: InputExpr -> InputExpr
-    update (HornConstraint xs f) = HornConstraint xs $ updateSubs allFormals f
+    update (HornConstraint xs f) = HornConstraint xs $ mapFormula updateUnknown f
     update a = a
 
-    updateSubs :: Map Id [Formula] -> Formula -> Formula
-    updateSubs formalMap (Unknown sub name) = Unknown sub' name
+    updateUnknown :: Formula -> Formula
+    updateUnknown (Unknown sub name) = Unknown sub' name
       where
-        sub' = Map.fromList $ renameVar 0 sub (formalMap ! name)
+        -- TODO look into Map.mapKeys
+        sub' = Map.fromList $ renameVar 0 sub (varMap ! name)
 
         -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
         renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
@@ -123,18 +138,16 @@ resolveUnknownParameters ins = map update ins
             (Var actlSort actlName) = s ! ("a" ++ (show n))
         renameVar _ _ [] = []
 
-    updateSubs m (Unary op f)      = Unary op $ updateSubs m f
-    updateSubs m (Binary op f1 f2) = Binary op f1' f2'
-      where
-        f1' = updateSubs m f1
-        f2' = updateSubs m f2
-    updateSubs m (Ite f1 f2 f3)    = Ite f1' f2' f3'
-      where
-        f1' = updateSubs m f1
-        f2' = updateSubs m f2
-        f3' = updateSubs m f3
-    updateSubs _ f = f
-
+        -- | Takes a call-site substitution map and a list of formals
+        -- renameVar :: Map Id Formula -> [Formula] -> [(Id, Formula)]
+        -- renameVar m xs = zip fmlNames substitutions
+        --   where
+        --     substitutions = zipWith (\s n -> Var s n) fmlSorts actlNames
+        --     fmlSorts = map varType xs
+        --     fmlNames = map varName xs
+        --     actlNames = map (varName . (m !)) keys
+        --     keys = map (("a" ++) . show) [0..]
+    updateUnknown a = a
 
 -- | Resolves sorts for a given qualifier, returns the resolved qualifier formula
 resolveInputSorts :: InputExpr -> InputExpr
@@ -168,62 +181,3 @@ varSort ((Var s n):xs) x
     | n == x      = s
     | otherwise   = varSort xs x
 varSort _ x     = error $ "no sort found for " ++ x ++ " in qualifier (variable not declared)"
-
-
-{-
-type HornSolver = FixPointSolver Z3State
-
--- | Solves for the least fixpoint(s) and greatest fixpoint of a constraint
--- with the given qualifiers
-musfixpoint :: Id -> Sort -> Formula -> IO ()
-musfixpoint var sort fml = print "resolvedTypes eventually..."
-  where
-    resolvedTypes = resolveTypeRefinement sort fml
-
-resolveTypeRefinement :: Sort -> Formula -> Resolver Formula
-we are trying to infer function pre-conditions (ie refinements on the params)
-
-type Resolver a = StateT ResolverState (Except ErrorMessage) a
-
-data ResolverState = ResolverState {
-  _environment :: Environment,
-  _goals :: [(Id, (UProgram, SourcePos))],
-  _checkingGoals :: [(Id, (UProgram, SourcePos))],
-  _condQualifiers :: [Formula],
-  _typeQualifiers :: [Formula],
-  _mutuals :: Map Id [Id],
-  _inlines :: Map Id ([Id], Formula),
-  _sortConstraints :: [SortConstraint],
-  _currentPosition :: SourcePos,
-  _idCount :: Int
-}
-
-toSpace :: Maybe Int -> [Formula] -> QSpace
-
-type HornSolver = FixPointSolver Z3State
-
--- | Parameters for constraint solving
-defaultHornSolverParams = HornSolverParams {
-  pruneQuals = True,
-  isLeastFixpoint = False,
-  optimalValuationsStrategy = MarcoValuations,
-  semanticPrune = True,
-  agressivePrune = True,
-  candidatePickStrategy = InitializedWeakCandidate,
-  constraintPickStrategy = SmallSpaceConstraint,
-  solverLogLevel = 0
-}
-
-initHornSolver :: Environment -> s Candidate
-preprocessConstraint :: Formula -> s [Formula]
-
--- remove extract assumptions
-refineCandidates :: [Formula] -> QMap -> ExtractAssumptions -> [Candidate] -> s [Candidate]
-
-data Candidate = Candidate {
-    solution :: Solution,
-    validConstraints :: Set Formula,
-    invalidConstraints :: Set Formula,
-    label :: String
-  } deriving (Show)
--}
