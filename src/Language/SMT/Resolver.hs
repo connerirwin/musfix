@@ -26,9 +26,6 @@ unifyWith f = foldr (union . f) []
 unify = unifyWith id
 
 {- Debug Testing -}
-
-
--- | A debug printing function designed to be as unobtrusive as possible
 resolverDebug :: IO ()
 resolverDebug = do
   print "nothing for now"
@@ -94,15 +91,12 @@ extractVars (All x y)      = unify $ map extractVars [x,y]
 extractVars _              = []
 
 -- | Resolve
-prepareInputs :: [InputExpr] -> [InputExpr]
-prepareInputs ins = resolveUnknownParameters $ map resolveInputSorts ins
-
 -- TODO add error checking if passed in types are wrong
-resolveUnknownParameters :: [InputExpr] -> [InputExpr]
-resolveUnknownParameters ins = map update ins
+prepareInputs :: [InputExpr] -> [InputExpr]
+prepareInputs ins = map (update . resolveInputSorts) ins
   where
     varMap :: Map Id [Formula]
-    varMap = Map.fromList $ map boxWF (allWFConstraints ins)
+    varMap = Map.fromList $ map boxWF $ allWFConstraints ins
       where
         boxWF :: InputExpr -> (Id, [Formula])
         boxWF (WFConstraint k fmls) = (k, fmls)

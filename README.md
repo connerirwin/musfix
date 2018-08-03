@@ -25,3 +25,22 @@ General purpose version of Synquid's greatest-fixpoint Horn clause solver.
 4. Run MUSFix
 
         stack exec -- musfix --help
+
+# Using development scripts
+
+To run the program quickly
+
+    run.sh [musfix args]
+
+To run the program in profiling mode.
+
+    profile.sh [musfix args] +RTS [ghc args]
+
+Example ghc arguments:
+* -p &nbsp;&nbsp; Generates musfix.prof containing time and allocation statistics
+
+A full list can be found [here](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html)
+
+To run rudimentary integration testing (this will diff your output against rubric)
+
+    verify.sh
