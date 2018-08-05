@@ -1,19 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Language.SMT.Parser
+import Language.SMT.Resolver
 import Language.SMT.Solve
 import Language.SMT.Syntax
-import Language.SMT.Resolver
 
 import Language.Synquid.Pretty
 
 import Control.Monad
-import Data.ByteString (ByteString)
-import System.Environment
-import System.Exit
+
 import qualified Data.Attoparsec.ByteString as A
 import qualified Data.AttoLisp as L
 import qualified Data.ByteString as ByteString
+import Data.ByteString (ByteString)
+
+import System.Environment
+import System.Exit
 
 data ProgramOptions = ProgramOptions {
   printProgramOutput :: Bool,
@@ -44,6 +46,10 @@ main = do
   args <- getArgs
   parseArgs defaultProgramOptions args
 
+-- | TODO make argument parsing more robust - add support for arguments in any
+-- order, multiple flags with a single dash, clean up the help and usage
+-- information
+-- Consider using a library? (optparse-applicative)
 parseArgs :: ProgramOptions -> [String] -> IO ()
 parseArgs o (x:y:xs)
     | x == "-o"   = verboseLog o' m >> parseArgs o' xs

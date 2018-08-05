@@ -3,6 +3,7 @@
 module Language.SMT.Parser where
 
 import Language.SMT.Syntax
+
 import Language.Synquid.Logic
 import Language.Synquid.Tokens
 
@@ -62,7 +63,8 @@ checkVars fs = foldr ((&&) . isVar) True fs
     isVar (Var _ _) = True
     isVar _         = False
 
--- | TODO replace parseFormula with parseVars
+-- | TODO replace parseFormula & checkvars with parseVars
+-- parseVars will have better error reporting
 instance FromLisp InputExpr where
   -- | Qualifiers
   parseLisp (List [(Symbol "qualif"), (Symbol n), List xs, y]) = do
@@ -98,10 +100,10 @@ instance FromLisp InputExpr where
 parseInputExpr :: Lisp -> Parser InputExpr
 parseInputExpr = parseLisp
 
--- TODO Cons (DataS ...) ...
+{- Formulas -}
+-- | TODO Cons (DataS ...) ...
 -- add constants as uninterpreted functions that take no args
 -- (declare-const name val)
-{- Formulas -}
 instance FromLisp Formula where
   -- | Basic literals
   parseLisp (Symbol "False")          = pure $ BoolLit False
@@ -122,7 +124,9 @@ instance FromLisp Formula where
   parseLisp (List [(Symbol "Map_default"), v]) = do
       defVal  <- parseFormula v
       pure $ Var (MapS AnyS AnyS) $ "map default value: " ++ show defVal
-      -- TODO look up map literals
+      -- TODO map literals do not exist yet, this needs to be added.
+      -- The Z3 translation should be pretty straightforward, but you'd have to dig in the z3-haskell library
+      -- Just dig next to those functions used to translate select and store, is probably somewhere there :)
   -- | Variable
   parseLisp (Symbol v)                = pure $ Var AnyS (T.unpack v)
   -- | Variable sort assignment

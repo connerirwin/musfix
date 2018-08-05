@@ -2,22 +2,23 @@ module Language.SMT.Resolver where
 
 import Language.SMT.Syntax
 
-import Data.List
-import qualified Data.Map as Map
-import Data.Map (Map, (!))
-import qualified Data.Set as Set
-
-import Debug.Trace
-
-import Control.Lens
-import Control.Monad
-import Control.Monad.State
-
 import Language.Synquid.HornSolver
 import Language.Synquid.Logic
 import Language.Synquid.Program
 import Language.Synquid.Util
 import Language.Synquid.Z3
+
+import Control.Lens
+import Control.Monad
+import Control.Monad.State
+
+import Data.List
+import qualified Data.Map as Map
+
+import Data.Map (Map, (!))
+import qualified Data.Set as Set
+
+import Debug.Trace
 
 {- Util -}
 debugOut a = traceShow a a
@@ -80,7 +81,6 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
 -- | Resolve
 -- TODO add error checking if passed in types are wrong
 -- enforceSame
-
 prepareInputs :: [InputExpr] -> [InputExpr]
 prepareInputs ins = map update ins
   where
@@ -96,6 +96,8 @@ prepareInputs ins = map update ins
     -- updateSorts a = a
     --
     -- sortResolvedIns = map updateSorts ins
+    --
+    -- This workaround actually might be a sign that this design should change
     varMap :: Map Id [Formula]
     varMap = Map.fromList $ map boxWF $ allWFConstraints ins
       where
