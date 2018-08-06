@@ -31,7 +31,7 @@ binaryOps = Map.fromList [ ("*",    Times)
                          , ("+",     Plus)
                          , ("-",    Minus)
                          , ("==",      Eq)
-                         , ("=",       Eq) -- TODO: Do we want to support this?
+                         , ("=",       Eq) -- ^ TODO: Do we want to support this?
                          , ("!=",     Neq)
                          , ("<",       Lt)
                          , ("<=",      Le)
@@ -40,8 +40,9 @@ binaryOps = Map.fromList [ ("*",    Times)
                          , ("&&",     And)
                          , ("||",      Or)
                          , ("==>",Implies)
-                         , ("=>", Implies) -- TODO: Same as above
+                         , ("=>", Implies) -- ^ TODO: Same as above
                          , ("<==>",   Iff)
+                         , ("Map_union", Union) -- ^ TODO do we want to treat the map expressions like binaryOps?
                          ]
 
 -- | Variable sorts
@@ -111,7 +112,10 @@ instance FromLisp Formula where
   parseLisp (Number n)                = case S.floatingOrInteger n of
     Left  f -> fail $ "non-integral value not supported " ++ (show n)
     Right i -> pure $ IntLit i
-  -- | Map literals
+  -- | Map
+  parseLisp (List [(Symbol "Map_default"), v]) = do
+      defVal  <- parseFormula v
+      pure $ MapLit AnyS defVal -- ^ TODO (MapS a b) causes z3 incompatible sort error
   parseLisp (List [(Symbol "Map_select"), m, k]) = do
       mapExpr <- parseFormula m
       key     <- parseFormula k
@@ -121,12 +125,10 @@ instance FromLisp Formula where
       key     <- parseFormula k
       val     <- parseFormula v
       return $ MapUpd mapExpr key val
-  parseLisp (List [(Symbol "Map_default"), v]) = do
-      defVal  <- parseFormula v
-      pure $ Var (MapS AnyS AnyS) $ "map default value: " ++ show defVal
-      -- TODO map literals do not exist yet, this needs to be added.
-      -- The Z3 translation should be pretty straightforward, but you'd have to dig in the z3-haskell library
-      -- Just dig next to those functions used to translate select and store, is probably somewhere there :)
+  -- parseLisp (List [(Symbol "Map_union"), m1, m2]) = do
+  --     map1    <- parseFormula m1
+  --     map2    <- parseFormula m2
+  --     return $ MapUni map1 map2
   -- | Variable
   parseLisp (Symbol v)                = pure $ Var AnyS (T.unpack v)
   -- | Variable sort assignment

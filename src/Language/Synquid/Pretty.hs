@@ -161,6 +161,8 @@ instance Pretty BinOp where
 power :: Formula -> Int
 power (Pred _ _ []) = 10
 power (Cons _ _ []) = 10
+power MapSel {} = 10
+power MapUpd {} = 10
 power Pred {} = 9
 power Cons {} = 9
 power Unary {} = 8
@@ -186,6 +188,8 @@ fmlDocAt n fml = condHlParens (n' <= n) (
     BoolLit b -> pretty b
     IntLit i -> intLiteral i
     SetLit s elems -> (hlBrackets $ commaSep $ map fmlDoc elems)
+    MapSel m k -> fmlDocAt n' m <> hlBrackets (hlBrackets (fmlDoc k))
+    MapUpd m k v -> fmlDocAt n' m <> hlBrackets (hlBrackets (fmlDoc k <+> operator ":=" <+> fmlDoc v))
     Var s name -> if name == valueVarName then special name else text name
     Unknown s name -> if Map.null s then text name else hMapDoc pretty pretty s <> text name
     Unary op e -> pretty op <> fmlDocAt n' e
@@ -422,6 +426,8 @@ instance Show ErrorMessage where
 -- | 'fmlNodeCount' @fml@ : size of @fml@ (in AST nodes)
 fmlNodeCount :: Formula -> Int
 fmlNodeCount (SetLit _ args) = 1 + sum (map fmlNodeCount args)
+fmlNodeCount (MapSel m k) = 1 + fmlNodeCount m + fmlNodeCount k
+fmlNodeCount (MapUpd m k v) = 1 + fmlNodeCount m + fmlNodeCount k + fmlNodeCount v
 fmlNodeCount (Unary _ e) = 1 + fmlNodeCount e
 fmlNodeCount (Binary _ l r) = 1 + fmlNodeCount l + fmlNodeCount r
 fmlNodeCount (Ite c l r) = 1 + fmlNodeCount c + fmlNodeCount l + fmlNodeCount r

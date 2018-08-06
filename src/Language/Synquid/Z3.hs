@@ -207,8 +207,23 @@ toAST :: Formula -> Z3State AST
 toAST expr = case expr of
   BoolLit True  -> mkTrue
   BoolLit False -> mkFalse
-  SetLit el xs -> setLiteral el xs
   IntLit i -> mkIntNum i
+  SetLit el xs -> do
+    emp <- toZ3Sort el >>= mkEmptySet
+    elems <- mapM toAST xs
+    foldM mkSetAdd emp elems
+  MapLit s v -> do
+    defVal <- toAST v
+    toZ3Sort s >>= flip mkConstArray defVal
+  MapSel m k -> do
+    m' <- toAST m
+    k' <- toAST k
+    mkSelect m' k'
+  MapUpd m k v -> do
+    m' <- toAST m
+    k' <- toAST k
+    v' <- toAST v
+    mkStore m' k' v'
   Var s name -> var s name
   Unknown _ name -> error $ unwords ["toAST: encountered a second-order unknown", name]
   Unary op e -> toAST e >>= unOp op
@@ -228,11 +243,6 @@ toAST expr = case expr of
     mapM toAST args >>= mkApp decl
   All v e -> accumAll [v] e
   where
-    setLiteral el xs = do
-      emp <- toZ3Sort el >>= mkEmptySet
-      elems <- mapM toAST xs
-      foldM mkSetAdd emp elems
-
     accumAll :: [Formula] -> Formula -> Z3State AST
     accumAll xs (All y e) = accumAll (xs ++ [y]) e
     accumAll xs e = do
@@ -254,24 +264,24 @@ toAST expr = case expr of
     binOp :: BinOp -> AST -> AST -> Z3State AST
     binOp op =
       case op of
-        Eq -> mkEq
-        Neq -> list2 mkDistinct
-        Gt -> mkGt
-        Lt -> mkLt
-        Le -> mkLe
-        Ge -> mkGe
-        Times -> list2 mkMul
-        Plus -> list2 mkAdd
-        Minus -> list2 mkSub
-        And   -> list2 mkAnd
-        Or    -> list2 mkOr
-        Implies -> mkImplies
-        Iff -> mkIff
-        Union -> list2 mkSetUnion
+        Eq        -> mkEq
+        Neq       -> list2 mkDistinct
+        Gt        -> mkGt
+        Lt        -> mkLt
+        Le        -> mkLe
+        Ge        -> mkGe
+        Times     -> list2 mkMul
+        Plus      -> list2 mkAdd
+        Minus     -> list2 mkSub
+        And       -> list2 mkAnd
+        Or        -> list2 mkOr
+        Implies   -> mkImplies
+        Iff       -> mkIff
+        Union     -> list2 mkSetUnion
         Intersect -> list2 mkSetIntersect
-        Diff -> mkSetDifference
-        Member -> mkSetMember
-        Subset -> mkSetSubset
+        Diff      -> mkSetDifference
+        Member    -> mkSetMember
+        Subset    -> mkSetSubset
     list2 o x y = o [x, y]
 
     -- | Lookup or create a variable with name `ident' and sort `s'

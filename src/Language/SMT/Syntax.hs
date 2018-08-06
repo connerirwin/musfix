@@ -91,8 +91,10 @@ data Formula =
   BoolLit Bool |                      -- ^ Boolean literal
   IntLit Integer |                    -- ^ Integer literal
   SetLit Sort [Formula] |             -- ^ Set literal ([1, 2, 3])
+  MapLit Sort Formula |               -- ^ Map literal, default value
   MapSel Formula Formula |            -- ^ Map select
   MapUpd Formula Formula Formula |    -- ^ Map update
+  -- MapUni Formula Formula              -- ^ Map union
   Var Sort Id |                       -- ^ Input variable (universally quantified first-order variable)
   Unknown Substitution Id |           -- ^ Predicate unknown (with a pending substitution)
   Unary UnOp Formula |                -- ^ Unary expression
@@ -110,6 +112,9 @@ mapFormula func i@(IntLit  _)       = func i
 mapFormula func   (SetLit s fs)     = func $ SetLit s fs'
   where
     fs' = map (mapFormula func) fs
+mapFormula func   (MapLit s f)      = func $ MapLit s f'
+  where
+    f' = mapFormula func f
 mapFormula func   (MapSel f1 f2)    = func $ MapSel f1' f2'
   where
     f1' = mapFormula func f1
