@@ -1,7 +1,5 @@
--Qualified exports
+-Map_union
 -Add support for Constructors
--Improve error message reporting in the parser
--Stricter compile flags (cabal)
--Figure out funding verification
--Improve bash script
+-Resolve sorts (in binary ops, unary ops)
+-Improve bash script (liquid fixpoint export script)
 -Improve the cmd parser (try using optparse-applicative)

@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1629c7018f20e4c20ab1e43267a3aaca9c32314f5e58b70e4d2d13d089ba7ce7
+-- hash: ff1eb42292b0f1c11ec32e4855841803c5980201b8f2bc5920e86b26bb700936
 
 name:           musfix
 version:        0.1.0.0
@@ -12,7 +12,7 @@ author:         Nadia Polikarpova,
                 Conner Irwin,
                 Kevin Hine
 maintainer:     cjirwin@ucsd.edu
-license:        UnspecifiedLicense
+license:        OtherLicense
 build-type:     Simple
 cabal-version:  >= 1.10
 
@@ -36,6 +36,7 @@ library
       Paths_musfix
   hs-source-dirs:
       src
+  ghc-options: -Wall -fwarn-tabs -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
   build-depends:
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7
@@ -75,6 +76,7 @@ executable musfix
   hs-source-dirs:
       src
       app
+  ghc-options: -Wall -fwarn-tabs -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates
   build-depends:
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7

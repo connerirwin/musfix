@@ -1,5 +1,5 @@
-name: musfix
 version: '0.1.0.0'
+name: musfix
 synopsis: Greatest Fixpoint Horn Solver from Synquid
 category: Language
 author:
@@ -7,7 +7,7 @@ author:
 - Conner Irwin
 - Kevin Hine
 maintainer: cjirwin@ucsd.edu
-license: UnspecifiedLicense
+license: OtherLicense
 dependencies:
 - ansi-wl-pprint >=0.6 && <0.7
 - ansi-terminal >=0.6
@@ -27,7 +27,13 @@ dependencies:
 library:
   source-dirs: src
 executable:
-  source-dirs: 
+  source-dirs:
   - src
   - app
   main: Main.hs
+ghc-options:
+- -Wall
+- -fwarn-tabs
+- -fwarn-incomplete-uni-patterns
+- -fwarn-incomplete-record-updates
+# - -O2
