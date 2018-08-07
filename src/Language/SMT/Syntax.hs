@@ -91,7 +91,7 @@ data Formula =
   BoolLit Bool |                      -- ^ Boolean literal
   IntLit Integer |                    -- ^ Integer literal
   SetLit Sort [Formula] |             -- ^ Set literal ([1, 2, 3])
-  MapLit Sort Formula |               -- ^ Map literal, default value
+  MapLit Sort Formula |               -- ^ Map literal; key sort, default value
   MapSel Formula Formula |            -- ^ Map select
   MapUpd Formula Formula Formula |    -- ^ Map update
   -- MapUni Formula Formula              -- ^ Map union

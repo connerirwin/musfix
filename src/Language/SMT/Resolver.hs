@@ -82,34 +82,21 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     isSet :: Eq a => [a] -> Bool
     isSet a = nub a == a
 
--- | Resolve
--- TODO add error checking if passed in types are wrong
--- enforceSame
 prepareInputs :: [InputExpr] -> [InputExpr]
-prepareInputs ins = map update ins
+prepareInputs ins = (resolveSorts . preprocessInput) ins
+
+-- |
+preprocessInput :: [InputExpr] -> [InputExpr]
+preprocessInput ins = map update ins
   where
-    -- | These maps are of the totally raw input. In the future, they might break
-    -- if updates vars actually cleans them. Replace calls to ins with sortResolvedIns.
-    -- updateSorts :: InputExpr -> InputExpr
-    -- updateSorts (Qualifier n xs f)    = Qualifier n xs f'
-    --   where
-    --     f' = mapFormula (updateVar xs) f
-    -- updateSorts (HornConstraint xs f) = HornConstraint xs f'
-    --   where
-    --     f' = mapFormula (updatePred . updateUnknown . (updateVar xs)) f
-    -- updateSorts a = a
-    --
-    -- sortResolvedIns = map updateSorts ins
-    --
-    -- This workaround actually might be a sign that this design should change
     varMap :: Map Id [Formula]
     varMap = Map.fromList $ map boxWF $ allWFConstraints ins
       where
         boxWF :: InputExpr -> (Id, [Formula])
         boxWF (WFConstraint k fmls) = (k, fmls)
 
-    sortMap :: Map Id Sort
-    sortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
+    predSortMap :: Map Id Sort
+    predSortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
       where
         boxUf :: InputExpr -> (Id, Sort)
         boxUf (UninterpFunction name formals result) = (name, result)
@@ -118,20 +105,30 @@ prepareInputs ins = map update ins
     update :: InputExpr -> InputExpr
     update (Qualifier n xs f)    = Qualifier n xs f'
       where
-        f' = mapFormula (updateVar xs) f
+        f' = mapFormula (distributeSort m) f
+        m  = formalSortMap xs
     update (HornConstraint xs f) = HornConstraint xs f'
       where
-        f' = mapFormula (updatePred . updateUnknown . (updateVar xs)) f
+        f' = mapFormula (updatePred . updateUnknown . (distributeSort m)) f
+        m = formalSortMap xs
     update a = a
 
-    -- | Updates the sorts in a formula using the given variables
-    updateVar :: [Formula] -> Formula -> Formula
-    updateVar xs (Var s n)
+    formalSortMap :: [Formula] -> Map Id Sort
+    formalSortMap formals = Map.fromList $ map boxVar formals
+      where
+        boxVar :: Formula -> (Id, Sort)
+        boxVar (Var sort name) = (name, sort)
+
+    -- | Applies the sort of formal variables to their actual occurances
+    distributeSort :: Map Id Sort -> Formula -> Formula
+    distributeSort m (Var s n)
       | s == AnyS   = Var s' n
       | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
       where
-        s' = varSort xs n
-    updateVar _ a = a
+        s' = case Map.lookup n m of
+          Nothing -> error $ "no sort found for " ++ n ++ " in qualifier (variable not declared)"
+          Just sort -> sort
+    distributeSort _ a = a
 
     -- | Resolves parameter substitutions for unknowns
     updateUnknown :: Formula -> Formula
@@ -161,12 +158,9 @@ prepareInputs ins = map update ins
     -- | Substitute in actual types for uninterpreted functions
     updatePred :: Formula -> Formula
     updatePred (Pred s p fs) = Pred s' p fs
-      where s' = sortMap ! p
+      where s' = predSortMap ! p
     updatePred a = a
 
--- | Gets the sort of a var from a list of vars
-varSort :: [Formula] -> Id -> Sort
-varSort ((Var s n):xs) x
-    | n == x      = s
-    | otherwise   = varSort xs x
-varSort _ x     = error $ "no sort found for " ++ x ++ " in qualifier (variable not declared)"
+-- | TODO sortSubstitute unifySorts
+resolveSorts :: [InputExpr] -> [InputExpr]
+resolveSorts a = a

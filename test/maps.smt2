@@ -1,5 +1,6 @@
 ; What if we allow uninterpreted functions that take no args, and are just constants?
-; (declare-var m1 (Map_t Int Int) (Map_default 0))
+; (declare-const m1 (Map_t Int Int) (Map_default 0))
+; (declare-const name sort value)
 
 (constraint
   (forall ((v Int) (m1 (Map_t Int Int)))

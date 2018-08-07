@@ -44,7 +44,6 @@ binaryOps = Map.fromList [ ("*",    Times)
                          , ("==>",Implies)
                          , ("=>", Implies) -- ^ TODO: Same as above
                          , ("<==>",   Iff)
-                         , ("Map_union", Union) -- ^ TODO do we want to treat the map expressions like binaryOps?
                          ]
 
 -- | Variable sorts
@@ -117,7 +116,7 @@ instance FromLisp Formula where
   -- | Map
   parseLisp (List [(Symbol "Map_default"), v]) = do
       defVal  <- parseFormula v
-      pure $ MapLit AnyS defVal -- ^ TODO (MapS a b) causes z3 incompatible sort error
+      pure $ MapLit AnyS defVal -- ^ This refers to an unknown key sort
   parseLisp (List [(Symbol "Map_select"), m, k]) = do
       mapExpr <- parseFormula m
       key     <- parseFormula k
@@ -127,6 +126,7 @@ instance FromLisp Formula where
       key     <- parseFormula k
       val     <- parseFormula v
       return $ MapUpd mapExpr key val
+      -- | TODO this is going to be implement using the z3 map somehow
   -- parseLisp (List [(Symbol "Map_union"), m1, m2]) = do
   --     map1    <- parseFormula m1
   --     map2    <- parseFormula m2

@@ -37,10 +37,28 @@ To run the program in profiling mode.
     profile.sh [musfix args] +RTS [ghc args]
 
 Example ghc arguments:
-* -p &nbsp;&nbsp; Generates musfix.prof containing time and allocation statistics
+* -p &nbsp;&nbsp;&nbsp; Generates musfix.prof containing time and allocation statistics
+* -xc &nbsp;&nbsp; Dumps a stack trace when an exception is raised
 
 A full list can be found [here](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html)
 
 To run rudimentary integration testing (this will diff your output against rubric)
 
     verify.sh
+
+# Debugging in GHCi
+
+To set a breakpoint
+
+    :break identifier
+    :break [module] line [column]
+
+To set program arguments
+
+    :set args arguments_to_main
+
+Then run with tracing enabled
+
+    :trace main
+
+More details [here](https://downloads.haskell.org/~ghc/7.4.1/docs/html/users_guide/ghci-debugger.html)
