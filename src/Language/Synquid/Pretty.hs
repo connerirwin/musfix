@@ -50,7 +50,7 @@ module Language.Synquid.Pretty (
   errorDoc,
   -- * Counting
   typeNodeCount,
-  programNodeCount
+  programNodeCount,
 ) where
 
 import Language.SMT.Syntax

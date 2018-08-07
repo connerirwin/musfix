@@ -2,13 +2,13 @@
 
 -- | Solver for second-order constraints
 module Language.Synquid.HornSolver (
-    CandidatePickStrategy (..)
-  , ConstraintPickStrategy (..)
-  , OptimalValuationsStrategy (..)
-  , HornSolverParams (..)
-  , FixPointSolver
-  , evalFixPointSolver
-  ) where
+  CandidatePickStrategy (..),
+  ConstraintPickStrategy (..),
+  OptimalValuationsStrategy (..),
+  HornSolverParams (..),
+  FixPointSolver,
+  evalFixPointSolver,
+) where
 
 import Language.SMT.Syntax
 import Language.Synquid.Logic

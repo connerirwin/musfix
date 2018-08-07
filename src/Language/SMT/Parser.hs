@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Language.SMT.Parser where
+module Language.SMT.Parser (
+  parseInputExpr,
+) where
 
 import Language.SMT.Syntax
 

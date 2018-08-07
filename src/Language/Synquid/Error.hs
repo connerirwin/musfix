@@ -1,13 +1,13 @@
 module Language.Synquid.Error (
-  Pos(..)
-  ,SourcePos
-  ,sourceLine
-  ,sourceColumn
-  ,sourceName
-  ,noPos
-  ,ErrorKind(..)
-  ,ErrorMessage(..)
-  ) where
+  Pos (..),
+  SourcePos,
+  sourceLine,
+  sourceColumn,
+  sourceName,
+  noPos,
+  ErrorKind (..),
+  ErrorMessage (..),
+) where
 
 import Text.PrettyPrint.ANSI.Leijen
 import Text.Parsec.Pos

@@ -1,4 +1,6 @@
-module Language.SMT.Solve where
+module Language.SMT.Solve (
+  findFixPoint,
+) where
 
 import Language.SMT.Syntax
 

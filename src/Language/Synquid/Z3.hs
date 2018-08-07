@@ -1,7 +1,10 @@
 {-# LANGUAGE TypeSynonymInstances, FlexibleInstances, TemplateHaskell #-}
 
 -- | Interface to Z3
-module Language.Synquid.Z3 (Z3State, evalZ3State) where
+module Language.Synquid.Z3 (
+  Z3State,
+  evalZ3State,
+) where
 
 import Language.SMT.Syntax
 

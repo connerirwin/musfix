@@ -1,4 +1,8 @@
-module Language.SMT.Resolver where
+module Language.SMT.Resolver (
+  generateQualifiers,
+  prepareInputs,
+  resolverDebug,
+) where
 
 import Language.SMT.Syntax
 
