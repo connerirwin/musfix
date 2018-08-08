@@ -18,7 +18,6 @@ import Control.Monad.State
 
 import Data.List
 import qualified Data.Map as Map
-
 import Data.Map (Map, (!))
 import qualified Data.Set as Set
 
@@ -161,10 +160,11 @@ preprocessInput ins = map targetUpdate ins
       where s' = predSortMap ! p
     updatePred a = a
 
--- | TODO sortSubstitute unifySortsMs
--- This doesn't need to be done now, but needs to be done eventually
 -- | make sure that the sorts of arguments match expressions
--- make sure that sorts of binops are the same
+-- make sure that sorts of binops eq are the same
+-- For the most part, this should only perform checking, not substitution
+-- However, for map literals and set literals, it should perform the substitution
+-- Goal, output all sort errors instead of stopping at the first one
 resolveSorts :: [InputExpr] -> [InputExpr]
 resolveSorts ins = map targetUpdate ins
   where
@@ -186,31 +186,53 @@ resolveSorts ins = map targetUpdate ins
     -- There has to be a better way of doing this.
     -- TODO This should use the writer monad?
     checkOp :: Formula -> Formula
-    checkOp u@(Unary op f) = seq check u
+    checkOp u@(Unary op f) = applySort sort u
       where
         (formalSort, _) = unOpSort op
         argSort = sortOf f
-        sort = unifySortsM formalSort argSort
-        check = case sort of
+        sort = case unifySortsM formalSort argSort of
           Nothing -> error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
+          Just s  -> s
     -- checkOp (Binary op f1 f2) =
     checkOp a = a
 
-    -- | Unifies the sorts of a and b if possible, otherwise fails
-    unifySortsM :: Sort -> Sort -> Maybe Sort
-    unifySortsM a b
-      | a == b           = pure a
-    unifySortsM (DataS n1 args1) (DataS n2 args2)
-      | n1 == n2   = do
-          args' <- zipWithM unifySortsM args1 args2
-          return $ DataS n1 args'
-    unifySortsM (SetS e1) (SetS e2) = do
-          e' <- unifySortsM e1 e2
-          return $ SetS e'
-    unifySortsM (MapS k1 v1) (MapS k2 v2) = do
-          k' <- unifySortsM k1 k2
-          v' <- unifySortsM v1 v2
-          return $ MapS k' v'
-    unifySortsM a    AnyS = pure a
-    unifySortsM AnyS b    = pure b
-    unifySortsM _    _    = fail "sort mismatch"
+    -- checkOp :: Formula -> Maybe Formula
+    -- checkOp u@(Unary op f) = do
+    --     let (formalSort, _) = unOpSort op
+    --     let argSort = sortOf f
+    --     f' <- unifySortsM formalSort argSort >>= flip applySort f
+    --     when (isNothing f') $ error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
+    --     return $ Unary op f'
+    -- checkOp b@(Binary op f1 f2) = do
+    --     let (formalSort1, formalSort2, _) = binOpSort op
+    --     let argSort1 = sortOf f1
+    --     let argSort2 = sortOf f2
+    --     f1' <- unifySortsM formalSort1 argSort1 >>= flip applySort f1
+    --     f2' <- unifySortsM formalSort2 argSort2 >>= flip applySort f2
+    --     when (isNothing f1' || isNothing f2') $ error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but recived " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
+    --     return $ Binary op f1' f2'
+    -- checkOp a = a
+
+-- If possible, replace the sorts in the formula so that it evaluates to having sort s
+applySort :: Sort -> Formula -> Formula
+applySort AnyS f = f
+applySort s f = f
+
+-- | Unifies the sorts of a and b if possible, otherwise fails
+unifySortsM :: Sort -> Sort -> Maybe Sort
+unifySortsM a b
+  | a == b           = pure a
+unifySortsM (DataS n1 args1) (DataS n2 args2)
+  | n1 == n2   = do
+      args' <- zipWithM unifySortsM args1 args2
+      return $ DataS n1 args'
+unifySortsM (SetS e1) (SetS e2) = do
+      e' <- unifySortsM e1 e2
+      return $ SetS e'
+unifySortsM (MapS k1 v1) (MapS k2 v2) = do
+      k' <- unifySortsM k1 k2
+      v' <- unifySortsM v1 v2
+      return $ MapS k' v'
+unifySortsM a    AnyS = pure a
+unifySortsM AnyS b    = pure b
+unifySortsM _    _    = fail "sort mismatch"
