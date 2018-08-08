@@ -162,14 +162,15 @@ instance FromLisp Formula where
   parseLisp (List ((Symbol p):x:xs))
     | T.head p == '$' = do
         args <- mapM parseFormula (x:xs)
-        let subs = Map.fromList $ toPairs args
+        let subs = Map.fromList $ zip distinctFormals args
         return $ Unknown subs $ T.unpack p
       where
-        toPairs xs = zip (map (("a" ++) . show) [0..]) xs
+        distinctFormals = map (\i -> "a" ++ show i) [0..]
   -- | uninterpreted function application
-  parseLisp (List ((Symbol p):x:xs)) = do
-      args <- mapM parseFormula (x:xs)
-      return $ Pred AnyS (T.unpack p) args
+  parseLisp (List ((Symbol p):x:xs))
+    | Set.notMember p reserved = do
+        args <- mapM parseFormula (x:xs)
+        return $ Pred AnyS (T.unpack p) args
 
   parseLisp f = fail $ "cannot read formula: " ++ show f
 

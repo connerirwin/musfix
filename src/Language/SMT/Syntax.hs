@@ -70,8 +70,15 @@ sortArgsOf (DataS _ sArgs) = sArgs
 varSortName (VarS name) = name
 
 -- | Unary operators
-data UnOp = Neg | Not
+data UnOp =
+    Neg |                          -- ^ Int -> Int
+    Not                            -- ^ Bool -> Bool
   deriving (Show, Eq, Ord)
+
+unOpSort :: UnOp -> (Sort, Sort)
+unOpSort op = case op of
+  Neg -> (IntS,   IntS)
+  Not -> (BoolS, BoolS)
 
 -- | Binary operators
 data BinOp =
@@ -82,6 +89,26 @@ data BinOp =
     Union | Intersect | Diff |      -- ^ Set -> Set -> Set
     Member | Subset                 -- ^ Int/Set -> Set -> Bool
   deriving (Show, Eq, Ord)
+
+-- | TODO replace AnyS with VarS, correctly handle params
+binOpSort :: BinOp -> (Sort, Sort, Sort)
+binOpSort op = case op of
+  Times     -> (IntS, IntS, IntS)
+  Plus      -> (IntS, IntS, IntS)
+  Minus     -> (IntS, IntS, IntS)
+  Eq        -> (AnyS, AnyS, BoolS)
+  Neq       -> (AnyS, AnyS, BoolS)
+  Lt        -> (IntS, IntS, BoolS)
+  Le        -> (IntS, IntS, BoolS)
+  Gt        -> (IntS, IntS, BoolS)
+  Ge        -> (IntS, IntS, BoolS)
+  And       -> (BoolS, BoolS, BoolS)
+  Or        -> (BoolS, BoolS, BoolS)
+  Implies   -> (BoolS, BoolS, BoolS)
+  Iff       -> (BoolS, BoolS, BoolS)
+  Union     -> (SetS AnyS, SetS AnyS, SetS AnyS)
+  Intersect -> (SetS AnyS, SetS AnyS, SetS AnyS)
+  Diff      -> (SetS AnyS, SetS AnyS, SetS AnyS)
 
 -- | Variable substitution
 type Substitution = Map Id Formula
@@ -148,3 +175,25 @@ mapFormula func   (All f1 f2)       = func $ All f1' f2'
   where
     f1' = mapFormula func f1
     f2' = mapFormula func f2
+
+-- | Base type of a term in the refinement logic
+sortOf :: Formula -> Sort
+sortOf (BoolLit _)                               = BoolS
+sortOf (IntLit _)                                = IntS
+sortOf (SetLit s _)                              = SetS s
+sortOf (MapLit k v)                              = MapS k $ sortOf v
+sortOf (MapSel m _)                              = valueSort (sortOf m)
+sortOf (MapUpd m _ _)                            = sortOf m
+sortOf (Var s _ )                                = s
+sortOf (Unknown _ _)                             = BoolS
+sortOf (Unary op _)
+  | op == Neg                                    = IntS
+  | otherwise                                    = BoolS
+sortOf (Binary op e1 _)
+  | op == Times || op == Plus || op == Minus     = IntS
+  | op == Union || op == Intersect || op == Diff = sortOf e1
+  | otherwise                                    = BoolS
+sortOf (Ite _ e1 _)                              = sortOf e1
+sortOf (Pred s _ _)                              = s
+sortOf (Cons s _ _)                              = s
+sortOf (All _ _)                                 = BoolS

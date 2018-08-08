@@ -225,7 +225,7 @@ Preparing to find greatest fixpoint...
 Inputs
 --------
 Reading from file test/unary0.smt2
-Qualifier "Neg" [Var BoolS "b"] (Unary Neg (Var BoolS "b"))
+Qualifier "Neg" [Var IntS "i"] (Unary Neg (Var IntS "i"))
 Qualifier "Not" [Var BoolS "b"] (Unary Not (Var BoolS "b"))
 
 QMAP
