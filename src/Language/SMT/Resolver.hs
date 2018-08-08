@@ -192,17 +192,11 @@ resolveSorts ins = map targetUpdate ins
         argSort = sortOf f
         sort = unifySortsM formalSort argSort
         check = case sort of
-          Nothing -> error $ "Sort mismatch: " ++ show formalSort ++ " cannot be resolved with " ++ show argSort ++ " in expression: " ++ show u
-          Just _  -> "TODO replace this with the writer monad, probably"
+          Nothing -> error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
     -- checkOp (Binary op f1 f2) =
     checkOp a = a
 
     -- | Unifies the sorts of a and b if possible, otherwise fails
-    unifySorts :: Sort -> Sort -> Sort
-    unifySorts a b = case unifySortsM a b of
-      Nothing -> error $ "Sort mismatch: " ++ show a ++ " cannot be resolved with " ++ show b
-      Just s  -> s
-
     unifySortsM :: Sort -> Sort -> Maybe Sort
     unifySortsM a b
       | a == b           = pure a

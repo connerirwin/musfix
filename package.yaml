@@ -31,9 +31,9 @@ executable:
   - src
   - app
   main: Main.hs
-ghc-options:
-- -Wall
-- -fwarn-tabs
-- -fwarn-incomplete-uni-patterns
-- -fwarn-incomplete-record-updates
+# ghc-options:
+# - -Wall
+# - -fwarn-tabs
+# - -fwarn-incomplete-uni-patterns
+# - -fwarn-incomplete-record-updates
 # - -O2
