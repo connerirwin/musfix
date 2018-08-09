@@ -97,10 +97,9 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
 -- What if we switch from Maybe to either? something like this:
 -- resolveRefinement :: Environment -> Formula -> Either ErrorMessage Formula
 prepareInputs :: [InputExpr] -> [InputExpr]
-prepareInputs ins = (resolve . preprocess) ins
+prepareInputs ins = resolve ins
   where
     env = createEnvironment ins
-    preprocess = preprocessInput env
     resolve = resolveSorts env
 
 -- | TODO make this a single pass
@@ -118,63 +117,6 @@ createEnvironment ins = env
       predMap = Map.fromList $ map boxUf $ allUninterpFunction ins
     }
 
-
-preprocessInput :: Environment -> [InputExpr] -> [InputExpr]
-preprocessInput env ins = map targetUpdate ins
-  where
-    -- | Target specific input expressions for updates
-    targetUpdate :: InputExpr -> InputExpr
-    targetUpdate (Qualifier n xs f)    = Qualifier n xs f'
-      where
-        f' = mapFormula (updatePred . updateUnknown . (distributeSort m)) f
-        m  = formalSortMap xs
-    targetUpdate (HornConstraint xs f) = HornConstraint xs f'
-      where
-        f' = mapFormula (updatePred . updateUnknown . (distributeSort m)) f
-        m = formalSortMap xs
-    targetUpdate a = a
-
-    formalSortMap :: [Formula] -> Map Id Sort
-    formalSortMap formals = Map.fromList $ map boxVar formals
-      where
-        boxVar :: Formula -> (Id, Sort)
-        boxVar (Var sort name) = (name, sort)
-
-    -- | Applies the sort of formal variables to their actual occurances
-    distributeSort :: Map Id Sort -> Formula -> Formula
-    distributeSort m (Var s n)
-      | s == AnyS   = Var s' n
-      | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
-      where
-        s' = case Map.lookup n m of -- ^ TODO switch to List.lookup?
-          Nothing -> error $ "no sort found for " ++ n ++ " in qualifier (variable not declared)"
-          Just sort -> sort
-    distributeSort _ a = a
-
-    -- | Resolves parameter substitutions for unknowns
-    -- Replaces the key with the correct parameter, and updates the variable sorts
-    -- what if the unknown is called on anything other than a variable?
-    updateUnknown :: Formula -> Formula
-    updateUnknown (Unknown sub name) = Unknown sub' name
-      where
-        sub' = Map.fromList $ renameVar 0 sub $ (wfMap env) ! name
-
-        -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
-        -- TODO switch to unifying the Sort of the vars
-
-        renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
-        renameVar n s ((Var fmlSort fmlName):xs) = (fmlName, Var fmlSort actlName):(renameVar (n + 1) s xs)
-          where
-            (Var actlSort actlName) = s ! ("a" ++ (show n))
-        renameVar _ _ [] = []
-    updateUnknown a = a
-
-    -- | Substitute in actual types for uninterpreted functions
-    updatePred :: Formula -> Formula
-    updatePred (Func s p fs) = Func s' p fs
-      where s' = last $ (predMap env) ! p
-    updatePred a = a
-
 -- | make sure that the sorts of arguments match expressions
 -- make sure that sorts of binops eq are the same
 -- For the most part, this should only perform checking, not substitution
@@ -189,72 +131,120 @@ resolveSorts env ins = map targetUpdate ins
     targetUpdate a = a
 
     resolveSorts' :: [Formula] -> Formula -> Formula
-    resolveSorts' vars eq = mapFormula checkOp eq
+    resolveSorts' vars eq = mapFormula (resolve vars) eq
 
-    -- |
-    resolve :: Formula -> Formula
-    resolve s@(SetLit sort elems) = s -- ^ check sort of elems
-    resolve m@(MapLit ksort val)  = m
-    resolve ms@(MapSel m k)       = ms
-    resolve mu@(MapUpd m k v)     = mu
-    resolve v@(Var sort name)     = v
-    resolve wf@(Unknown sub name) = wf
-    resolve u@(Unary op f)        = u
-    resolve b@(Binary op f1 f2)   = b
-    resolve ite@(Ite i t e)       = ite
-    resolve f@(Func sort name fs) = f
-    resolve c@(Cons sort name fs) = c
-    resolve a@(All f1 f2)         = a
+    -- | Checks sorts, resolving them if possible
+    resolve :: [Formula] -> Formula -> Formula
+    resolve _  b@(BoolLit bool)      = b
+    resolve _  i@(IntLit val)        = i
+    resolve _  s@(SetLit sort elems) = s -- ^ check sort of elems
+    resolve _  m@(MapLit ksort val)  = m
+    resolve _  ms@(MapSel m k)       = ms
+    resolve _  mu@(MapUpd m k v)     = mu
+    resolve vs v@(Var sort name)     = lookupVar v vs
+    resolve _  wf@(Unknown sub name) = resolveUnknown wf
+    resolve _  u@(Unary op f)        = resolveAp u
+    resolve _  b@(Binary op f1 f2)   = resolveAp b
+    resolve _  ite@(Ite i t e)       = ite
+    resolve _  f@(Func sort name fs) = lookupFunc $ resolveAp f
+    resolve _  c@(Cons sort name fs) = c
+    resolve _  a@(All f1 f2)         = a
 
-    -- | Checks operator sorts, resolving them if possible.
-    -- The pure version checks if the monadic version fails, and if so, throws an error
-    checkOp :: Formula -> Formula
-    checkOp u@(Unary op f) = u'
+    {- The more complicated resolving has been factored out -}
+
+    lookupVar :: Formula -> [Formula] -> Formula
+    lookupVar (Var sort name) vs
+      | sort == AnyS  = Var sort' name
+      | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
+      where
+        sort' = case Map.lookup name (formalSortMap vs) of
+          Nothing -> error $ "no sort found for " ++ name ++ " in qualifier (variable not declared)"
+          Just sort -> sort
+
+        formalSortMap :: [Formula] -> Map Id Sort
+        formalSortMap formals = Map.fromList $ map boxVar formals
+          where
+            boxVar :: Formula -> (Id, Sort)
+            boxVar (Var sort name) = (name, sort)
+
+    -- | Replaces the key with the correct parameter, updates the variable sorts
+    resolveUnknown :: Formula -> Formula
+    resolveUnknown (Unknown sub name) = Unknown sub' name
+      where
+        sub' = Map.fromList $ renameVar 0 sub $ (wfMap env) ! name
+        -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
+        -- TODO switch to unifying the Sort of the vars
+        renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
+        renameVar n s ((Var fmlSort fmlName):xs) = (fmlName, Var fmlSort actlName):(renameVar (n + 1) s xs)
+          where
+            (Var actlSort actlName) = s ! ("a" ++ (show n))
+        renameVar _ _ [] = []
+
+    -- | Checks the sorts of the formals
+    resolveAp :: Formula -> Formula
+    resolveAp u@(Unary op f)        = Unary op f'
       where
         ap = FunctionApplication (show op) (init $ unOpSort op) [f] u
         (FunctionApplication _ _ [f'] _) = checkAp ap
-        u' = Unary op f'
-    checkOp b@(Binary op f1 f2) = b'
+    resolveAp b@(Binary op f1 f2)   = Binary op f1' f2'
       where
         ap = FunctionApplication (show op) (init $ binOpSort op) [f1, f2] b
         (FunctionApplication _ _ [f1', f2'] _) = checkAp ap
-        b' = Binary op f1' f2'
-    checkOp p@(Func s op fs) = p'
+    resolveAp f@(Func sort name fs) = Func sort name fs'
       where
-        ap = FunctionApplication op (init $ (predMap env) ! op) fs p
+        ap = FunctionApplication name (init $ (predMap env) ! name) fs f
         (FunctionApplication _ _ fs' _) = checkAp ap
-        p' = Func s op fs'
-    checkOp a = a
 
-    -- | TODO add support for polymorphic sort unification
-    -- basically, some of the arguments might need to have their sorts unified with eachother, not the signature
-    checkAp :: FunctionApplication -> FunctionApplication
-    checkAp ap = case checkApM ap of
-        Nothing -> error $ "Sort mismatch:  " ++ name ++ " expects " ++ formalSorts ++ ", but received " ++ argSorts ++ " in expression:  " ++ expr
-        Just a  -> a
+    -- | Lookup the sort of an uninterpreted func
+    lookupFunc :: Formula -> Formula
+    lookupFunc (Func _ name fs) = Func sort name fs
       where
-        name = funcName ap
-        formalSorts = show $ signature ap
-        argSorts = show $ map sortOf $ arguments ap
-        expr = show $ expression ap
+        sort = last $ (predMap env) ! name
 
-    checkApM :: FunctionApplication -> Maybe FunctionApplication
-    checkApM ap = do
-        let formalSorts = signature ap
-        let args = arguments ap
-        formals' <- zipWithM applySortM args formalSorts
-        return $ ap { arguments = formals' }
+-- | TODO add support for polymorphic sort unification
+-- basically, some of the arguments might need to have their sorts unified with eachother, not the signature
+checkAp :: FunctionApplication -> FunctionApplication
+checkAp ap = case checkApM ap of
+    Nothing -> error $ "Sort mismatch:  " ++ name ++ " expects " ++ formalSorts ++ ", but received " ++ argSorts ++ " in expression:  " ++ expr
+    Just a  -> a
+  where
+    name = funcName ap
+    formalSorts = show $ signature ap
+    argSorts = show $ map sortOf $ arguments ap
+    expr = show $ expression ap
+
+checkApM :: FunctionApplication -> Maybe FunctionApplication
+checkApM ap = do
+    let formalSorts = signature ap
+    let args = arguments ap
+    formals' <- zipWithM applySortM formalSorts args
+    return $ ap { arguments = formals' }
+
+-- Error reporting
+applySort :: Sort -> Formula -> Formula
+applySort s f = case applySortM s f of
+    Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ sort ++ " to " ++ formula
+    Just a  -> a
+  where
+    sort = show s
+    formula = show f
 
 -- | Applies the sort to formula if possible, otherwise fails
-applySortM :: Formula -> Sort -> Maybe Formula
-applySortM f s = do
+applySortM :: Sort -> Formula -> Maybe Formula
+applySortM s f = do
     let assumedSort = sortOf f
-    unifySortsM s assumedSort >>= pure . applySort f
-
--- | Replaces the sorts in the formula so that its new sort is s. This should never be called when it could fail
-applySort :: Formula -> Sort -> Formula
-applySort f AnyS = f
-applySort f s    = f
+    unifySortsM s assumedSort >>= pure . (flip applySort' f)
+  where
+    -- | Replaces the sorts in the formula so that its new sort is s
+    -- this cannot be called in a context where it can fail
+    applySort' :: Sort -> Formula -> Formula
+    applySort' AnyS f = f
+    applySort' s (SetLit _ elems)            = SetLit s elems
+    applySort' (MapS ksort _) (MapLit _ val) = MapLit ksort val
+    applySort' s (Var _ name)                = Var s name
+    applySort' s (Func _ name fs)            = Func s name fs
+    applySort' s (Cons _ name fs)            = Cons s name fs
+    applySort' _ f                           = f
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 unifySortsM :: Sort -> Sort -> Maybe Sort
