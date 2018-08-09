@@ -197,10 +197,3 @@ sortOf (Ite _ e1 _)                              = sortOf e1
 sortOf (Pred s _ _)                              = s
 sortOf (Cons s _ _)                              = s
 sortOf (All _ _)                                 = BoolS
-
-data FunctionApplication = FunctionApplication {
-  funcName   :: String,
-  signature  :: [Sort],
-  arguments  :: [Formula],
-  expression :: Formula
-}

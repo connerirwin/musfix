@@ -8,7 +8,7 @@ import Language.SMT.Syntax
 
 import Language.Synquid.HornSolver
 import Language.Synquid.Logic
-import Language.Synquid.Program
+import Language.Synquid.Program hiding (Environment)
 import Language.Synquid.Util
 import Language.Synquid.Z3
 
@@ -25,6 +25,18 @@ import Debug.Trace
 
 {- Util -}
 debugOut a = traceShow a a
+
+data FunctionApplication = FunctionApplication {
+  funcName   :: String,
+  signature  :: [Sort],
+  arguments  :: [Formula],
+  expression :: Formula
+}
+
+data Environment = Environment {
+  wfMap   :: Map Id [Formula],
+  predMap :: Map Id [Sort]
+}
 
 {- Debug Testing -}
 resolverDebug :: IO ()
@@ -85,16 +97,31 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
 -- What if we switch from Maybe to either? something like this:
 -- resolveRefinement :: Environment -> Formula -> Either ErrorMessage Formula
 prepareInputs :: [InputExpr] -> [InputExpr]
-prepareInputs ins = (resolveSorts . preprocessInput) ins
-
-preprocessInput :: [InputExpr] -> [InputExpr]
-preprocessInput ins = map targetUpdate ins
+prepareInputs ins = (resolve . preprocess) ins
   where
-    varMap :: Map Id [Formula]
-    varMap = Map.fromList $ map boxWF $ allWFConstraints ins
-      where
-        boxWF :: InputExpr -> (Id, [Formula])
-        boxWF (WFConstraint k fmls) = (k, fmls)
+    env = createEnvironment ins
+    preprocess = preprocessInput env
+    resolve = resolveSorts env
+
+-- | TODO make this a single pass
+createEnvironment :: [InputExpr] -> Environment
+createEnvironment ins = env
+  where
+    boxWF :: InputExpr -> (Id, [Formula])
+    boxWF (WFConstraint k fmls) = (k, fmls)
+
+    boxUf :: InputExpr -> (Id, [Sort])
+    boxUf (UninterpFunction name formals result) = (name, formals ++ [result])
+
+    env = Environment {
+      wfMap   = Map.fromList $ map boxWF $ allWFConstraints ins,
+      predMap = Map.fromList $ map boxUf $ allUninterpFunction ins
+    }
+
+
+preprocessInput :: Environment -> [InputExpr] -> [InputExpr]
+preprocessInput env ins = map targetUpdate ins
+  where
 
     predSortMap :: Map Id Sort
     predSortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
@@ -135,7 +162,7 @@ preprocessInput ins = map targetUpdate ins
     updateUnknown :: Formula -> Formula
     updateUnknown (Unknown sub name) = Unknown sub' name
       where
-        sub' = Map.fromList $ renameVar 0 sub (varMap ! name)
+        sub' = Map.fromList $ renameVar 0 sub ((wfMap env) ! name)
 
         -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
         renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
@@ -159,7 +186,7 @@ preprocessInput ins = map targetUpdate ins
     -- | Substitute in actual types for uninterpreted functions
     updatePred :: Formula -> Formula
     updatePred (Pred s p fs) = Pred s' p fs
-      where s' = predSortMap ! p
+      where s' = last $ (predMap env) ! p
     updatePred a = a
 
 -- | make sure that the sorts of arguments match expressions
@@ -167,15 +194,9 @@ preprocessInput ins = map targetUpdate ins
 -- For the most part, this should only perform checking, not substitution
 -- However, for map literals and set literals, it should perform the substitution
 -- Goal, output all sort errors instead of stopping at the first one
-resolveSorts :: [InputExpr] -> [InputExpr]
-resolveSorts ins = map targetUpdate ins
+resolveSorts :: Environment -> [InputExpr] -> [InputExpr]
+resolveSorts env ins = map targetUpdate ins
   where
-    predSortMap :: Map Id [Sort]
-    predSortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
-      where
-        boxUf :: InputExpr -> (Id, [Sort])
-        boxUf (UninterpFunction name formals result) = (name, formals ++ [result])
-
     targetUpdate :: InputExpr -> InputExpr
     targetUpdate (Qualifier name vars eq) = Qualifier name vars eq'
       where
@@ -204,7 +225,7 @@ resolveSorts ins = map targetUpdate ins
         b' = Binary op f1' f2'
     checkOp p@(Pred s op fs) = p'
       where
-        ap = FunctionApplication op (init $ predSortMap ! op) fs p
+        ap = FunctionApplication op (init $ (predMap env) ! op) fs p
         (FunctionApplication _ _ fs' _) = checkAp ap
         p' = Pred s op fs'
     checkOp a = a
