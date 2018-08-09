@@ -192,41 +192,41 @@ resolveSorts ins = map targetUpdate ins
     -- | Checks operator sorts, resolving them if possible.
     -- The pure version checks if the monadic version fails, and if so, throws an error
     checkOp :: Formula -> Formula
-    checkOp u@(Unary op f) = case checkOpM u of
-        Nothing -> error $ "Sort mismatch:  " ++ show op ++ " expects " ++ show formalSorts ++ ", but received " ++ show argSorts ++ " in expression:  " ++ show u
-        Just a  -> a
+    checkOp u@(Unary op f) = u'
       where
-        formalSorts = init $ unOpSort op
-        argSorts    = map sortOf [f]
-    checkOp b@(Binary op f1 f2) = case checkOpM b of
-        Nothing -> error $ "Sort mismatch:  " ++ show op ++ " expects " ++ show formalSorts ++ ", but received " ++ show argSorts ++ " in expression:  " ++ show b
-        Just a  -> a
+        ap = FunctionApplication (show op) (init $ unOpSort op) [f] u
+        (FunctionApplication _ _ [f'] _) = checkAp ap
+        u' = Unary op f'
+    checkOp b@(Binary op f1 f2) = b'
       where
-        formalSorts = init $ binOpSort op
-        argSorts    = map sortOf [f1, f2]
-    checkOp p@(Pred _ op fs) = case checkOpM p of
-        Nothing -> error $ "Sort mismatch:  " ++ show op ++ " expects " ++ show formalSorts ++ ", but received " ++ show argSorts ++ " in expression:  " ++ show p
-        Just a  -> a
+        ap = FunctionApplication (show op) (init $ binOpSort op) [f1, f2] b
+        (FunctionApplication _ _ [f1', f2'] _) = checkAp ap
+        b' = Binary op f1' f2'
+    checkOp p@(Pred s op fs) = p'
       where
-        formalSorts = init $ predSortMap ! op
-        argSorts    = map sortOf fs
+        ap = FunctionApplication op (init $ predSortMap ! op) fs p
+        (FunctionApplication _ _ fs' _) = checkAp ap
+        p' = Pred s op fs'
     checkOp a = a
 
     -- | TODO add support for polymorphic sort unification
-    checkOpM :: Formula -> Maybe Formula
-    checkOpM u@(Unary op f) = do
-        let formalSorts = init $ unOpSort op
-        [f'] <- zipWithM applySortM [f] formalSorts
-        return $ Unary op f'
-    checkOpM b@(Binary op f1 f2) = do
-        let formalSorts = init $ binOpSort op
-        [f1', f2'] <- zipWithM applySortM [f1, f2] formalSorts
-        return $ Binary op f1' f2'
-    checkOpM p@(Pred s op fs) = do
-        let formalSorts = init $ predSortMap ! op
-        fs' <- zipWithM applySortM fs formalSorts
-        return $ Pred s op fs'
-    checkOpM a = pure a
+    -- basically, some of the arguments might need to have their sorts unified with eachother, not the signature
+    checkAp :: FunctionApplication -> FunctionApplication
+    checkAp ap = case checkApM ap of
+        Nothing -> error $ "Sort mismatch:  " ++ name ++ " expects " ++ formalSorts ++ ", but received " ++ argSorts ++ " in expression:  " ++ expr
+        Just a  -> a
+      where
+        name = funcName ap
+        formalSorts = show $ signature ap
+        argSorts = show $ map sortOf $ arguments ap
+        expr = show $ expression ap
+
+    checkApM :: FunctionApplication -> Maybe FunctionApplication
+    checkApM ap = do
+        let formalSorts = signature ap
+        let args = arguments ap
+        formals' <- zipWithM applySortM args formalSorts
+        return $ ap { arguments = formals' }
 
 -- | Applies the sort to formula if possible, otherwise fails
 applySortM :: Formula -> Sort -> Maybe Formula

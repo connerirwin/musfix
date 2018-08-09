@@ -182,7 +182,7 @@ sortOf (BoolLit _)                               = BoolS
 sortOf (IntLit _)                                = IntS
 sortOf (SetLit s _)                              = SetS s
 sortOf (MapLit k v)                              = MapS k $ sortOf v
-sortOf (MapSel m _)                              = valueSort (sortOf m)
+sortOf (MapSel m _)                              = valueSort $ sortOf m
 sortOf (MapUpd m _ _)                            = sortOf m
 sortOf (Var s _ )                                = s
 sortOf (Unknown _ _)                             = BoolS
@@ -197,3 +197,10 @@ sortOf (Ite _ e1 _)                              = sortOf e1
 sortOf (Pred s _ _)                              = s
 sortOf (Cons s _ _)                              = s
 sortOf (All _ _)                                 = BoolS
+
+data FunctionApplication = FunctionApplication {
+  funcName   :: String,
+  signature  :: [Sort],
+  arguments  :: [Formula],
+  expression :: Formula
+}

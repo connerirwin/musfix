@@ -4,3 +4,4 @@
 -Improve bash script (liquid fixpoint export script)
 -Improve the cmd parser (try using optparse-applicative)
 -Better method for logging (error stops the program, not everything should be IO)
+-Consider renaming Pred to Func
