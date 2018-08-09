@@ -3,4 +3,4 @@
 (qualif Neg ((v Int)) (<= v 0))
 
 ; Various Errors
-(qualif QQ ((b Bool)) (<= True b))
+; (qualif QQ ((b Bool)) (<= True b))
