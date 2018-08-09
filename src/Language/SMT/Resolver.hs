@@ -188,34 +188,46 @@ resolveSorts ins = map targetUpdate ins
 
     -- what if apply sort worked differently ...?
 
+    -- | Checks operator sorts, resolving them if possible
+    -- The monadic version fails, while the pure version throws an error
     checkOp :: Formula -> Formula
-    checkOp u@(Unary op f) = Unary op f'
+    checkOp u@(Unary op f) = case checkOpM u of
+        Nothing -> error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
+        Just f  -> f
       where
         (formalSort, _) = unOpSort op
         argSort = sortOf f
-        sort = case unifySortsM formalSort argSort of
-          Nothing -> error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
-          Just s  -> s
-        f' = applySort sort f
-    checkOp b@(Binary op f1 f2) = Binary op f1' f2'
+    checkOp b@(Binary op f1 f2) = case checkOpM b of
+        Nothing -> error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but received " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
+        Just f  -> f
       where
         (formalSort1, formalSort2, _) = binOpSort op
         argSort1 = sortOf f1
         argSort2 = sortOf f2
-        sort1 = case unifySortsM formalSort1 argSort1 of
-          Nothing -> error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but received " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
-          Just  s -> s
-        sort2 = case unifySortsM formalSort2 argSort2 of
-          Nothing -> error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but received " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
-          Just  s -> s
-        f1' = applySort sort1 f1
-        f2' = applySort sort2 f2
     checkOp a = a
 
--- If possible, replace the sorts in the formula so that it evaluates to having sort s
-applySort :: Sort -> Formula -> Formula
-applySort AnyS f = f
-applySort s f = f
+    checkOpM :: Formula -> Maybe Formula
+    checkOpM u@(Unary op f) = do
+        let (formalSort, _) = unOpSort op
+        f' <- f `applySortM` formalSort
+        return $ Unary op f'
+    checkOpM b@(Binary op f1 f2) = do
+        let (formalSort1, formalSort2, _) = binOpSort op
+        f1' <- f1 `applySortM` formalSort1
+        f2' <- f2 `applySortM` formalSort2
+        return $ Binary op f1' f2'
+    checkOpM a = pure a
+
+-- | Replaces the sorts in the formula so that its new sort is s
+applySort :: Formula -> Sort -> Formula
+applySort f AnyS = f
+applySort f s    = f
+
+-- | Applies the sort to formula if possible, otherwise fails
+applySortM :: Formula -> Sort -> Maybe Formula
+applySortM f s = do
+    let assumedSort = sortOf f
+    unifySortsM s assumedSort >>= pure . applySort f
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 unifySortsM :: Sort -> Sort -> Maybe Sort
