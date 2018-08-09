@@ -185,33 +185,32 @@ resolveSorts ins = map targetUpdate ins
     -- if it passes, continue evaluation. Otherwise it spits out an error message.
     -- There has to be a better way of doing this.
     -- TODO This should use the writer monad?
+
+    -- what if apply sort worked differently ...?
+
     checkOp :: Formula -> Formula
-    checkOp u@(Unary op f) = applySort sort u
+    checkOp u@(Unary op f) = Unary op f'
       where
         (formalSort, _) = unOpSort op
         argSort = sortOf f
         sort = case unifySortsM formalSort argSort of
           Nothing -> error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
           Just s  -> s
-    -- checkOp (Binary op f1 f2) =
+        f' = applySort sort f
+    checkOp b@(Binary op f1 f2) = Binary op f1' f2'
+      where
+        (formalSort1, formalSort2, _) = binOpSort op
+        argSort1 = sortOf f1
+        argSort2 = sortOf f2
+        sort1 = case unifySortsM formalSort1 argSort1 of
+          Nothing -> error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but received " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
+          Just  s -> s
+        sort2 = case unifySortsM formalSort2 argSort2 of
+          Nothing -> error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but received " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
+          Just  s -> s
+        f1' = applySort sort1 f1
+        f2' = applySort sort2 f2
     checkOp a = a
-
-    -- checkOp :: Formula -> Maybe Formula
-    -- checkOp u@(Unary op f) = do
-    --     let (formalSort, _) = unOpSort op
-    --     let argSort = sortOf f
-    --     f' <- unifySortsM formalSort argSort >>= flip applySort f
-    --     when (isNothing f') $ error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
-    --     return $ Unary op f'
-    -- checkOp b@(Binary op f1 f2) = do
-    --     let (formalSort1, formalSort2, _) = binOpSort op
-    --     let argSort1 = sortOf f1
-    --     let argSort2 = sortOf f2
-    --     f1' <- unifySortsM formalSort1 argSort1 >>= flip applySort f1
-    --     f2' <- unifySortsM formalSort2 argSort2 >>= flip applySort f2
-    --     when (isNothing f1' || isNothing f2') $ error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but recived " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
-    --     return $ Binary op f1' f2'
-    -- checkOp a = a
 
 -- If possible, replace the sorts in the formula so that it evaluates to having sort s
 applySort :: Sort -> Formula -> Formula
