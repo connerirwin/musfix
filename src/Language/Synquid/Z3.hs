@@ -236,7 +236,7 @@ toAST expr = case expr of
     e1' <- toAST e1
     e2' <- toAST e2
     mkIte e0' e1' e2'
-  Pred s name args -> do
+  Func s name args -> do
     let tArgs = map sortOf args
     decl <- function s name tArgs
     mapM toAST args >>= mkApp decl

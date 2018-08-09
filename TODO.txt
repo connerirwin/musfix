@@ -1,4 +1,3 @@
--Consider renaming Pred to Func
 -Map_union
 -Add support for Constructors
 -Improve bash script (liquid fixpoint export script)

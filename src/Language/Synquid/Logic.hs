@@ -152,7 +152,7 @@ varsOf v@(Var _ _)      = Set.singleton v
 varsOf (Unary _ e)      = varsOf e
 varsOf (Binary _ e1 e2) = Set.unions $ map varsOf [e1, e2]
 varsOf (Ite e0 e1 e2)   = Set.unions $ map varsOf [e0, e1, e2]
-varsOf (Pred _ _ es)    = Set.unions $ map varsOf es
+varsOf (Func _ _ es)    = Set.unions $ map varsOf es
 varsOf (Cons _ _ es)    = Set.unions $ map varsOf es
 varsOf (All x e)        = Set.delete x (varsOf e)
 varsOf _                = Set.empty
@@ -163,7 +163,7 @@ unknownsOf u@(Unknown _ _)  = Set.singleton u
 unknownsOf (Unary Not e)    = unknownsOf e
 unknownsOf (Binary _ e1 e2) = Set.unions $ map unknownsOf [e1, e2]
 unknownsOf (Ite e0 e1 e2)   = Set.unions $ map unknownsOf [e0, e1, e2]
-unknownsOf (Pred _ _ es)    = Set.unions $ map unknownsOf es
+unknownsOf (Func _ _ es)    = Set.unions $ map unknownsOf es
 unknownsOf (Cons _ _ es)    = Set.unions $ map unknownsOf es
 unknownsOf (All _ e)        = unknownsOf e
 unknownsOf _                = Set.empty
@@ -182,7 +182,7 @@ posUnknowns = fst . posNegUnknowns
 negUnknowns = snd . posNegUnknowns
 
 posNegPreds :: Formula -> (Set Id, Set Id)
-posNegPreds (Pred BoolS p es)      = (Set.singleton p, Set.empty)
+posNegPreds (Func BoolS p es)      = (Set.singleton p, Set.empty)
 posNegPreds (Unary Not e)          = swap $ posNegPreds e
 posNegPreds (Binary Implies e1 e2) = both2 Set.union (swap $ posNegPreds e1) (posNegPreds e2)
 posNegPreds (Binary Iff e1 e2)     = both2 Set.union (posNegPreds $ e1 |=>| e2) (posNegPreds $ e2 |=>| e1)
@@ -194,7 +194,7 @@ posPreds = fst . posNegPreds
 negPreds = snd . posNegPreds
 
 predSigsOf :: Formula -> Set PredSig
-predSigsOf (Pred r p es)    = Set.insert (PredSig p (map sortOf es) r) (Set.unions $ map predSigsOf es)
+predSigsOf (Func r p es)    = Set.insert (PredSig p (map sortOf es) r) (Set.unions $ map predSigsOf es)
 predSigsOf (SetLit _ elems) = Set.unions $ map predSigsOf elems
 predSigsOf (MapSel m k)     = Set.unions $ map predSigsOf [m, k]
 predSigsOf (MapUpd m k v)   = Set.unions $ map predSigsOf [m, k, v]
@@ -221,7 +221,7 @@ isExecutable (MapUpd _ _ _)   = False
 isExecutable (Unary _ e)      = isExecutable e
 isExecutable (Binary _ e1 e2) = isExecutable e1 && isExecutable e2
 isExecutable (Ite e0 e1 e2)   = False
-isExecutable (Pred _ _ _)     = False
+isExecutable (Func _ _ _)     = False
 isExecutable (All _ _)        = False
 isExecutable _ = True
 
@@ -240,7 +240,7 @@ substitute subst fml = case fml of
   Unary op e        -> Unary op (substitute subst e)
   Binary op e1 e2   -> Binary op (substitute subst e1) (substitute subst e2)
   Ite e0 e1 e2      -> Ite (substitute subst e0) (substitute subst e1) (substitute subst e2)
-  Pred b name args  -> Pred b name $ map (substitute subst) args
+  Func b name args  -> Func b name $ map (substitute subst) args
   Cons b name args  -> Cons b name $ map (substitute subst) args
   All v@(Var _ x) e -> if x `Map.member` subst
                             then error $ unwords ["Scoped variable clashes with substitution variable", x]
@@ -267,7 +267,7 @@ sortSubstituteFml subst fml = case fml of
   Unary op e     -> Unary op (sortSubstituteFml subst e)
   Binary op l r  -> Binary op (sortSubstituteFml subst l) (sortSubstituteFml subst r)
   Ite c l r      -> Ite (sortSubstituteFml subst c) (sortSubstituteFml subst l) (sortSubstituteFml subst r)
-  Pred s name es -> Pred (sortSubstitute subst s) name (map (sortSubstituteFml subst) es)
+  Func s name es -> Func (sortSubstitute subst s) name (map (sortSubstituteFml subst) es)
   Cons s name es -> Cons (sortSubstitute subst s) name (map (sortSubstituteFml subst) es)
   All x e         -> All (sortSubstituteFml subst x) (sortSubstituteFml subst e)
   otherwise      -> fml
@@ -279,8 +279,8 @@ noncaptureSortSubstFml sVars sArgs fml =
 
 substitutePredicate :: Substitution -> Formula -> Formula
 substitutePredicate pSubst fml = case fml of
-  Pred b name args -> case Map.lookup name pSubst of
-                      Nothing -> Pred b name (map (substitutePredicate pSubst) args)
+  Func b name args -> case Map.lookup name pSubst of
+                      Nothing -> Func b name (map (substitutePredicate pSubst) args)
                       Just value -> substitute (Map.fromList $ zip deBrujns args) (substitutePredicate pSubst value)
   Unary op e -> Unary op (substitutePredicate pSubst e)
   Binary op e1 e2 -> Binary op (substitutePredicate pSubst e1) (substitutePredicate pSubst e2)
@@ -334,7 +334,7 @@ splitByPredicate preds arg fmls = foldM (\m fml -> checkFml fml m fml) Map.empty
   where
     checkFml _ _ fml | fml == arg   = Nothing
     checkFml whole m fml = case fml of
-      Pred _ name args ->
+      Func _ name args ->
         if name `Set.member` preds && length args == 1 && head args == arg
           then return $ Map.insertWith Set.union name (Set.singleton whole) m
           else foldM (checkFml whole) m args

@@ -170,7 +170,7 @@ instance FromLisp Formula where
   parseLisp (List ((Symbol p):x:xs))
     | Set.notMember p reserved = do
         args <- mapM parseFormula (x:xs)
-        return $ Pred AnyS (T.unpack p) args
+        return $ Func AnyS (T.unpack p) args
 
   parseLisp f = fail $ "cannot read formula: " ++ show f
 

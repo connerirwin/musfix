@@ -171,7 +171,7 @@ preprocessInput env ins = map targetUpdate ins
 
     -- | Substitute in actual types for uninterpreted functions
     updatePred :: Formula -> Formula
-    updatePred (Pred s p fs) = Pred s' p fs
+    updatePred (Func s p fs) = Func s' p fs
       where s' = last $ (predMap env) ! p
     updatePred a = a
 
@@ -202,7 +202,7 @@ resolveSorts env ins = map targetUpdate ins
     resolve u@(Unary op f)        = u
     resolve b@(Binary op f1 f2)   = b
     resolve ite@(Ite i t e)       = ite
-    resolve p@(Pred sort name fs) = p
+    resolve f@(Func sort name fs) = f
     resolve c@(Cons sort name fs) = c
     resolve a@(All f1 f2)         = a
 
@@ -219,11 +219,11 @@ resolveSorts env ins = map targetUpdate ins
         ap = FunctionApplication (show op) (init $ binOpSort op) [f1, f2] b
         (FunctionApplication _ _ [f1', f2'] _) = checkAp ap
         b' = Binary op f1' f2'
-    checkOp p@(Pred s op fs) = p'
+    checkOp p@(Func s op fs) = p'
       where
         ap = FunctionApplication op (init $ (predMap env) ! op) fs p
         (FunctionApplication _ _ fs' _) = checkAp ap
-        p' = Pred s op fs'
+        p' = Func s op fs'
     checkOp a = a
 
     -- | TODO add support for polymorphic sort unification

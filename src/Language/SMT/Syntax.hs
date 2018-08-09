@@ -127,7 +127,7 @@ data Formula =
   Unary UnOp Formula |                -- ^ Unary expression
   Binary BinOp Formula Formula |      -- ^ Binary expression
   Ite Formula Formula Formula |       -- ^ If-then-else expression
-  Pred Sort Id [Formula] |            -- ^ Logic function application
+  Func Sort Id [Formula] |            -- ^ Logic function application
   Cons Sort Id [Formula] |            -- ^ Constructor application
   All Formula Formula                 -- ^ Universal quantification
   deriving (Show, Eq, Ord)
@@ -165,7 +165,7 @@ mapFormula func   (Ite f1 f2 f3)    = func $ Ite f1' f2' f3'
     f1' = mapFormula func f1
     f2' = mapFormula func f2
     f3' = mapFormula func f3
-mapFormula func   (Pred s p fs)     = func $ Pred s p fs'
+mapFormula func   (Func s p fs)     = func $ Func s p fs'
   where
     fs' = map (mapFormula func) fs
 mapFormula func   (Cons s c fs)     = func $ Cons s c fs'
@@ -194,6 +194,6 @@ sortOf (Binary op e1 _)
   | op == Union || op == Intersect || op == Diff = sortOf e1
   | otherwise                                    = BoolS
 sortOf (Ite _ e1 _)                              = sortOf e1
-sortOf (Pred s _ _)                              = s
+sortOf (Func s _ _)                              = s
 sortOf (Cons s _ _)                              = s
 sortOf (All _ _)                                 = BoolS
