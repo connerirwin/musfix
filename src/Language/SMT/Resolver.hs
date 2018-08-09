@@ -108,7 +108,7 @@ createEnvironment :: [InputExpr] -> Environment
 createEnvironment ins = env
   where
     boxWF :: InputExpr -> (Id, [Formula])
-    boxWF (WFConstraint k fmls) = (k, fmls)
+    boxWF (WFConstraint k formals) = (k, formals)
 
     boxUf :: InputExpr -> (Id, [Sort])
     boxUf (UninterpFunction name formals result) = (name, formals ++ [result])
@@ -122,13 +122,6 @@ createEnvironment ins = env
 preprocessInput :: Environment -> [InputExpr] -> [InputExpr]
 preprocessInput env ins = map targetUpdate ins
   where
-
-    predSortMap :: Map Id Sort
-    predSortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
-      where
-        boxUf :: InputExpr -> (Id, Sort)
-        boxUf (UninterpFunction name formals result) = (name, result)
-
     -- | Target specific input expressions for updates
     targetUpdate :: InputExpr -> InputExpr
     targetUpdate (Qualifier n xs f)    = Qualifier n xs f'
@@ -153,35 +146,28 @@ preprocessInput env ins = map targetUpdate ins
       | s == AnyS   = Var s' n
       | otherwise   = error "qualifier already contains sorts (this shouldn't happen)"
       where
-        s' = case Map.lookup n m of
+        s' = case Map.lookup n m of -- ^ TODO switch to List.lookup?
           Nothing -> error $ "no sort found for " ++ n ++ " in qualifier (variable not declared)"
           Just sort -> sort
     distributeSort _ a = a
 
     -- | Resolves parameter substitutions for unknowns
+    -- Replaces the key with the correct parameter, and updates the variable sorts
+    -- what if the unknown is called on anything other than a variable?
     updateUnknown :: Formula -> Formula
     updateUnknown (Unknown sub name) = Unknown sub' name
       where
-        sub' = Map.fromList $ renameVar 0 sub ((wfMap env) ! name)
+        sub' = Map.fromList $ renameVar 0 sub $ (wfMap env) ! name
 
         -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
+        -- TODO switch to unifying the Sort of the vars
+
         renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
         renameVar n s ((Var fmlSort fmlName):xs) = (fmlName, Var fmlSort actlName):(renameVar (n + 1) s xs)
           where
             (Var actlSort actlName) = s ! ("a" ++ (show n))
         renameVar _ _ [] = []
     updateUnknown a = a
-
-    -- TODO look into Map.mapKeys
-    -- | Takes a call-site substitution map and a list of formals
-    -- renameVar :: Map Id Formula -> [Formula] -> [(Id, Formula)]
-    -- renameVar m xs = zip fmlNames substitutions
-    --   where
-    --     substitutions = zipWith (\s n -> Var s n) fmlSorts actlNames
-    --     fmlSorts = map varType xs
-    --     fmlNames = map varName xs
-    --     actlNames = map (varName . (m !)) keys
-    --     keys = map (("a" ++) . show) [0..]
 
     -- | Substitute in actual types for uninterpreted functions
     updatePred :: Formula -> Formula
@@ -198,17 +184,27 @@ resolveSorts :: Environment -> [InputExpr] -> [InputExpr]
 resolveSorts env ins = map targetUpdate ins
   where
     targetUpdate :: InputExpr -> InputExpr
-    targetUpdate (Qualifier name vars eq) = Qualifier name vars eq'
-      where
-        eq' = resolveSorts' vars eq
-    targetUpdate (HornConstraint vars eq) = HornConstraint vars eq'
-      where
-        eq' = resolveSorts' vars eq
+    targetUpdate (Qualifier name vars eq) = Qualifier name vars $ resolveSorts' vars eq
+    targetUpdate (HornConstraint vars eq) = HornConstraint vars $ resolveSorts' vars eq
     targetUpdate a = a
 
-    -- | Resolve the sorts of
     resolveSorts' :: [Formula] -> Formula -> Formula
     resolveSorts' vars eq = mapFormula checkOp eq
+
+    -- |
+    resolve :: Formula -> Formula
+    resolve s@(SetLit sort elems) = s -- ^ check sort of elems
+    resolve m@(MapLit ksort val)  = m
+    resolve ms@(MapSel m k)       = ms
+    resolve mu@(MapUpd m k v)     = mu
+    resolve v@(Var sort name)     = v
+    resolve wf@(Unknown sub name) = wf
+    resolve u@(Unary op f)        = u
+    resolve b@(Binary op f1 f2)   = b
+    resolve ite@(Ite i t e)       = ite
+    resolve p@(Pred sort name fs) = p
+    resolve c@(Cons sort name fs) = c
+    resolve a@(All f1 f2)         = a
 
     -- | Checks operator sorts, resolving them if possible.
     -- The pure version checks if the monadic version fails, and if so, throws an error

@@ -1,7 +1,6 @@
+-Consider renaming Pred to Func
 -Map_union
 -Add support for Constructors
--Resolve sorts (in binary ops, unary ops)
 -Improve bash script (liquid fixpoint export script)
 -Improve the cmd parser (try using optparse-applicative)
 -Better method for logging (error stops the program, not everything should be IO)
--Consider renaming Pred to Func
