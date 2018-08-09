@@ -75,10 +75,10 @@ data UnOp =
     Not                            -- ^ Bool -> Bool
   deriving (Show, Eq, Ord)
 
-unOpSort :: UnOp -> (Sort, Sort)
+unOpSort :: UnOp -> [Sort]
 unOpSort op = case op of
-  Neg -> (IntS,   IntS)
-  Not -> (BoolS, BoolS)
+  Neg -> [IntS,   IntS]
+  Not -> [BoolS, BoolS]
 
 -- | Binary operators
 data BinOp =
@@ -91,24 +91,24 @@ data BinOp =
   deriving (Show, Eq, Ord)
 
 -- | TODO replace AnyS with VarS, correctly handle params
-binOpSort :: BinOp -> (Sort, Sort, Sort)
+binOpSort :: BinOp -> [Sort]
 binOpSort op = case op of
-  Times     -> (IntS, IntS, IntS)
-  Plus      -> (IntS, IntS, IntS)
-  Minus     -> (IntS, IntS, IntS)
-  Eq        -> (AnyS, AnyS, BoolS)
-  Neq       -> (AnyS, AnyS, BoolS)
-  Lt        -> (IntS, IntS, BoolS)
-  Le        -> (IntS, IntS, BoolS)
-  Gt        -> (IntS, IntS, BoolS)
-  Ge        -> (IntS, IntS, BoolS)
-  And       -> (BoolS, BoolS, BoolS)
-  Or        -> (BoolS, BoolS, BoolS)
-  Implies   -> (BoolS, BoolS, BoolS)
-  Iff       -> (BoolS, BoolS, BoolS)
-  Union     -> (SetS AnyS, SetS AnyS, SetS AnyS)
-  Intersect -> (SetS AnyS, SetS AnyS, SetS AnyS)
-  Diff      -> (SetS AnyS, SetS AnyS, SetS AnyS)
+  Times     -> [IntS, IntS, IntS]
+  Plus      -> [IntS, IntS, IntS]
+  Minus     -> [IntS, IntS, IntS]
+  Eq        -> [AnyS, AnyS, BoolS]
+  Neq       -> [AnyS, AnyS, BoolS]
+  Lt        -> [IntS, IntS, BoolS]
+  Le        -> [IntS, IntS, BoolS]
+  Gt        -> [IntS, IntS, BoolS]
+  Ge        -> [IntS, IntS, BoolS]
+  And       -> [BoolS, BoolS, BoolS]
+  Or        -> [BoolS, BoolS, BoolS]
+  Implies   -> [BoolS, BoolS, BoolS]
+  Iff       -> [BoolS, BoolS, BoolS]
+  Union     -> [SetS AnyS, SetS AnyS, SetS AnyS]
+  Intersect -> [SetS AnyS, SetS AnyS, SetS AnyS]
+  Diff      -> [SetS AnyS, SetS AnyS, SetS AnyS]
 
 -- | Variable substitution
 type Substitution = Map Id Formula

@@ -81,10 +81,12 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     isSet :: Eq a => [a] -> Bool
     isSet a = nub a == a
 
+-- | TODO I bet that it is possible to combine these into a single pass.
+-- What if we switch from Maybe to either? something like this:
+-- resolveRefinement :: Environment -> Formula -> Either ErrorMessage Formula
 prepareInputs :: [InputExpr] -> [InputExpr]
 prepareInputs ins = (resolveSorts . preprocessInput) ins
 
--- |
 preprocessInput :: [InputExpr] -> [InputExpr]
 preprocessInput ins = map targetUpdate ins
   where
@@ -104,7 +106,7 @@ preprocessInput ins = map targetUpdate ins
     targetUpdate :: InputExpr -> InputExpr
     targetUpdate (Qualifier n xs f)    = Qualifier n xs f'
       where
-        f' = mapFormula (distributeSort m) f
+        f' = mapFormula (updatePred . updateUnknown . (distributeSort m)) f
         m  = formalSortMap xs
     targetUpdate (HornConstraint xs f) = HornConstraint xs f'
       where
@@ -168,6 +170,12 @@ preprocessInput ins = map targetUpdate ins
 resolveSorts :: [InputExpr] -> [InputExpr]
 resolveSorts ins = map targetUpdate ins
   where
+    predSortMap :: Map Id [Sort]
+    predSortMap = Map.fromList $ map boxUf $ allUninterpFunction ins
+      where
+        boxUf :: InputExpr -> (Id, [Sort])
+        boxUf (UninterpFunction name formals result) = (name, formals ++ [result])
+
     targetUpdate :: InputExpr -> InputExpr
     targetUpdate (Qualifier name vars eq) = Qualifier name vars eq'
       where
@@ -181,53 +189,55 @@ resolveSorts ins = map targetUpdate ins
     resolveSorts' :: [Formula] -> Formula -> Formula
     resolveSorts' vars eq = mapFormula checkOp eq
 
-    -- | This is currently really weird. Basically, it will perform a check, and
-    -- if it passes, continue evaluation. Otherwise it spits out an error message.
-    -- There has to be a better way of doing this.
-    -- TODO This should use the writer monad?
-
-    -- what if apply sort worked differently ...?
-
-    -- | Checks operator sorts, resolving them if possible
-    -- The monadic version fails, while the pure version throws an error
+    -- | Checks operator sorts, resolving them if possible.
+    -- The pure version checks if the monadic version fails, and if so, throws an error
     checkOp :: Formula -> Formula
     checkOp u@(Unary op f) = case checkOpM u of
-        Nothing -> error $ "Sort mismatch:  Unary op " ++ show op ++ " expected an input of sort " ++ show formalSort ++ ", but received " ++ show argSort ++ " in expression:  " ++ show u
-        Just f  -> f
+        Nothing -> error $ "Sort mismatch:  " ++ show op ++ " expects " ++ show formalSorts ++ ", but received " ++ show argSorts ++ " in expression:  " ++ show u
+        Just a  -> a
       where
-        (formalSort, _) = unOpSort op
-        argSort = sortOf f
+        formalSorts = init $ unOpSort op
+        argSorts    = map sortOf [f]
     checkOp b@(Binary op f1 f2) = case checkOpM b of
-        Nothing -> error $ "Sort mismatch:  Binary op " ++ show op ++ " expected inputs of sort " ++ show (formalSort1, formalSort2) ++ ", but received " ++ show (argSort1, argSort2) ++ " in expression:  " ++ show b
-        Just f  -> f
+        Nothing -> error $ "Sort mismatch:  " ++ show op ++ " expects " ++ show formalSorts ++ ", but received " ++ show argSorts ++ " in expression:  " ++ show b
+        Just a  -> a
       where
-        (formalSort1, formalSort2, _) = binOpSort op
-        argSort1 = sortOf f1
-        argSort2 = sortOf f2
+        formalSorts = init $ binOpSort op
+        argSorts    = map sortOf [f1, f2]
+    checkOp p@(Pred _ op fs) = case checkOpM p of
+        Nothing -> error $ "Sort mismatch:  " ++ show op ++ " expects " ++ show formalSorts ++ ", but received " ++ show argSorts ++ " in expression:  " ++ show p
+        Just a  -> a
+      where
+        formalSorts = init $ predSortMap ! op
+        argSorts    = map sortOf fs
     checkOp a = a
 
+    -- | TODO add support for polymorphic sort unification
     checkOpM :: Formula -> Maybe Formula
     checkOpM u@(Unary op f) = do
-        let (formalSort, _) = unOpSort op
-        f' <- f `applySortM` formalSort
+        let formalSorts = init $ unOpSort op
+        [f'] <- zipWithM applySortM [f] formalSorts
         return $ Unary op f'
     checkOpM b@(Binary op f1 f2) = do
-        let (formalSort1, formalSort2, _) = binOpSort op
-        f1' <- f1 `applySortM` formalSort1
-        f2' <- f2 `applySortM` formalSort2
+        let formalSorts = init $ binOpSort op
+        [f1', f2'] <- zipWithM applySortM [f1, f2] formalSorts
         return $ Binary op f1' f2'
+    checkOpM p@(Pred s op fs) = do
+        let formalSorts = init $ predSortMap ! op
+        fs' <- zipWithM applySortM fs formalSorts
+        return $ Pred s op fs'
     checkOpM a = pure a
-
--- | Replaces the sorts in the formula so that its new sort is s
-applySort :: Formula -> Sort -> Formula
-applySort f AnyS = f
-applySort f s    = f
 
 -- | Applies the sort to formula if possible, otherwise fails
 applySortM :: Formula -> Sort -> Maybe Formula
 applySortM f s = do
     let assumedSort = sortOf f
     unifySortsM s assumedSort >>= pure . applySort f
+
+-- | Replaces the sorts in the formula so that its new sort is s. This should never be called when it could fail
+applySort :: Formula -> Sort -> Formula
+applySort f AnyS = f
+applySort f s    = f
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 unifySortsM :: Sort -> Sort -> Maybe Sort
