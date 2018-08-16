@@ -29,29 +29,40 @@ unaryOps = Map.fromList [ ("not",     Not)
 
 -- | Binary operators
 binaryOps :: Map Text BinOp
-binaryOps = Map.fromList [ ("*",    Times)
-                         , ("+",     Plus)
-                         , ("-",    Minus)
-                         , ("==",      Eq)
-                         , ("=",       Eq) -- ^ TODO: Do we want to support this?
-                         , ("!=",     Neq)
-                         , ("<",       Lt)
-                         , ("<=",      Le)
-                         , (">",       Gt)
-                         , (">=",      Ge)
-                         , ("&&",     And)
-                         , ("and",    And)
-                         , ("||",      Or)
-                         , ("or",      Or)
-                         , ("==>",Implies)
-                         , ("=>", Implies) -- ^ TODO: Same as above
-                         , ("<==>",   Iff)
+binaryOps = Map.fromList [ ("*",     Times)
+                         , ("+",      Plus)
+                         , ("-",     Minus)
+                         , ("==",       Eq)
+                         , ("=",        Eq)
+                         , ("!=",      Neq)
+                         , ("<",        Lt)
+                         , ("<=",       Le)
+                         , (">",        Gt)
+                         , (">=",       Ge)
+                         , ("&&",      And)
+                         , ("and",     And)
+                         , ("||",       Or)
+                         , ("or",       Or)
+                         , ("==>", Implies)
+                         , ("=>",  Implies)
+                         , ("<==>",    Iff)
+                         , ("<=>",     Iff)
+                         , ("cup",   Union)
+                         , ("union", Union)
+                         , ("cap", Intersect)
+                         -- , ("intersect", Intersect) -- ^ TODO find a better name for this
+                         , ("^",         Intersect)
+                         , ("diff",     Diff)
+                         , ("/",        Diff) -- ^ TODO why don't we support division?
+                         , ("in",     Member)
+                         , ("member", Member)
+                         , ("subset", Subset)
                          ]
 
 -- | Variable sorts
 sorts :: Map Text Sort
-sorts = Map.fromList [ ("Int",   IntS),
-                       ("Bool", BoolS)
+sorts = Map.fromList [ ("Int",   IntS)
+                     , ("Bool", BoolS)
                      ]
 
 reserved :: Set Text
@@ -115,6 +126,13 @@ instance FromLisp Formula where
   parseLisp (Number n)                = case S.floatingOrInteger n of
     Left  f -> fail $ "non-integral value not supported " ++ (show n)
     Right i -> pure $ IntLit i
+  -- | Set
+  parseLisp (List [(Symbol "Set_empty"), i]) = do
+      initialSize <- parseFormula i -- ^ TODO should this do something?
+      pure $ SetLit AnyS []
+  parseLisp (List [(Symbol "Set_sng"), v]) = do
+      val <- parseFormula v
+      pure $ SetLit AnyS [val]
   -- | Map
   parseLisp (List [(Symbol "Map_default"), v]) = do
       defVal  <- parseFormula v
@@ -190,20 +208,22 @@ parseSortM :: Lisp -> Parser Sort
 parseSortM = parseLisp
 
 parseSort :: Lisp -> Maybe Sort
--- | List sort
+-- | List
 parseSort (Symbol s)
   | T.head s == '[' && T.last s == ']' = do
       sort <- parseSort subsort
       return $ SetS sort
     where
       subsort = Symbol $ (T.drop 1 . T.dropEnd 1) s
-
+-- | Set
+parseSort (List [(Symbol "Set"), s]) = do
+    sort <- parseSort s
+    return $ SetS sort
 -- | Map
 parseSort (List [(Symbol "Map_t"), k, v]) = do
     keySort <- parseSort k
     valSort <- parseSort v
     return $ MapS keySort valSort
-
 -- | Polymorphic sort
 -- TODO this currently is a hack that doesn't actually ensure that all
 -- polymorphic types are the same, but rather just allows the instantiation of
@@ -211,7 +231,6 @@ parseSort (List [(Symbol "Map_t"), k, v]) = do
 -- be constructed that is then used by the resolver.
 parseSort (Symbol s)
   | T.head s == '@' = pure AnyS
-
 -- | Sort literal
 parseSort (Symbol s) = Map.lookup s sorts
 

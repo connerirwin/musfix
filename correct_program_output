@@ -224,6 +224,28 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
+Reading from file test/sets01.smt2
+HornConstraint [Var IntS "v",Var (SetS IntS) "m1"] (Binary Implies (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m1"))))
+HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2"] (Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m2"))))
+HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2"] (Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Binary Member (IntLit 10) (Var (SetS IntS) "m2")))
+HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2",Var (SetS IntS) "m3"] (Binary Implies (Binary And (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m3") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 20])) (SetLit AnyS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m2") (Var (SetS IntS) "m3")))
+HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2",Var (SetS IntS) "m3",Var (SetS IntS) "m4",Var (SetS IntS) "m5"] (Binary Implies (Binary And (Binary And (Binary And (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m3") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 20])) (SetLit AnyS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m4") (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m5") (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m2") (Var (SetS IntS) "m3")))
+
+QMAP
+--------
+fromList []
+
+Candidates
+--------
+[Candidate {solution = fromList [], validConstraints = fromList [Binary Implies (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m1"))),Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m2"))),Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Binary Member (IntLit 10) (Var (SetS IntS) "m2")),Binary Implies (Binary And (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m3") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 20])) (SetLit AnyS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m2") (Var (SetS IntS) "m3")),Binary Implies (Binary And (Binary And (Binary And (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit AnyS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])) (SetLit AnyS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m3") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 20])) (SetLit AnyS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m4") (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m5") (Binary Union (Var (SetS IntS) "m1") (SetLit AnyS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m2") (Var (SetS IntS) "m3"))], invalidConstraints = fromList [], label = "0"}]
+
+
+Final candidates:
+0: [] (5 0)
+Preparing to find greatest fixpoint...
+
+Inputs
+--------
 Reading from file test/test3.smt2
 Qualifier "Zog" [Var AnyS "v",Var AnyS "z"] (Binary Eq (Var AnyS "v") (Var AnyS "z"))
 WFConstraint "$k0" [Var IntS "v",Var IntS "x"]

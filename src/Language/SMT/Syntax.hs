@@ -87,7 +87,8 @@ data BinOp =
     Lt | Le | Gt | Ge |             -- ^ Int -> Int -> Bool
     And | Or | Implies | Iff |      -- ^ Bool -> Bool -> Bool
     Union | Intersect | Diff |      -- ^ Set -> Set -> Set
-    Member | Subset                 -- ^ Int/Set -> Set -> Bool
+    Member |                        -- ^ a -> Set -> Bool
+    Subset                          -- ^ Set -> Set -> Bool
   deriving (Show, Eq, Ord)
 
 -- | TODO replace AnyS with VarS, correctly handle params
@@ -109,6 +110,8 @@ binOpSort op = case op of
   Union     -> [SetS AnyS, SetS AnyS, SetS AnyS]
   Intersect -> [SetS AnyS, SetS AnyS, SetS AnyS]
   Diff      -> [SetS AnyS, SetS AnyS, SetS AnyS]
+  Member    -> [AnyS, SetS AnyS, BoolS]
+  Subset    -> [SetS AnyS, SetS AnyS, BoolS]
 
 -- | Variable substitution
 type Substitution = Map Id Formula

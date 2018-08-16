@@ -137,7 +137,7 @@ resolveSorts env ins = map targetUpdate ins
     resolve :: [Formula] -> Formula -> Formula
     resolve _  b@(BoolLit bool)      = b
     resolve _  i@(IntLit val)        = i
-    resolve _  s@(SetLit sort elems) = s -- ^ check sort of elems
+    resolve _  s@(SetLit sort elems) = resolveSet s -- ^ check sort of elems
     resolve _  m@(MapLit ksort val)  = m
     resolve _  ms@(MapSel m k)       = ms
     resolve _  mu@(MapUpd m k v)     = mu
@@ -151,7 +151,6 @@ resolveSorts env ins = map targetUpdate ins
     resolve _  a@(All f1 f2)         = a
 
     {- The more complicated resolving has been factored out -}
-
     lookupVar :: Formula -> [Formula] -> Formula
     lookupVar (Var sort name) vs
       | sort == AnyS  = Var sort' name
@@ -166,6 +165,12 @@ resolveSorts env ins = map targetUpdate ins
           where
             boxVar :: Formula -> (Id, Sort)
             boxVar (Var sort name) = (name, sort)
+
+    -- | TODO make this check the sorts of the elements against eachother, so that the applied sort is continually updated
+    resolveSet :: Formula -> Formula
+    resolveSet (SetLit sort elems) = SetLit sort elems'
+      where
+        elems' = map (applySort sort) elems
 
     -- | Replaces the key with the correct parameter, updates the variable sorts
     resolveUnknown :: Formula -> Formula
@@ -239,7 +244,9 @@ applySortM s f = do
     -- this cannot be called in a context where it can fail
     applySort' :: Sort -> Formula -> Formula
     applySort' AnyS f = f
-    applySort' s (SetLit _ elems)            = SetLit s elems
+    applySort' BoolS (BoolLit b)             = BoolLit b
+    applySort' IntS (IntLit i)               = IntLit i
+    applySort' (SetS s) (SetLit _ elems)     = SetLit s elems
     applySort' (MapS ksort _) (MapLit _ val) = MapLit ksort val
     applySort' s (Var _ name)                = Var s name
     applySort' s (Func _ name fs)            = Func s name fs
