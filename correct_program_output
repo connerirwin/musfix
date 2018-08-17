@@ -22,7 +22,7 @@ Preparing to find greatest fixpoint...
 Inputs
 --------
 Reading from file test/func0.smt2
-Qualifier "Eq" [Var AnyS "v",Var AnyS "z"] (Binary Eq (Var AnyS "v") (Var AnyS "z"))
+Qualifier "Eq" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
 UninterpFunction "bar" [IntS] BoolS
 WFConstraint "$k0" [Var IntS "v0",Var IntS "v1"]
 HornConstraint [Var IntS "v2",Var IntS "v3"] (Binary Implies (Unknown (fromList [("v0",Var IntS "v2"),("v1",Var IntS "v3")]) "$k0") (Binary Eq (Func BoolS "bar" [Var IntS "v2"]) (Func BoolS "bar" [Var IntS "v3"])))
@@ -246,7 +246,7 @@ Preparing to find greatest fixpoint...
 Inputs
 --------
 Reading from file test/test3.smt2
-Qualifier "Zog" [Var AnyS "v",Var AnyS "z"] (Binary Eq (Var AnyS "v") (Var AnyS "z"))
+Qualifier "Zog" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
 WFConstraint "$k0" [Var IntS "v",Var IntS "x"]
 HornConstraint [Var IntS "v",Var IntS "q"] (Binary Implies (Binary Eq (Var IntS "v") (Var IntS "q")) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0"))
 HornConstraint [Var IntS "v",Var IntS "y"] (Binary Implies (Binary And (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "y")]) "$k0") (Binary Eq (Var IntS "y") (IntLit 10))) (Binary Eq (Var IntS "v") (IntLit 10)))

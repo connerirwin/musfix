@@ -69,6 +69,10 @@ isData _ = False
 sortArgsOf (DataS _ sArgs) = sArgs
 varSortName (VarS name) = name
 
+isAnyPoly (VarS _) = True
+isAnyPoly AnyS     = True
+isAnyPoly _        = False
+
 -- | Unary operators
 data UnOp =
     Neg |                          -- ^ Int -> Int

@@ -78,10 +78,12 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     -- | ensures that all mappings are one-to-one
     validMappings = filter (isSet . Map.elems) fullMappings
 
+    -- | TODO improve polymorphic qualifiers
+    -- Is any polymorphic qualifier will currently just let things through,
+    -- since unification will happen later on... hopefully
+    -- TODO TODO this should actually perform unification
     sameSort :: Formula -> Formula -> Bool
-    -- | TODO This is a hack that allows for polymorphic qualifiers in the worst
-    -- way possible. This should actually use a map
-    sameSort (Var s1 _) (Var s2 _) = s1 == s2 || s1 == AnyS || s2 == AnyS
+    sameSort (Var s1 _) (Var s2 _) = s1 == s2 || isAnyPoly s1 || isAnyPoly s2
     sameSort _          _          = False
 
     keysMatch :: Eq a => [(a, b)] -> [(a, c)] -> Bool

@@ -230,7 +230,9 @@ parseSort (List [(Symbol "Map_t"), k, v]) = do
 -- anything for each type. To implement this fully, a map of the types needs to
 -- be constructed that is then used by the resolver.
 parseSort (Symbol s)
-  | T.head s == '@' = pure AnyS
+  | T.head s == '@' = pure $ VarS name
+    where
+      name = T.unpack $ T.tail s
 -- | Sort literal
 parseSort (Symbol s) = Map.lookup s sorts
 
