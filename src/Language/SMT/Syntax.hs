@@ -75,13 +75,13 @@ isAnyPoly _        = False
 
 -- | Unary operators
 data UnOp =
-    Neg |                          -- ^ Int -> Int
-    Not                            -- ^ Bool -> Bool
+    Neg |                           -- ^ Int -> Int
+    Not                             -- ^ Bool -> Bool
   deriving (Show, Eq, Ord)
 
 unOpSort :: UnOp -> [Sort]
 unOpSort op = case op of
-  Neg -> [IntS,   IntS]
+  Neg -> [IntS, IntS]
   Not -> [BoolS, BoolS]
 
 -- | Binary operators

@@ -81,7 +81,6 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     -- | TODO improve polymorphic qualifiers
     -- Is any polymorphic qualifier will currently just let things through,
     -- since unification will happen later on... hopefully
-    -- TODO TODO this should actually perform unification
     sameSort :: Formula -> Formula -> Bool
     sameSort (Var s1 _) (Var s2 _) = s1 == s2 || isAnyPoly s1 || isAnyPoly s2
     sameSort _          _          = False
@@ -120,11 +119,7 @@ createEnvironment ins = env
       predMap = Map.fromList $ map boxUf $ allUninterpFunction ins
     }
 
--- | make sure that the sorts of arguments match expressions
--- make sure that sorts of binops eq are the same
--- For the most part, this should only perform checking, not substitution
--- However, for map literals and set literals, it should perform the substitution
--- Goal, output all sort errors instead of stopping at the first one
+-- | Resolves the sorts of expression, or throws an error
 resolveSorts :: Environment -> [InputExpr] -> [InputExpr]
 resolveSorts env ins = map targetUpdate ins
   where
@@ -142,7 +137,7 @@ resolveSorts env ins = map targetUpdate ins
     resolve _  i@(IntLit val)        = i
     resolve _  s@(SetLit sort elems) = resolveSet s -- ^ check sort of elems
     resolve _  m@(MapLit ksort val)  = m
-    resolve _  ms@(MapSel m k)       = ms
+    resolve _  ms@(MapSel m k)       = ms -- ^ TODO resolveAp ?
     resolve _  mu@(MapUpd m k v)     = mu
     resolve vs v@(Var sort name)     = lookupVar v vs
     resolve _  wf@(Unknown sub name) = resolveUnknown wf
@@ -154,6 +149,7 @@ resolveSorts env ins = map targetUpdate ins
     resolve _  a@(All f1 f2)         = a
 
     {- The more complicated resolving has been factored out -}
+    -- | Lookup the variable sort from the formals
     lookupVar :: Formula -> [Formula] -> Formula
     lookupVar (Var sort name) vs
       | sort == AnyS  = Var sort' name
@@ -209,8 +205,6 @@ resolveSorts env ins = map targetUpdate ins
       where
         sort = last $ (predMap env) ! name
 
--- | TODO add support for polymorphic sort unification
--- basically, some of the arguments might need to have their sorts unified with eachother, not the signature
 checkAp :: FunctionApplication -> FunctionApplication
 checkAp ap = case checkApM ap of
     Nothing -> error $ "Sort mismatch:  " ++ name ++ " expects " ++ formalSorts ++ ", but received " ++ argSorts ++ " in expression:  " ++ expr

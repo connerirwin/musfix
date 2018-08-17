@@ -29,7 +29,7 @@ unaryOps = Map.fromList [ ("not",     Not)
 
 -- | Binary operators
 binaryOps :: Map Text BinOp
-binaryOps = Map.fromList [ ("*",     Times)
+binaryOps = Map.fromList [ ("*",     Times) -- ^ TODO why don't we support division?
                          , ("+",      Plus)
                          , ("-",     Minus)
                          , ("==",       Eq)
@@ -50,10 +50,9 @@ binaryOps = Map.fromList [ ("*",     Times)
                          , ("cup",   Union)
                          , ("union", Union)
                          , ("cap", Intersect)
-                         -- , ("intersect", Intersect) -- ^ TODO find a better name for this
-                         , ("^",         Intersect)
+                         , ("^",   Intersect)
                          , ("diff",     Diff)
-                         , ("/",        Diff) -- ^ TODO why don't we support division?
+                         , ("/",        Diff)
                          , ("in",     Member)
                          , ("member", Member)
                          , ("subset", Subset)
@@ -119,6 +118,7 @@ parseInputExpr = parseLisp
 -- | TODO Cons (DataS ...) ...
 -- add constants as uninterpreted functions that take no args
 -- (declare-const name val)
+-- Rework binary op, unary op system to make adding new var-arg operands easier?
 instance FromLisp Formula where
   -- | Basic literals
   parseLisp (Symbol "False")          = pure $ BoolLit False
@@ -225,10 +225,6 @@ parseSort (List [(Symbol "Map_t"), k, v]) = do
     valSort <- parseSort v
     return $ MapS keySort valSort
 -- | Polymorphic sort
--- TODO this currently is a hack that doesn't actually ensure that all
--- polymorphic types are the same, but rather just allows the instantiation of
--- anything for each type. To implement this fully, a map of the types needs to
--- be constructed that is then used by the resolver.
 parseSort (Symbol s)
   | T.head s == '@' = pure $ VarS name
     where

@@ -89,7 +89,6 @@ readConstraints o f = do
         verboseLog o "\n\nFinal candidates:"
         mapM_ ((finalOutput o) . show . pretty) candidates
 
-
 formulas :: InputExpr -> Formula
 formulas (HornConstraint vs f) = f
 formulas _ = error "non-horn constraint in constraints"

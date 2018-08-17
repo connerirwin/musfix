@@ -35,8 +35,7 @@ defaultHornSolverParams = HornSolverParams {
 findFixPoint :: Bool -> [Formula] -> QMap -> IO [Candidate]
 findFixPoint useLeastFixpoint constraints qmap = evalZ3State $ evalFixPointSolver (computeFixPoints constraints qmap) params
   where
-    params = defaultHornSolverParams { isLeastFixpoint = useLeastFixpoint } -- TODO: Make this more elegant
-
+    params = defaultHornSolverParams { isLeastFixpoint = useLeastFixpoint }
 
 -- | Compute the fix points
 computeFixPoints :: [Formula] -> QMap -> HornSolver [Candidate]
