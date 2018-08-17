@@ -152,9 +152,10 @@ instance FromLisp Formula where
   --     map2    <- parseFormula m2
   --     return $ MapUni map1 map2
   -- | Variable
-  parseLisp (Symbol v)                = pure $ Var AnyS (T.unpack v)
+  parseLisp (Symbol v)
+    | Set.notMember v reserved
+      && (Char.isLower . T.head) v = pure $ Var AnyS (T.unpack v)
   -- | Variable sort assignment
-  -- This needs to be incredibly strict, otherwise it overlaps with unary uninterpreted function applications
   parseLisp (List [(Symbol v), s])
     | Set.notMember v reserved      -- ^ Variable name is not a reserved keyword
       && (Char.isLower . T.head) v
@@ -186,9 +187,18 @@ instance FromLisp Formula where
         distinctFormals = map (\i -> "a" ++ show i) [0..]
   -- | uninterpreted function application
   parseLisp (List ((Symbol p):x:xs))
-    | Set.notMember p reserved = do
+    | Set.notMember p reserved
+      && (Char.isLower . T.head) p = do
         args <- mapM parseFormula (x:xs)
         return $ Func AnyS (T.unpack p) args
+  -- | Constructor
+  parseLisp (List ((Symbol p):x:xs))
+    | Set.notMember p reserved
+      && (Char.isUpper . T.head) p = do
+        args <- mapM parseFormula (x:xs)
+        return $ Cons AnyS name args
+      where
+        name = T.unpack p
 
   parseLisp f = fail $ "cannot read formula: " ++ show f
 
@@ -231,6 +241,13 @@ parseSort (Symbol s)
       name = T.unpack $ T.tail s
 -- | Sort literal
 parseSort (Symbol s) = Map.lookup s sorts
+-- | Constructor
+parseSort (List ((Symbol n):f:fs))
+  | Char.isUpper $ T.head n = do
+      formals <- mapM parseSort (f:fs)
+      return $ DataS name formals
+    where
+      name = T.unpack n
 
 isSort :: Lisp -> Bool
 isSort s = case parseSort s of
