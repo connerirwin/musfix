@@ -7,7 +7,7 @@ module Language.SMT.Resolver (
 import Language.SMT.Syntax
 
 import Language.Synquid.HornSolver
-import Language.Synquid.Logic
+import Language.Synquid.Logic hiding (unifySorts)
 import Language.Synquid.Program hiding (Environment)
 import Language.Synquid.Util
 import Language.Synquid.Z3
@@ -25,6 +25,7 @@ import Debug.Trace
 
 {- Util -}
 debugOut a = traceShow a a
+debugOutMsg m a = trace (m ++ show a) a
 
 data FunctionApplication = FunctionApplication {
   funcName   :: String,
@@ -218,12 +219,33 @@ checkAp ap = case checkApM ap of
     argSorts = show $ map sortOf $ arguments ap
     expr = show $ expression ap
 
+-- | Check var sorts against eachother
+-- TODO add some sort of Environment to clean up the two pass polymorphic unification
 checkApM :: FunctionApplication -> Maybe FunctionApplication
 checkApM ap = do
     let formalSorts = signature ap
     let args = arguments ap
-    formals' <- zipWithM applySortM formalSorts args
+    partialFormals <- zipWithM applySortM formalSorts args
+
+    let partialSorts = map sortOf partialFormals
+    let unifiedSorts = unifyPolymorphic formalSorts partialSorts
+    formals' <- zipWithM applySortM unifiedSorts args
+
     return $ ap { arguments = formals' }
+
+unifyPolymorphic :: [Sort] -> [Sort] -> [Sort]
+unifyPolymorphic fs ps = zipWith applyMap fs ps
+  where
+    buildMap :: Map Id Sort -> [Sort] -> [Sort] -> Map Id Sort
+    buildMap m ((VarS name):fs) (p:ps) = buildMap (Map.insertWith unifySorts name p m) fs ps
+    buildMap m (f:fs) (p:ps) = buildMap m fs ps
+    buildMap m [] [] = m
+
+    polymorphicMap = buildMap Map.empty fs ps
+
+    applyMap :: Sort -> Sort -> Sort
+    applyMap (VarS name) p = polymorphicMap ! name
+    applyMap _ p           = p
 
 -- Error reporting
 applySort :: Sort -> Formula -> Formula
@@ -238,12 +260,14 @@ applySort s f = case applySortM s f of
 applySortM :: Sort -> Formula -> Maybe Formula
 applySortM s f = do
     let assumedSort = sortOf f
-    unifySortsM s assumedSort >>= pure . (flip applySort' f)
+    unifiedSort <- unifySortsM s assumedSort
+    pure $ applySort' unifiedSort f
   where
     -- | Replaces the sorts in the formula so that its new sort is s
     -- this cannot be called in a context where it can fail
     applySort' :: Sort -> Formula -> Formula
-    applySort' AnyS f = f
+    applySort' AnyS f     = f
+    applySort' (VarS _) f = f
     applySort' BoolS (BoolLit b)             = BoolLit b
     applySort' IntS (IntLit i)               = IntLit i
     applySort' (SetS s) (SetLit _ elems)     = SetLit s elems
@@ -252,6 +276,12 @@ applySortM s f = do
     applySort' s (Func _ name fs)            = Func s name fs
     applySort' s (Cons _ name fs)            = Cons s name fs
     applySort' _ f                           = f
+
+-- | Error reporting
+unifySorts :: Sort -> Sort -> Sort
+unifySorts a b = case unifySortsM a b of
+    Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
+    Just a  -> a
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 unifySortsM :: Sort -> Sort -> Maybe Sort
@@ -268,6 +298,8 @@ unifySortsM (MapS k1 v1) (MapS k2 v2) = do
       k' <- unifySortsM k1 k2
       v' <- unifySortsM v1 v2
       return $ MapS k' v'
-unifySortsM a    AnyS = pure a
-unifySortsM AnyS b    = pure b
-unifySortsM _    _    = fail "sort mismatch"
+unifySortsM a AnyS     = pure a
+unifySortsM AnyS b     = pure b
+unifySortsM a (VarS _) = pure a
+unifySortsM (VarS _) b = pure b
+unifySortsM _ _        = fail "sort mismatch"

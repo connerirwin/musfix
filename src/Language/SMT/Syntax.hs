@@ -97,7 +97,7 @@ binOpSort op = case op of
   Times     -> [IntS, IntS, IntS]
   Plus      -> [IntS, IntS, IntS]
   Minus     -> [IntS, IntS, IntS]
-  Eq        -> [AnyS, AnyS, BoolS]
+  Eq        -> [VarS "a", VarS "a", BoolS]
   Neq       -> [AnyS, AnyS, BoolS]
   Lt        -> [IntS, IntS, BoolS]
   Le        -> [IntS, IntS, BoolS]
