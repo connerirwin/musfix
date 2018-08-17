@@ -1,6 +1,6 @@
 ; Not all qualifiers need to be used by each wf constraint
 (qualif Discard ((b Bool))        (= b b))
-(qualif Partial ((v Int)(b Bool)) (not (= v b)))
+; (qualif Partial ((v Int)(b Bool)) (not (= v b)))
 (qualif Accept  ((v Int))         (<= v 0))
 
 (wf $k0 ((v0 Int)))

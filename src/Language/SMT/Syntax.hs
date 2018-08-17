@@ -91,27 +91,15 @@ data BinOp =
     Subset                          -- ^ Set -> Set -> Bool
   deriving (Show, Eq, Ord)
 
--- | TODO replace AnyS with VarS, correctly handle params
 binOpSort :: BinOp -> [Sort]
-binOpSort op = case op of
-  Times     -> [IntS, IntS, IntS]
-  Plus      -> [IntS, IntS, IntS]
-  Minus     -> [IntS, IntS, IntS]
-  Eq        -> [VarS "a", VarS "a", BoolS]
-  Neq       -> [AnyS, AnyS, BoolS]
-  Lt        -> [IntS, IntS, BoolS]
-  Le        -> [IntS, IntS, BoolS]
-  Gt        -> [IntS, IntS, BoolS]
-  Ge        -> [IntS, IntS, BoolS]
-  And       -> [BoolS, BoolS, BoolS]
-  Or        -> [BoolS, BoolS, BoolS]
-  Implies   -> [BoolS, BoolS, BoolS]
-  Iff       -> [BoolS, BoolS, BoolS]
-  Union     -> [SetS AnyS, SetS AnyS, SetS AnyS]
-  Intersect -> [SetS AnyS, SetS AnyS, SetS AnyS]
-  Diff      -> [SetS AnyS, SetS AnyS, SetS AnyS]
-  Member    -> [AnyS, SetS AnyS, BoolS]
-  Subset    -> [SetS AnyS, SetS AnyS, BoolS]
+binOpSort op
+  | op `elem` [Times, Plus, Minus]     = [IntS, IntS, IntS]
+  | op `elem` [Eq, Neq]                = [VarS "a", VarS "a", BoolS]
+  | op `elem` [Lt, Le, Gt, Ge]         = [IntS, IntS, BoolS]
+  | op `elem` [And, Or, Implies, Iff]  = [BoolS, BoolS, BoolS]
+  | op `elem` [Union, Intersect, Diff] = [SetS $ VarS "a", SetS $ VarS "a", SetS $ VarS "a"]
+  | op `elem` [Member]                 = [VarS "a", SetS $ VarS "a", BoolS]
+  | op `elem` [Subset]                 = [SetS $ VarS "a", SetS $ VarS "a", BoolS]
 
 -- | Variable substitution
 type Substitution = Map Id Formula
