@@ -227,11 +227,12 @@ checkApM ap = do
     let unifiedSorts = unifyPolymorphic formalSorts partialSorts
     formals' <- zipWithM applySortM unifiedSorts args
 
-    return $ ap { arguments = formals' }
+    return $ ap { arguments = debugOutMsg "Updated Formals " formals' }
 
 unifyPolymorphic :: [Sort] -> [Sort] -> [Sort]
-unifyPolymorphic fs ps = zipWith applyMap fs ps
+unifyPolymorphic fs ps = debugOutMsg ("\nFormals " ++ show fs ++ "\tPartials " ++ show ps ++ "\nMap " ++ show polymorphicMap ++ "\tUnified ") $ zipWith applyMap fs ps
   where
+    -- | TODO This needs to be done in a more robust way. What about SetS of VarS?
     buildMap :: Map Id Sort -> [Sort] -> [Sort] -> Map Id Sort
     buildMap m ((VarS name):fs) (p:ps) = buildMap (Map.insertWith unifySorts name p m) fs ps
     buildMap m (f:fs) (p:ps) = buildMap m fs ps
@@ -264,8 +265,7 @@ applySortM s f = do
     applySort' :: Sort -> Formula -> Formula
     applySort' AnyS f     = f
     applySort' (VarS _) f = f
-    applySort' BoolS (BoolLit b)             = BoolLit b
-    applySort' IntS (IntLit i)               = IntLit i
+    -- | TODO DataS
     applySort' (SetS s) (SetLit _ elems)     = SetLit s elems
     applySort' (MapS ksort _) (MapLit _ val) = MapLit ksort val
     applySort' s (Var _ name)                = Var s name

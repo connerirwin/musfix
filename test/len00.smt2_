@@ -1,13 +1,15 @@
-(qualif ListZ ((v [@0])) (>= (len v) 0))
+(qualif ListZ ((v (Set_t @0))) (>= (len v) 0))
 
 (define-fun len (@0 @1) Int)
 
-(wf [$k0] ((v [(Tuple Int a)])))
+(wf (Set_t $k0) ((v (Set_t (Tuple Int @a)))))
 
 (constraint
-(forall ((v [(Tuple Int a)]))
-          (=> (>= (len v) 0) ([$k0]))))
+  (forall ((v (Set_t (Tuple Int @a))))
+    (=> (>= (len v) 0)
+        ((Set_t $k0)))))
 
 (constraint
-(forall ((v [(Tuple Int a)]))
-          (=> ([$k0]) (>= (len v) 0))))
+  (forall ((v (Set_t (Tuple Int @a))))
+    (=> ((Set_t $k0))
+        (>= (len v) 0))))

@@ -127,12 +127,11 @@ instance FromLisp Formula where
     Left  f -> fail $ "non-integral value not supported " ++ (show n)
     Right i -> pure $ IntLit i
   -- | Set
-  parseLisp (List [(Symbol "Set_empty"), i]) = do
-      initialSize <- parseFormula i -- ^ TODO should this do something?
+  parseLisp (Symbol "[]") = do
       pure $ SetLit AnyS []
-  parseLisp (List [(Symbol "Set_sng"), v]) = do
-      val <- parseFormula v
-      pure $ SetLit AnyS [val]
+  parseLisp (List ((Symbol "Set"):v:vs)) = do
+      vals <- mapM parseFormula (v:vs)
+      pure $ SetLit AnyS vals
   -- | Map
   parseLisp (List [(Symbol "Map_default"), v]) = do
       defVal  <- parseFormula v
@@ -218,15 +217,8 @@ parseSortM :: Lisp -> Parser Sort
 parseSortM = parseLisp
 
 parseSort :: Lisp -> Maybe Sort
--- | List
-parseSort (Symbol s)
-  | T.head s == '[' && T.last s == ']' = do
-      sort <- parseSort subsort
-      return $ SetS sort
-    where
-      subsort = Symbol $ (T.drop 1 . T.dropEnd 1) s
 -- | Set
-parseSort (List [(Symbol "Set"), s]) = do
+parseSort (List [(Symbol "Set_t"), s]) = do
     sort <- parseSort s
     return $ SetS sort
 -- | Map
