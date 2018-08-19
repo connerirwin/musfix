@@ -98,12 +98,12 @@ data BinOp =
 binOpSort :: BinOp -> [Sort]
 binOpSort op
   | op `elem` [Times, Plus, Minus]     = [IntS, IntS, IntS]
-  | op `elem` [Eq, Neq]                = [VarS "a", VarS "a", BoolS]
+  | op `elem` [Eq, Neq]                = [VarS "_a", VarS "_a", BoolS]
   | op `elem` [Lt, Le, Gt, Ge]         = [IntS, IntS, BoolS]
   | op `elem` [And, Or, Implies, Iff]  = [BoolS, BoolS, BoolS]
-  | op `elem` [Union, Intersect, Diff] = [SetS $ VarS "a", SetS $ VarS "a", SetS $ VarS "a"]
-  | op `elem` [Member]                 = [VarS "a", SetS $ VarS "a", BoolS]
-  | op `elem` [Subset]                 = [SetS $ VarS "a", SetS $ VarS "a", BoolS]
+  | op `elem` [Union, Intersect, Diff] = [SetS $ VarS "_a", SetS $ VarS "_a", SetS $ VarS "_a"]
+  | op `elem` [Member]                 = [VarS "_a", SetS $ VarS "_a", BoolS]
+  | op `elem` [Subset]                 = [SetS $ VarS "_a", SetS $ VarS "_a", BoolS]
 
 -- | Variable substitution
 type Substitution = Map Id Formula

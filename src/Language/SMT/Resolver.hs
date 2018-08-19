@@ -230,7 +230,9 @@ checkApM ap = do
 
 applyMap :: PolyMap -> Formula -> Formula
 applyMap m f
-  | (VarS name) <- sortOf f = applySort (m ! name) f
+  | (VarS name) <- sortOf f = case Map.lookup name m of
+    Nothing -> error $ show name
+    Just s  -> applySort s f
 applyMap _ f = f
 
 -- Error reporting
@@ -281,9 +283,14 @@ unifySortsM (MapS k1 v1) (MapS k2 v2) = do
       k' <- unifySortsM k1 k2
       v' <- unifySortsM v1 v2
       return $ MapS k' v'
-unifySortsM AnyS b     = unifySortsM b AnyS
+unifySortsM AnyS b     = pure b
 unifySortsM a AnyS     = pure a
-unifySortsM (VarS name) b = unifySortsM b (VarS name)
+-- | TODO what about when both are var sorts?
+unifySortsM (VarS name) b = do
+    m <- get
+    let m' = Map.insertWith unifySorts name b m
+    put m'
+    return b
 unifySortsM a (VarS name) = do
     m <- get
     let m' = Map.insertWith unifySorts name a m
