@@ -227,10 +227,10 @@ checkApM ap = do
     let unifiedSorts = unifyPolymorphic formalSorts partialSorts
     formals' <- zipWithM applySortM unifiedSorts args
 
-    return $ ap { arguments = debugOutMsg "Updated Formals " formals' }
+    return $ ap { arguments = formals' }
 
 unifyPolymorphic :: [Sort] -> [Sort] -> [Sort]
-unifyPolymorphic fs ps = debugOutMsg ("\nFormals " ++ show fs ++ "\tPartials " ++ show ps ++ "\nMap " ++ show polymorphicMap ++ "\tUnified ") $ zipWith applyMap fs ps
+unifyPolymorphic fs ps = zipWith applyMap fs ps
   where
     -- | TODO This needs to be done in a more robust way. What about SetS of VarS?
     buildMap :: Map Id Sort -> [Sort] -> [Sort] -> Map Id Sort
@@ -280,6 +280,7 @@ unifySorts a b = case unifySortsM a b of
     Just a  -> a
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
+-- this should somehow use StateT (Map Id Sort)
 unifySortsM :: Sort -> Sort -> Maybe Sort
 unifySortsM a b
   | a == b           = pure a
@@ -296,6 +297,6 @@ unifySortsM (MapS k1 v1) (MapS k2 v2) = do
       return $ MapS k' v'
 unifySortsM a AnyS     = pure a
 unifySortsM AnyS b     = pure b
-unifySortsM a (VarS _) = pure a
+unifySortsM a (VarS _) = pure a -- | this should add the sort to some map
 unifySortsM (VarS _) b = pure b
 unifySortsM _ _        = fail "sort mismatch"

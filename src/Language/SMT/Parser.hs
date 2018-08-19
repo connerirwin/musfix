@@ -131,7 +131,7 @@ instance FromLisp Formula where
       pure $ SetLit AnyS []
   parseLisp (List ((Symbol "Set"):v:vs)) = do
       vals <- mapM parseFormula (v:vs)
-      pure $ SetLit AnyS vals
+      pure $ SetLit (VarS "_any") vals
   -- | Map
   parseLisp (List [(Symbol "Map_default"), v]) = do
       defVal  <- parseFormula v
