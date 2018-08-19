@@ -205,6 +205,8 @@ resolveSorts env ins = map targetUpdate ins
       where
         sort = last $ (predMap env) ! name
 
+type PolyMap = Map Id Sort
+
 checkAp :: FunctionApplication -> FunctionApplication
 checkAp ap = case checkApM ap of
     Nothing -> error $ "Sort mismatch:  " ++ name ++ " expects " ++ formalSorts ++ ", but received " ++ argSorts ++ " in expression:  " ++ expr
@@ -221,40 +223,24 @@ checkApM :: FunctionApplication -> Maybe FunctionApplication
 checkApM ap = do
     let formalSorts = signature ap
     let args = arguments ap
-    partialFormals <- zipWithM applySortM formalSorts args
+    (partialFormals, polymap) <- runStateT (zipWithM applySortM formalSorts args) Map.empty
 
-    let partialSorts = map sortOf partialFormals
-    let unifiedSorts = unifyPolymorphic formalSorts partialSorts
-    formals' <- zipWithM applySortM unifiedSorts args
-
+    let formals' = map (applyMap polymap) partialFormals
     return $ ap { arguments = formals' }
 
-unifyPolymorphic :: [Sort] -> [Sort] -> [Sort]
-unifyPolymorphic fs ps = zipWith applyMap fs ps
-  where
-    -- | TODO This needs to be done in a more robust way. What about SetS of VarS?
-    buildMap :: Map Id Sort -> [Sort] -> [Sort] -> Map Id Sort
-    buildMap m ((VarS name):fs) (p:ps) = buildMap (Map.insertWith unifySorts name p m) fs ps
-    buildMap m (f:fs) (p:ps) = buildMap m fs ps
-    buildMap m [] [] = m
-
-    polymorphicMap = buildMap Map.empty fs ps
-
-    applyMap :: Sort -> Sort -> Sort
-    applyMap (VarS name) p = polymorphicMap ! name
-    applyMap _ p           = p
+applyMap :: PolyMap -> Formula -> Formula
+applyMap m f
+  | (VarS name) <- sortOf f = applySort (m ! name) f
+applyMap _ f = f
 
 -- Error reporting
 applySort :: Sort -> Formula -> Formula
-applySort s f = case applySortM s f of
-    Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ sort ++ " to " ++ formula
+applySort s f = case evalStateT (applySortM s f) Map.empty of
+    Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ show s ++ " to " ++ show f
     Just a  -> a
-  where
-    sort = show s
-    formula = show f
 
 -- | Applies the sort to formula if possible, otherwise fails
-applySortM :: Sort -> Formula -> Maybe Formula
+applySortM :: Sort -> Formula -> StateT PolyMap Maybe Formula
 applySortM s f = do
     let assumedSort = sortOf f
     unifiedSort <- unifySortsM s assumedSort
@@ -275,15 +261,15 @@ applySortM s f = do
 
 -- | Error reporting
 unifySorts :: Sort -> Sort -> Sort
-unifySorts a b = case unifySortsM a b of
+unifySorts a b = case evalStateT (unifySortsM a b) Map.empty of
     Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
     Just a  -> a
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 -- this should somehow use StateT (Map Id Sort)
-unifySortsM :: Sort -> Sort -> Maybe Sort
+unifySortsM :: Sort -> Sort -> StateT PolyMap Maybe Sort
 unifySortsM a b
-  | a == b           = pure a
+  | a == b     = pure a
 unifySortsM (DataS n1 args1) (DataS n2 args2)
   | n1 == n2   = do
       args' <- zipWithM unifySortsM args1 args2
@@ -295,8 +281,12 @@ unifySortsM (MapS k1 v1) (MapS k2 v2) = do
       k' <- unifySortsM k1 k2
       v' <- unifySortsM v1 v2
       return $ MapS k' v'
+unifySortsM AnyS b     = unifySortsM b AnyS
 unifySortsM a AnyS     = pure a
-unifySortsM AnyS b     = pure b
-unifySortsM a (VarS _) = pure a -- | this should add the sort to some map
-unifySortsM (VarS _) b = pure b
+unifySortsM (VarS name) b = unifySortsM b (VarS name)
+unifySortsM a (VarS name) = do
+    m <- get
+    let m' = Map.insertWith unifySorts name a m
+    put m'
+    return a
 unifySortsM _ _        = fail "sort mismatch"
