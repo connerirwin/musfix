@@ -51,6 +51,7 @@ binaryOps = Map.fromList [ ("*",     Times) -- ^ TODO why don't we support divis
                          , ("union", Union)
                          , ("cap", Intersect)
                          , ("^",   Intersect)
+                         , ("intersect", Intersect)
                          , ("diff",     Diff)
                          , ("/",        Diff)
                          , ("in",     Member)

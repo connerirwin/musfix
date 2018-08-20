@@ -177,7 +177,6 @@ resolveSorts env ins = map targetUpdate ins
       where
         sub' = Map.fromList $ renameVar 0 sub $ (wfMap env) ! name
         -- | Takes an accumulator, call-site substitution map, and a list of formals, then outputs pairs of new variable names and their variable objects
-        -- TODO switch to unifying the Sort of the vars
         renameVar :: Int -> Map Id Formula -> [Formula] -> [(Id, Formula)]
         renameVar n s ((Var fmlSort fmlName):xs) = (fmlName, Var fmlSort actlName):(renameVar (n + 1) s xs)
           where
@@ -210,7 +209,7 @@ type PolyMap = Map Id Sort
 checkAp :: FunctionApplication -> FunctionApplication
 checkAp ap = case checkApM ap of
     Nothing -> error $ "Sort mismatch:  " ++ name ++ " expects " ++ formalSorts ++ ", but received " ++ argSorts ++ " in expression:  " ++ expr
-    Just a  -> a
+    Just a  -> trace ("Unified sorts in expression: " ++ expr ++ " to " ++ (show $ arguments a)) a
   where
     name = funcName ap
     formalSorts = show $ signature ap
@@ -231,15 +230,20 @@ checkApM ap = do
 applyMap :: PolyMap -> Formula -> Formula
 applyMap m f
   | (VarS name) <- sortOf f = case Map.lookup name m of
-    Nothing -> error $ show name
+    Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
     Just s  -> applySort s f
 applyMap _ f = f
 
 -- Error reporting
+-- applySort :: Sort -> Formula -> Formula
+-- applySort s f = case evalStateT (applySortM s f) Map.empty of
+--     Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ show s ++ " to " ++ show f
+--     Just a  -> a
+
 applySort :: Sort -> Formula -> Formula
-applySort s f = case evalStateT (applySortM s f) Map.empty of
+applySort s f = case runStateT (applySortM s f) Map.empty of
     Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ show s ++ " to " ++ show f
-    Just a  -> a
+    Just (a, m)  -> debugOutMsg ("map: " ++ (show m)) a
 
 -- | Applies the sort to formula if possible, otherwise fails
 applySortM :: Sort -> Formula -> StateT PolyMap Maybe Formula
@@ -265,15 +269,26 @@ applySortM s f = do
 unifySorts :: Sort -> Sort -> Sort
 unifySorts a b = case evalStateT (unifySortsM a b) Map.empty of
     Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
-    Just a  -> a
+    Just s  -> s
+
+unifySortsMap :: PolyMap -> Sort -> Sort -> Sort
+unifySortsMap m a b = case evalStateT (unifySortsM a b) m of
+    Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
+    Just s  -> s
+
+updateMap :: Id -> Sort -> StateT PolyMap Maybe ()
+updateMap name s = do
+    m <- get
+    let m' = Map.insertWith (unifySortsMap m) name s m
+    put $ debugOutMsg "\npolymap: " m'
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 -- this should somehow use StateT (Map Id Sort)
 unifySortsM :: Sort -> Sort -> StateT PolyMap Maybe Sort
 unifySortsM a b
-  | a == b     = pure a
+  | a == b    = pure a
 unifySortsM (DataS n1 args1) (DataS n2 args2)
-  | n1 == n2   = do
+  | n1 == n2  = do
       args' <- zipWithM unifySortsM args1 args2
       return $ DataS n1 args'
 unifySortsM (SetS e1) (SetS e2) = do
@@ -283,17 +298,16 @@ unifySortsM (MapS k1 v1) (MapS k2 v2) = do
       k' <- unifySortsM k1 k2
       v' <- unifySortsM v1 v2
       return $ MapS k' v'
-unifySortsM AnyS b     = pure b
-unifySortsM a AnyS     = pure a
--- | TODO what about when both are var sorts?
+unifySortsM AnyS b  = pure b
+unifySortsM a AnyS  = pure a
+unifySortsM a@(VarS na) b@(VarS nb) = do
+      updateMap na b
+      updateMap nb a
+      pure a
 unifySortsM (VarS name) b = do
-    m <- get
-    let m' = Map.insertWith unifySorts name b m
-    put m'
-    return b
+      updateMap name b
+      pure b
 unifySortsM a (VarS name) = do
-    m <- get
-    let m' = Map.insertWith unifySorts name a m
-    put m'
-    return a
+      updateMap name a
+      pure a
 unifySortsM _ _        = fail "sort mismatch"
