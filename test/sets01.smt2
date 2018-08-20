@@ -1,3 +1,4 @@
+; Convert Set_t to Set, parse Set Sort and Set Literal properly
 (constraint
   (forall ((v Int) (m1 (Set_t Int)))
     (=> (= m1 [])
