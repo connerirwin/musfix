@@ -1,5 +1,7 @@
 (declare-fun len   ((Set @0)) Int)
 (declare-fun elems ((Set @0)) (Set @0))
+;(declare-sort List num)
+; num is the number of sorts that this takes
 
 ; [] empty set
 ; ((Set @0) x) singleton set

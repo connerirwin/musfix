@@ -1,4 +1,5 @@
 ; Convert Set to Set, parse Set Sort and Set Literal properly
+; List are some constructed data type
 (constraint
   (forall ((v Int) (m1 (Set Int)))
     (=> (= m1 [])

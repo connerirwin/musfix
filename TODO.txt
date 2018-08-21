@@ -1,4 +1,4 @@
--Add support for Constructors
+-Add support for Constructors (add sort)
 -Improve bash script (liquid fixpoint export script)
 -Improve the cmd parser (try using optparse-applicative)
 -Map_union

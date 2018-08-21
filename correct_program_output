@@ -2,7 +2,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/binary0.smt2
+Reading from file test/sample/binary0.smt2
 Qualifier "Pos" [Var IntS "v"] (Binary Le (IntLit 0) (Var IntS "v"))
 Qualifier "Neg" [Var IntS "v"] (Binary Le (Var IntS "v") (IntLit 0))
 
@@ -21,7 +21,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/func0.smt2
+Reading from file test/sample/func0.smt2
 Qualifier "Eq" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
 UninterpFunction "bar" [IntS] BoolS
 WFConstraint "$k0" [Var IntS "v0",Var IntS "v1"]
@@ -43,7 +43,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/gfp00.smt2
+Reading from file test/sample/gfp00.smt2
 Qualifier "Pos" [Var IntS "v"] (Binary Le (IntLit 0) (Var IntS "v"))
 Qualifier "Neg" [Var IntS "v"] (Binary Le (Var IntS "v") (IntLit 0))
 Qualifier "NeqZ" [Var IntS "v"] (Unary Not (Binary Eq (Var IntS "v") (IntLit 0)))
@@ -67,7 +67,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/gfp02.smt2
+Reading from file test/sample/gfp02.smt2
 Qualifier "Pos" [Var IntS "v"] (Binary Le (IntLit 0) (Var IntS "v"))
 Qualifier "Neg" [Var IntS "v"] (Binary Le (Var IntS "v") (IntLit 0))
 Qualifier "NeqZ" [Var IntS "v"] (Unary Not (Binary Eq (Var IntS "v") (IntLit 0)))
@@ -94,7 +94,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/gfp03.smt2
+Reading from file test/sample/gfp03.smt2
 Qualifier "Pos" [Var IntS "v"] (Binary Le (IntLit 0) (Var IntS "v"))
 Qualifier "Neg" [Var IntS "v"] (Binary Le (Var IntS "v") (IntLit 0))
 Qualifier "NeqZ" [Var IntS "v"] (Unary Not (Binary Eq (Var IntS "v") (IntLit 0)))
@@ -121,7 +121,27 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/maps.smt2
+Reading from file test/sample/map_sanity.smt2
+WFConstraint "$k0" [Var IntS "v",Var IntS "x"]
+HornConstraint [Var IntS "v",Var IntS "q",Var (MapS IntS IntS) "m1"] (Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m1") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var IntS "q") (IntLit 0))) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0"))
+HornConstraint [Var (MapS BoolS BoolS) "m1"] (Binary Implies (Binary Eq (Var (MapS BoolS BoolS) "m1") (MapLit BoolS (BoolLit True))) (Binary Eq (MapSel (Var (MapS BoolS BoolS) "m1") (BoolLit False)) (BoolLit True)))
+
+QMAP
+--------
+fromList [("$k0",QSpace {_qualifiers = [], _maxCount = 0})]
+
+Candidates
+--------
+[Candidate {solution = fromList [("$k0",fromList [])], validConstraints = fromList [Binary Implies (Binary Eq (Var (MapS BoolS BoolS) "m1") (MapLit BoolS (BoolLit True))) (Binary Eq (MapSel (Var (MapS BoolS BoolS) "m1") (BoolLit False)) (BoolLit True)),Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m1") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var IntS "q") (IntLit 0))) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0")], invalidConstraints = fromList [], label = "0"}]
+
+
+Final candidates:
+0: [$k0 -> {}] (2 0)
+Preparing to find greatest fixpoint...
+
+Inputs
+--------
+Reading from file test/sample/maps.smt2
 HornConstraint [Var IntS "v",Var (MapS IntS IntS) "m1"] (Binary Implies (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m1") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var IntS "v") (IntLit 0)))
 HornConstraint [Var IntS "v",Var (MapS IntS IntS) "m1",Var (MapS IntS IntS) "m2"] (Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m2") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var (MapS IntS IntS) "m2") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 10) (IntLit 1)) (IntLit 20) (IntLit 1)))) (Binary Eq (Var IntS "v") (IntLit 0)))
 HornConstraint [Var IntS "v",Var (MapS IntS IntS) "m1",Var (MapS IntS IntS) "m2"] (Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m2") (IntLit 10))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var (MapS IntS IntS) "m2") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 10) (IntLit 1)) (IntLit 20) (IntLit 1)))) (Binary Eq (Var IntS "v") (IntLit 1)))
@@ -142,7 +162,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/qmap0.smt2
+Reading from file test/sample/qmap0.smt2
 Qualifier "Discard" [Var BoolS "b"] (Binary Eq (Var BoolS "b") (Var BoolS "b"))
 Qualifier "Accept" [Var IntS "v"] (Binary Le (Var IntS "v") (IntLit 0))
 WFConstraint "$k0" [Var IntS "v0"]
@@ -164,7 +184,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/qmap1a.smt2
+Reading from file test/sample/qmap1a.smt2
 Qualifier "Less" [Var IntS "a",Var IntS "b"] (Binary Lt (Var IntS "a") (Var IntS "b"))
 WFConstraint "$k0" [Var IntS "v0",Var IntS "v1"]
 
@@ -183,7 +203,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/qmap1b.smt2
+Reading from file test/sample/qmap1b.smt2
 Qualifier "Sum" [Var IntS "a",Var IntS "b",Var IntS "c"] (Binary Eq (Binary Plus (Var IntS "a") (Var IntS "b")) (Var IntS "c"))
 WFConstraint "$k0" [Var IntS "v0",Var IntS "v1",Var IntS "v2"]
 
@@ -202,7 +222,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/qmap2.smt2
+Reading from file test/sample/qmap2.smt2
 Qualifier "Less" [Var IntS "a",Var IntS "b"] (Binary Lt (Var IntS "a") (Var IntS "b"))
 Qualifier "Or" [Var BoolS "a",Var BoolS "b"] (Binary Or (Var BoolS "a") (Var BoolS "b"))
 WFConstraint "$k0" [Var IntS "v0",Var IntS "v1"]
@@ -223,7 +243,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/sets01.smt2
+Reading from file test/sample/sets01.smt2
 HornConstraint [Var IntS "v",Var (SetS IntS) "m1"] (Binary Implies (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m1"))))
 HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2"] (Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit (VarS "_a") [IntLit 10])) (SetLit (VarS "_a") [IntLit 20])))) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m2"))))
 HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2"] (Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit (VarS "_a") [IntLit 10])) (SetLit (VarS "_a") [IntLit 20])))) (Binary Member (IntLit 10) (Var (SetS IntS) "m2")))
@@ -245,7 +265,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/test3.smt2
+Reading from file test/sample/test3.smt2
 Qualifier "Zog" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
 WFConstraint "$k0" [Var IntS "v",Var IntS "x"]
 HornConstraint [Var IntS "v",Var IntS "q"] (Binary Implies (Binary Eq (Var IntS "v") (Var IntS "q")) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0"))
@@ -267,7 +287,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/unary0.smt2
+Reading from file test/sample/unary0.smt2
 Qualifier "Neg" [Var IntS "i"] (Unary Neg (Var IntS "i"))
 Qualifier "Not" [Var BoolS "b"] (Unary Not (Var BoolS "b"))
 
