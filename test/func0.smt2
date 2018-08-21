@@ -1,7 +1,7 @@
 ; Parsing of uniterpreted functions
 (qualif Eq ((v @a)(z @b)) (= v z))
 
-(define-fun bar (Int) Bool)
+(declare-fun bar (Int) Bool)
 
 (wf $k0 ((v0 Int)(v1 Int)))
 

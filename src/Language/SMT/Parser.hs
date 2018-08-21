@@ -105,7 +105,7 @@ instance FromLisp InputExpr where
         formula <- parseFormula y
         return $ HornConstraint vars formula
   -- | Uninterpreted function declaration
-  parseLisp (List [(Symbol "define-fun"), (Symbol n), List ps, rt]) = do
+  parseLisp (List [(Symbol "declare-fun"), (Symbol n), List ps, rt]) = do
     params <- mapM parseSortM ps
     output <- parseSortM rt
     return $ UninterpFunction (T.unpack n) params output
