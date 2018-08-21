@@ -130,7 +130,8 @@ instance FromLisp Formula where
   -- | Set
   parseLisp (Symbol "[]") = do
       pure $ SetLit AnyS []
-  parseLisp (List ((Symbol "Set"):v:vs)) = do
+  parseLisp (List ((Symbol "Set"):v:vs))
+    | not $ isSort v  = do
       vals <- mapM parseFormula (v:vs)
       pure $ SetLit (VarS "_any") vals
   -- | Map
@@ -154,11 +155,11 @@ instance FromLisp Formula where
   -- | Variable
   parseLisp (Symbol v)
     | Set.notMember v reserved
-      && (Char.isLower . T.head) v = pure $ Var AnyS (T.unpack v)
+      && ((Char.isLower $ T.head v) || (T.head v == '_')) = pure $ Var AnyS (T.unpack v)
   -- | Variable sort assignment
   parseLisp (List [(Symbol v), s])
     | Set.notMember v reserved      -- ^ Variable name is not a reserved keyword
-      && (Char.isLower . T.head) v
+      && ((Char.isLower $ T.head v) || (T.head v == '_'))
       && T.head v /= '$'            -- ^ Variable name is not an unknown application
       && isSort s                   -- ^ Sort is valid
       = do
@@ -219,17 +220,18 @@ parseSortM = parseLisp
 
 parseSort :: Lisp -> Maybe Sort
 -- | Set
-parseSort (List [(Symbol "Set_t"), s]) = do
+parseSort (List [(Symbol "Set"), s]) = do
     sort <- parseSort s
     return $ SetS sort
 -- | Map
-parseSort (List [(Symbol "Map_t"), k, v]) = do
+parseSort (List [(Symbol "Map"), k, v]) = do
     keySort <- parseSort k
     valSort <- parseSort v
     return $ MapS keySort valSort
 -- | Polymorphic sort
 parseSort (Symbol s)
-  | T.head s == '@' = pure $ VarS name
+  | T.head s == '@'
+    && (T.head $ T.drop 1 s) /= '_'  = pure $ VarS name
     where
       name = T.unpack $ T.tail s
 -- | Sort literal
@@ -241,6 +243,7 @@ parseSort (List ((Symbol n):f:fs))
       return $ DataS name formals
     where
       name = T.unpack n
+parseSort _ = Nothing
 
 isSort :: Lisp -> Bool
 isSort s = case parseSort s of

@@ -227,18 +227,6 @@ checkApM ap = do
     let formals' = zipWith (applyMap polymap) formalSorts partialFormals
     return $ ap { arguments = formals' }
 
--- | This needs to check the old sorts of the formals
--- | If any of the formals used to be VarS, this should update them
-applyMap :: PolyMap -> Sort -> Formula -> Formula
-applyMap m (VarS name) f = case Map.lookup name m of
-    Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
-    Just s  -> applySort s f
-applyMap m _ f
-  | (VarS name) <- sortOf f = case Map.lookup name m of
-    Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
-    Just s  -> applySort s f
-applyMap _ _ f = f
-
 -- Error reporting
 applySort :: Sort -> Formula -> Formula
 applySort s f = case evalStateT (applySortM s f) Map.empty of
@@ -265,24 +253,37 @@ applySortM s f = do
     applySort' s (Cons _ name fs)            = Cons s name fs
     applySort' _ f                           = f
 
--- | Error reporting
-unifySorts :: Sort -> Sort -> Sort
-unifySorts a b = case evalStateT (unifySortsM a b) Map.empty of
-    Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
-    Just s  -> s
-
-unifySortsMap :: PolyMap -> Sort -> Sort -> Sort
-unifySortsMap m a b = case evalStateT (unifySortsM a b) m of
-    Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
-    Just s  -> s
-
 -- | Poly map needs to have multiple keys go to the same value
+-- Multikey map
 -- Either, have two maps, or have an key that indexes a VarS keep looking until it reaches a concrete sort
 updateMap :: Id -> Sort -> StateT PolyMap Maybe ()
 updateMap name s = do
     m <- get
     let m' = Map.insertWith (unifySortsMap m) name s m
     put m'
+
+unifySortsMap :: PolyMap -> Sort -> Sort -> Sort
+unifySortsMap m a b = case evalStateT (unifySortsM a b) m of
+    Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
+    Just s  -> s
+
+-- | This needs to check the old sorts of the formals
+-- | If any of the formals used to be VarS, this should update them
+applyMap :: PolyMap -> Sort -> Formula -> Formula
+applyMap m (VarS name) f = case Map.lookup name m of
+    Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
+    Just s  -> applySort s f
+applyMap m _ f
+  | (VarS name) <- sortOf f = case Map.lookup name m of
+    Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
+    Just s  -> applySort s f
+applyMap _ _ f = f
+
+-- | Error reporting
+unifySorts :: Sort -> Sort -> Sort
+unifySorts a b = case evalStateT (unifySortsM a b) Map.empty of
+    Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
+    Just s  -> s
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 -- this should somehow use StateT (Map Id Sort)
@@ -304,7 +305,7 @@ unifySortsM AnyS b  = pure b
 unifySortsM a AnyS  = pure a
 unifySortsM a@(VarS na) b@(VarS nb) = do
       updateMap na b
-      updateMap nb a
+      updateMap nb AnyS
       pure a
 unifySortsM (VarS name) b = do
       updateMap name b
