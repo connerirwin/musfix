@@ -11,4 +11,4 @@
 
 (constraint
   (forall ((v2 Int)(v3 Int))
-          (=> ($k0 v2 v3) (= (bar v2)(bar v3)))))
+    (=> ($k0 v2 v3) (= (bar v2)(bar v3)))))

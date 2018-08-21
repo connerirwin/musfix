@@ -209,7 +209,7 @@ type PolyMap = Map Id Sort
 checkAp :: FunctionApplication -> FunctionApplication
 checkAp ap = case checkApM ap of
     Nothing -> error $ "Sort mismatch:  " ++ name ++ " expects " ++ formalSorts ++ ", but received " ++ argSorts ++ " in expression:  " ++ expr
-    Just a  -> trace ("Unified sorts in expression: " ++ expr ++ " to " ++ (show $ arguments a)) a
+    Just a  -> a
   where
     name = funcName ap
     formalSorts = show $ signature ap
@@ -224,26 +224,26 @@ checkApM ap = do
     let args = arguments ap
     (partialFormals, polymap) <- runStateT (zipWithM applySortM formalSorts args) Map.empty
 
-    let formals' = map (applyMap polymap) partialFormals
+    let formals' = zipWith (applyMap polymap) formalSorts partialFormals
     return $ ap { arguments = formals' }
 
-applyMap :: PolyMap -> Formula -> Formula
-applyMap m f
+-- | This needs to check the old sorts of the formals
+-- | If any of the formals used to be VarS, this should update them
+applyMap :: PolyMap -> Sort -> Formula -> Formula
+applyMap m (VarS name) f = case Map.lookup name m of
+    Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
+    Just s  -> applySort s f
+applyMap m _ f
   | (VarS name) <- sortOf f = case Map.lookup name m of
     Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
     Just s  -> applySort s f
-applyMap _ f = f
+applyMap _ _ f = f
 
 -- Error reporting
--- applySort :: Sort -> Formula -> Formula
--- applySort s f = case evalStateT (applySortM s f) Map.empty of
---     Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ show s ++ " to " ++ show f
---     Just a  -> a
-
 applySort :: Sort -> Formula -> Formula
-applySort s f = case runStateT (applySortM s f) Map.empty of
+applySort s f = case evalStateT (applySortM s f) Map.empty of
     Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ show s ++ " to " ++ show f
-    Just (a, m)  -> debugOutMsg ("map: " ++ (show m)) a
+    Just a  -> a
 
 -- | Applies the sort to formula if possible, otherwise fails
 applySortM :: Sort -> Formula -> StateT PolyMap Maybe Formula
@@ -276,11 +276,13 @@ unifySortsMap m a b = case evalStateT (unifySortsM a b) m of
     Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
     Just s  -> s
 
+-- | Poly map needs to have multiple keys go to the same value
+-- Either, have two maps, or have an key that indexes a VarS keep looking until it reaches a concrete sort
 updateMap :: Id -> Sort -> StateT PolyMap Maybe ()
 updateMap name s = do
     m <- get
     let m' = Map.insertWith (unifySortsMap m) name s m
-    put $ debugOutMsg "\npolymap: " m'
+    put m'
 
 -- | Unifies the sorts of a and b if possible, otherwise fails
 -- this should somehow use StateT (Map Id Sort)
