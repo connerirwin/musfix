@@ -1,0 +1,11 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((x Int)(y Int)(xs (Vec Int))(ys (Vec Int))(l1 (Vec Int))(l2 (Vec Int))(v1 Int)) (=> (and True (and True (and True (and True (and (= l1 (mkCons x xs)) (and (= l2 (mkCons y ys)) True)))))) (= x y))))

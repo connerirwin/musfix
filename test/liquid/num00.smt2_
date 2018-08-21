@@ -1,0 +1,14 @@
+; Functions
+
+
+; Qualifiers
+(qualif Zog ((v @a0)) (<= 0 v))
+
+
+; Well-formedness constraints
+(wf $k0 ((v [alpha])(alpha unknown [given FNum])))
+
+
+; Horn constraints
+(constraint (forall ((alpha unknown [given FNum])(v1 [alpha])) (=> (and True (= v1 10)) ($k0 v1))))
+(constraint (forall ((alpha unknown [given FNum])(v2 [alpha])) (=> (and True ($k0 v2)) (<= 0 v2))))

@@ -1,0 +1,11 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((b Bin)(g1 (Int) Bin)(g2 (bool) Bin)(f (Bin) Bin)(v1 Int)) (=> (and True (and (= g1 unsupported expression [ELam ("lam_arg##1",FInt) (ECst (EVar "b") (FTC (TC "Bin" defined from: "tests/pos/adt_bin_lam.fq" (line 7, column 18) to: "tests/pos/adt_bin_lam.fq" (line 7, column 22) (TCInfo {tc_isNum = False, tc_isReal = False, tc_isString = False}))))]) (and (= g2 unsupported expression [ELam ("lam_arg##1",FTC (TC "bool" (dummyLoc) (TCInfo {tc_isNum = False, tc_isReal = False, tc_isString = False}))) (ECst (EVar "b") (FTC (TC "Bin" defined from: "tests/pos/adt_bin_lam.fq" (line 7, column 18) to: "tests/pos/adt_bin_lam.fq" (line 7, column 22) (TCInfo {tc_isNum = False, tc_isReal = False, tc_isString = False}))))]) (and (= f unsupported expression [ELam ("lam_arg##1",FTC (TC "Bin" defined from: "tests/pos/adt_bin_lam.fq" (line 10, column 46) to: "tests/pos/adt_bin_lam.fq" (line 10, column 50) (TCInfo {tc_isNum = False, tc_isReal = False, tc_isString = False}))) (ECst (EVar "b") (FTC (TC "Bin" defined from: "tests/pos/adt_bin_lam.fq" (line 7, column 18) to: "tests/pos/adt_bin_lam.fq" (line 7, column 22) (TCInfo {tc_isNum = False, tc_isReal = False, tc_isString = False}))))]) (= (apply f b) b))))) (= b (apply f b)))))

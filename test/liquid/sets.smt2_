@@ -1,0 +1,11 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((v3 (Set [a_aTp]))) (=> (Set_emp v3) (= v3 []))))

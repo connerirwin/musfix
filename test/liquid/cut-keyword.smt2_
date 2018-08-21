@@ -1,0 +1,10 @@
+; Functions
+(declare-fun Prop (GHC.Types.Bool) bool)
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints

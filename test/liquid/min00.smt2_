@@ -1,0 +1,17 @@
+; Functions
+
+
+; Qualifiers
+(qualif Zog ((v @a0)) (<= 10 v))
+(qualif Zog ((v @a0)) (<= 9 v))
+(qualif Zog ((v @a0)) (<= 8 v))
+(qualif Zog ((v @a0)) (<= 99 v))
+
+
+; Well-formedness constraints
+(wf $k0 ((v Int)))
+
+
+; Horn constraints
+(constraint (forall ((v1 Int)) (=> (= v1 100) ($k0 v1))))
+(constraint (forall ((v2 Int)) (=> ($k0 v2) (<= 15 v2))))

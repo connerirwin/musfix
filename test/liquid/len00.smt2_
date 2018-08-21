@@ -1,0 +1,14 @@
+; Functions
+(declare-fun len ((@a0 @a1)) Int)
+
+; Qualifiers
+(qualif ListZ ((v ([] @a0))) (>= (len v) 0))
+
+
+; Well-formedness constraints
+(wf $k0 ((v ([] (Tuple Int [a])))))
+
+
+; Horn constraints
+(constraint (forall ((yoink ([] (Tuple Int [a])))(v1 ([] (Tuple Int [a])))) (=> (and (>= (apply len yoink) 0) (= v1 yoink)) ($k0 v1))))
+(constraint (forall ((v2 ([] (Tuple Int [a])))) (=> ($k0 v2) (>= (apply len v2) 0))))

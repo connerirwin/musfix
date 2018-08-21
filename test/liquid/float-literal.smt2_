@@ -1,0 +1,11 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((v2 [a_aZU])) (=> True (>= v2 1.00000))))

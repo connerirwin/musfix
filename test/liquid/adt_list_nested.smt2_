@@ -1,0 +1,11 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((junk (LL Int))(v1 Int)) (=> (and True True) (= emp (ite (< 1 2) emp (con junk emp))))))

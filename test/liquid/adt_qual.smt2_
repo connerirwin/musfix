@@ -1,0 +1,15 @@
+; Functions
+
+
+; Qualifiers
+(qualif Eq ((v @a0)(x @a0)) (= v x))
+(qualif Leq ((v @a0)(x @a0)) (<= v x))
+
+
+; Well-formedness constraints
+(wf $k0 ((v Zob)(a Zob)))
+
+
+; Horn constraints
+(constraint (forall ((a Zob)(v1 Zob)) (=> (and True (= v1 a)) ($k0 v1 a))))
+(constraint (forall ((a Zob)(v2 Zob)) (=> (and True ($k0 v2 a)) (= v2 a))))

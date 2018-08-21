@@ -1,0 +1,11 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((x unknown [given FReal])(y unknown [given FReal])(v3 Int)) (=> (and (= v1 0.200000) (and (= v2 (+ 0.800000 x)) True)) (= y 1.00000))))

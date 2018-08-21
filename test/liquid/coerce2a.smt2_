@@ -1,0 +1,11 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((b Int)(pig [b])(v1 Int)) (=> (and True (and (= pig 10) True)) (> pig 5))))

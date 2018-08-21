@@ -1,0 +1,11 @@
+; Functions
+(declare-fun offset (Int) @a0)
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((x (BitVec Size32))(v1 (BitVec Size32))) (=> (and (= VV (apply offset 0)) (= v1 x)) (= v1 x))))

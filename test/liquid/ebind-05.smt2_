@@ -1,0 +1,14 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+(wf $k_$35$$35$137 ((VV Int)(m Int)))
+
+
+; Horn constraints
+(constraint (forall ((m Int)(n Int)(v3 Int)) (=> (and True (and True False)) ($k_$35$$35$137 v3 m))))
+(constraint (forall ((m Int)(n Int)(v4 Int)) (=> (and True (and True ($k_$35$$35$137 v4 m))) (= v4 n))))
+(constraint (forall ((m Int)(v5 Int)) (=> (and True (= v5 (+ m 1))) ($k_$35$$35$137 v5 m))))

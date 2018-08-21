@@ -1,0 +1,13 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((m Int)(n Int)(v3 Int)) (=> (and True (and True (= v3 n))) (and (= v3 (+ m 1)) (= v3 3)))))
+(constraint (forall ((m Int)(n Int)(v4 Int)) (=> (and True (and True (= v4 3))) (= v4 n))))
+(constraint (forall ((m Int)(n Int)(v5 Int)) (=> (and True (and True (= v5 (+ m 1)))) (= v5 n))))

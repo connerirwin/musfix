@@ -1,0 +1,11 @@
+; Functions
+(declare-fun mkEmp (Int) @a0)
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((junk bool)(punk Int)(v0 Int)) (=> (and (= junk (apply mkEmp 0)) (and (= punk (apply mkEmp 0)) (= v0 (apply mkEmp 10)))) (= v0 (apply mkEmp 10)))))

@@ -1,0 +1,11 @@
+; Functions
+(declare-fun len ((@a0 @a1)) Int)
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((b ([] Int))(pig [b])(v1 Int)) (=> (and True (and (= (apply len pig) 10) True)) (> (apply len pig) 5))))

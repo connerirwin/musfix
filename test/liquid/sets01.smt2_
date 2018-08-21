@@ -1,0 +1,15 @@
+; Functions
+(declare-fun Set_sng (@a0) (Set @a0))
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((m1 (Set Int))(v1 Int)) (=> (and (= m1 []) True) (not (in 100 m1)))))
+(constraint (forall ((m1 (Set Int))(m2 (Set Int))(v2 Int)) (=> (and (= m1 []) (and (= m2 (union (union m1 (Set_sng 10)) (Set_sng 20))) True)) (not (in 100 m2)))))
+(constraint (forall ((m1 (Set Int))(m2 (Set Int))(v3 Int)) (=> (and (= m1 []) (and (= m2 (union (union m1 (Set_sng 10)) (Set_sng 20))) True)) (in 10 m2))))
+(constraint (forall ((m1 (Set Int))(m2 (Set Int))(m3 (Set Int))(v4 Int)) (=> (and (= m1 []) (and (= m2 (union (union m1 (Set_sng 10)) (Set_sng 20))) (and (= m3 (union (union m1 (Set_sng 20)) (Set_sng 10))) True))) (= m2 m3))))
+(constraint (forall ((m1 (Set Int))(m2 (Set Int))(m3 (Set Int))(m4 (Set Int))(m5 (Set Int))(v5 Int)) (=> (and (= m1 []) (and (= m2 (union (union m1 (Set_sng 10)) (Set_sng 20))) (and (= m3 (union (union m1 (Set_sng 20)) (Set_sng 10))) (and (= m4 (union m1 (Set_sng 10))) (and (= m5 (union m1 (Set_sng 20))) True))))) (= m2 (union m4 m5)))))

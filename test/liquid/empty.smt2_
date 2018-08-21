@@ -1,0 +1,10 @@
+; Functions
+(declare-fun One Peano)(declare-fun Zero Peano)
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints

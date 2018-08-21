@@ -1,0 +1,17 @@
+; Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+(wf $kb ((v Int)))
+(wf $ka ((v Int)))
+
+
+; Horn constraints
+(constraint (forall ((x1 Int)(v1 Int)) (=> (and True (= v1 1)) (= v1 x1))))
+(constraint (forall ((x1 Int)(v2 Int)) (=> (and True (= v2 (+ x1 1))) ($ka v2))))
+(constraint (forall ((x2 Int)(v3 Int)) (=> (and True ($ka v3)) (= v3 x2))))
+(constraint (forall ((x2 Int)(v4 Int)) (=> (and True (= v4 (+ x2 1))) ($kb v4))))
+(constraint (forall ((v5 Int)) (=> ($kb v5) (= v5 3))))

@@ -1,0 +1,54 @@
+; Functions
+
+
+; Qualifiers
+(qualif Nat ((v Int)) (<= 0 v))
+
+
+; Well-formedness constraints
+(wf $k4 ((v Int)))
+(wf $k15 ((v Int)))
+(wf $k18 ((v Int)))
+(wf $k9 ((v Int)))
+(wf $k3 ((v Int)))
+(wf $k12 ((v Int)))
+(wf $k8 ((v Int)))
+(wf $k19 ((v Int)))
+(wf $k13 ((v Int)))
+(wf $k2 ((v Int)))
+(wf $k16 ((v Int)))
+(wf $k7 ((v Int)))
+(wf $k1 ((v Int)))
+(wf $k10 ((v Int)))
+(wf $k6 ((v Int)))
+(wf $k17 ((v Int)))
+(wf $k11 ((v Int)))
+(wf $k0 ((v Int)))
+(wf $k5 ((v Int)))
+(wf $k14 ((v Int)))
+(wf $k20 ((v Int)))
+
+
+; Horn constraints
+(constraint (forall ((v0 Int)) (=> (= v0 10) ($k0 v0))))
+(constraint (forall ((v16 Int)(x15 Int)) (=> (and (= v16 x15) ($k15 v)) ($k16 v16))))
+(constraint (forall ((x0 Int)(v1 Int)) (=> (and ($k0 v) (= v1 x0)) ($k1 v1))))
+(constraint (forall ((x16 Int)(v17 Int)) (=> (and ($k16 v) (= v17 x16)) ($k17 v17))))
+(constraint (forall ((x1 Int)(v2 Int)) (=> (and ($k1 v) (= v2 x1)) ($k2 v2))))
+(constraint (forall ((x17 Int)(v18 Int)) (=> (and ($k17 v) (= v18 x17)) ($k18 v18))))
+(constraint (forall ((x2 Int)(v3 Int)) (=> (and ($k2 v) (= v3 x2)) ($k3 v3))))
+(constraint (forall ((x18 Int)(v19 Int)) (=> (and ($k18 v) (= v19 x18)) ($k19 v19))))
+(constraint (forall ((x3 Int)(v4 Int)) (=> (and ($k3 v) (= v4 x3)) ($k4 v4))))
+(constraint (forall ((x19 Int)(v20 Int)) (=> (and ($k19 v) (= v20 x19)) ($k20 v20))))
+(constraint (forall ((x20 Int)(v100 Int)) (=> (and ($k20 v) (= v100 x20)) (<= 0 v100))))
+(constraint (forall ((v5 Int)(x4 Int)) (=> (and (= v5 x4) ($k4 v)) ($k5 v5))))
+(constraint (forall ((v6 Int)(x5 Int)) (=> (and (= v6 x5) ($k5 v)) ($k6 v6))))
+(constraint (forall ((v7 Int)(x6 Int)) (=> (and (= v7 x6) ($k6 v)) ($k7 v7))))
+(constraint (forall ((v8 Int)(x7 Int)) (=> (and (= v8 x7) ($k7 v)) ($k8 v8))))
+(constraint (forall ((v9 Int)(x8 Int)) (=> (and (= v9 x8) ($k8 v)) ($k9 v9))))
+(constraint (forall ((v10 Int)(x9 Int)) (=> (and (= v10 x9) ($k9 v)) ($k10 v10))))
+(constraint (forall ((v11 Int)(x10 Int)) (=> (and (= v11 x10) ($k10 v)) ($k11 v11))))
+(constraint (forall ((v12 Int)(x11 Int)) (=> (and (= v12 x11) ($k11 v)) ($k12 v12))))
+(constraint (forall ((v13 Int)(x12 Int)) (=> (and (= v13 x12) ($k12 v)) ($k13 v13))))
+(constraint (forall ((v14 Int)(x13 Int)) (=> (and (= v14 x13) ($k13 v)) ($k14 v14))))
+(constraint (forall ((v15 Int)(x14 Int)) (=> (and (= v15 x14) ($k14 v)) ($k15 v15))))
