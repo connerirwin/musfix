@@ -1,11 +1,8 @@
-; (qualif Equiv ((v @a)(z @b)) (= v z))
-; (qualif False ((a @a)(b @b)) False)
+(qualif Equiv ((v @a)(z @b)) (= v z))
+(qualif False ((a @a)(b @b)) False)
 
 (wf $k0 ((v Int)(x Int)))
 
-; possibly add 'as const' syntax
-; TODO add support for maps sort inference
-; Map_default key_sort default_value
 (constraint
   (forall ((v Int) (q Int) (m1 (Map Int Int)))
     (=> (&& (&& (= v (Map_select m1 100)) (= m1 (Map_default 0))) (= q 0))

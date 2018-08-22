@@ -17,6 +17,7 @@ data InputExpr =
   | WFConstraint Id [Formula]               -- ^ Well-formed predicate constraint
   | HornConstraint [Formula] Formula        -- ^ Horn constraint
   | UninterpFunction Id [Sort] Sort         -- ^ Uninterpreted function with input types and a return type (this is the way that z3 does it)
+  | SortDecl Id Int                         -- ^ Sort declaration
   deriving (Show, Eq, Ord)
 
 isQualifier (Qualifier _ _ _) = True
@@ -27,6 +28,8 @@ isHornConstraint (HornConstraint _ _) = True
 isHornConstraint _ = False
 isUninterpFunction (UninterpFunction _ _ _) = True
 isUninterpFunction _ = False
+isSortDecl (SortDecl _ _) = True
+isSortDecl _ = False
 
 -- | Gets all the qualifiers in an input expression list
 allQualifiers :: [InputExpr] -> [InputExpr]
@@ -42,6 +45,9 @@ allHornConstraints = filter isHornConstraint
 
 allUninterpFunction :: [InputExpr] -> [InputExpr]
 allUninterpFunction = filter isUninterpFunction
+
+allSortDecl :: [InputExpr] -> [InputExpr]
+allSortDecl = filter isSortDecl
 
 wfName :: InputExpr -> Id
 wfName (WFConstraint name _) = name

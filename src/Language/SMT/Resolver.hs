@@ -36,7 +36,8 @@ data FunctionApplication = FunctionApplication {
 
 data Environment = Environment {
   wfMap   :: Map Id [Formula],
-  predMap :: Map Id [Sort]
+  predMap :: Map Id [Sort],
+  sortMap :: Map Id Int
 }
 
 {- Debug Testing -}
@@ -114,9 +115,13 @@ createEnvironment ins = env
     boxUf :: InputExpr -> (Id, [Sort])
     boxUf (UninterpFunction name formals result) = (name, formals ++ [result])
 
+    boxSD :: InputExpr -> (Id, Int)
+    boxSD (SortDecl name numSorts) = (name, numSorts)
+
     env = Environment {
       wfMap   = Map.fromList $ map boxWF $ allWFConstraints ins,
-      predMap = Map.fromList $ map boxUf $ allUninterpFunction ins
+      predMap = Map.fromList $ map boxUf $ allUninterpFunction ins,
+      sortMap = Map.fromList $ map boxSD $ allSortDecl ins
     }
 
 -- | Resolves the sorts of expression, or throws an error

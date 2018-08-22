@@ -122,13 +122,15 @@ Preparing to find greatest fixpoint...
 Inputs
 --------
 Reading from file test/sample/map_sanity.smt2
+Qualifier "Equiv" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
+Qualifier "False" [Var (VarS "a") "a",Var (VarS "b") "b"] (BoolLit False)
 WFConstraint "$k0" [Var IntS "v",Var IntS "x"]
 HornConstraint [Var IntS "v",Var IntS "q",Var (MapS IntS IntS) "m1"] (Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m1") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var IntS "q") (IntLit 0))) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0"))
 HornConstraint [Var (MapS BoolS BoolS) "m1"] (Binary Implies (Binary Eq (Var (MapS BoolS BoolS) "m1") (MapLit BoolS (BoolLit True))) (Binary Eq (MapSel (Var (MapS BoolS BoolS) "m1") (BoolLit False)) (BoolLit True)))
 
 QMAP
 --------
-fromList [("$k0",QSpace {_qualifiers = [], _maxCount = 0})]
+fromList [("$k0",QSpace {_qualifiers = [Binary Eq (Var IntS "v") (Var IntS "x"),Binary Eq (Var IntS "x") (Var IntS "v"),BoolLit False], _maxCount = 3})]
 
 Candidates
 --------

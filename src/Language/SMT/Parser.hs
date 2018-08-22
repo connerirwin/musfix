@@ -21,6 +21,12 @@ import Data.Set (Set)
 import qualified Data.Text as T
 import Data.Text (Text)
 
+{- Utility functions -}
+getInt :: S.Scientific -> Int
+getInt n = case S.floatingOrInteger n of
+  Left  f -> error $ "non-integral value not supported " ++ (show n)
+  Right i -> i
+
 -- | Unary operators
 unaryOps :: Map Text UnOp
 unaryOps = Map.fromList [ ("not",     Not)
@@ -81,6 +87,14 @@ checkVars fs = foldr ((&&) . isVar) True fs
 -- | TODO replace parseFormula & checkvars with parseVars
 -- parseVars will have better error reporting
 instance FromLisp InputExpr where
+  -- | Custom Sorts
+  parseLisp (List [(Symbol "declare-sort"), (Symbol n), (Number num)]) =
+    return $ SortDecl (T.unpack n) (getInt num)
+  -- | Uninterpreted function declaration
+  parseLisp (List [(Symbol "declare-fun"), (Symbol n), List ps, rt]) = do
+    params <- mapM parseSortM ps
+    output <- parseSortM rt
+    return $ UninterpFunction (T.unpack n) params output
   -- | Qualifiers
   parseLisp (List [(Symbol "qualif"), (Symbol n), List xs, y]) = do
       vars <- mapM parseFormula xs
@@ -104,12 +118,6 @@ instance FromLisp InputExpr where
     else do
         formula <- parseFormula y
         return $ HornConstraint vars formula
-  -- | Uninterpreted function declaration
-  parseLisp (List [(Symbol "declare-fun"), (Symbol n), List ps, rt]) = do
-    params <- mapM parseSortM ps
-    output <- parseSortM rt
-    return $ UninterpFunction (T.unpack n) params output
-
   parseLisp _ = fail "unknown top-level construct"
 
 parseInputExpr :: Lisp -> Parser InputExpr
