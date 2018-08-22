@@ -1,4 +1,4 @@
-; the weakest solution is `$k0 -> len v0 == 1 + len [], elems v0 == v1 + elems []`
+; the weakest solution is `$k0 -> len v0 == 1 + len nil, elems v0 == v1 + elems nil`
 
 ; num is the number of sorts that this takes
 (declare-sort List 1)
@@ -6,10 +6,10 @@
 (declare-fun len   ((List @0)) Int)
 (declare-fun elems ((List @0)) (Set @0))
 
-(qualif LenZ  ((x (List @0)))                     (= (len x) 0))
-(qualif Empty ((x (List @0)))                     (= (elems x) []))
-(qualif Plus1 ((x (List @0)) (y (List @0)))       (= (len x) (+ 1 (len y))))
-(qualif SumL  ((x (List @0)) (y (List @0))(z @0)) (= (elems x) (union (Set z) (elems y))))
+(qualif LenZ  ((x (List @0)))                      (= (len x) 0))
+(qualif Empty ((x (List @0)))                      (= (elems x) []))
+(qualif Plus1 ((x (List @0)) (y (List @0)))        (= (len x) (+ 1 (len y))))
+(qualif SumL  ((x (List @0)) (y (List @0)) (z @0)) (= (elems x) (union (Set z) (elems y))))
 
 (wf $k0 ((nil (List @0)) (v0 (List @0)) (v1 Int)))
 
