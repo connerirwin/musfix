@@ -23,4 +23,4 @@
   (forall ((x Int) (nil (List @0)) (x4 (List @0)) (_v (List @0)))
     (=> (&& (&& (&& (&& (= (elems nil) []) (= (len nil) 0)) ($k0 nil x4 x))
           (= (elems _v) (union (Set x) (elems x4)))) (>= (len x4) 0))
-        (= (len _v) (Set x)))))
+        (= (elems _v) (Set x)))))
