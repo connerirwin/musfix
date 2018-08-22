@@ -177,6 +177,23 @@ mapFormula func   (All f1 f2)       = func $ All f1' f2'
     f1' = mapFormula func f1
     f2' = mapFormula func f2
 
+-- | Perform recursive traversal of sorts
+mapSort :: (Sort -> Sort) -> Sort -> Sort
+mapSort func b@(BoolS)         = func b
+mapSort func i@(IntS)          = func i
+mapSort func v@(VarS _)        = func v
+mapSort func   (DataS name ss) = DataS name ss'
+  where
+    ss' = map (mapSort func) ss
+mapSort func   (SetS s)        = SetS s'
+  where
+    s' = mapSort func s
+mapSort func   (MapS s1 s2)    = MapS s1' s2'
+  where
+    s1' = mapSort func s1
+    s2' = mapSort func s2
+mapSort func a@(AnyS)          = func a
+
 -- | Base type of a term in the refinement logic
 sortOf :: Formula -> Sort
 sortOf (BoolLit _)                               = BoolS

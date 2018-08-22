@@ -37,7 +37,7 @@ data FunctionApplication = FunctionApplication {
 data Environment = Environment {
   wfMap   :: Map Id [Formula],
   predMap :: Map Id [Sort],
-  sortMap :: Map Id Int
+  consMap :: Map Id Int          -- Keeps track of the number of parameters that a new sort takes
 }
 
 {- Debug Testing -}
@@ -121,7 +121,7 @@ createEnvironment ins = env
     env = Environment {
       wfMap   = Map.fromList $ map boxWF $ allWFConstraints ins,
       predMap = Map.fromList $ map boxUf $ allUninterpFunction ins,
-      sortMap = Map.fromList $ map boxSD $ allSortDecl ins
+      consMap = Map.fromList $ map boxSD $ allSortDecl ins
     }
 
 -- | Resolves the sorts of expression, or throws an error
@@ -134,7 +134,7 @@ resolveSorts env ins = map targetUpdate ins
     targetUpdate a = a
 
     resolveSorts' :: [Formula] -> Formula -> Formula
-    resolveSorts' vars eq = mapFormula (resolve vars) eq
+    resolveSorts' vars eq = mapFormula (checkDataS . resolve vars) eq
 
     -- | Checks sorts, resolving them if possible
     resolve :: [Formula] -> Formula -> Formula
@@ -150,25 +150,8 @@ resolveSorts env ins = map targetUpdate ins
     resolve _  b@(Binary op f1 f2)   = resolveAp b
     resolve _  ite@(Ite i t e)       = ite
     resolve _  f@(Func sort name fs) = lookupFunc $ resolveAp f
-    resolve _  c@(Cons sort name fs) = c
+    resolve _  c@(Cons sort name fs) = lookupCons c
     resolve _  a@(All f1 f2)         = a
-
-    {- The more complicated resolving has been factored out -}
-    -- | Lookup the variable sort from the formals
-    lookupVar :: Formula -> [Formula] -> Formula
-    lookupVar (Var sort name) vs
-      | sort == AnyS  = Var sort' name
-      | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
-      where
-        sort' = case Map.lookup name (formalSortMap vs) of
-          Nothing -> error $ "no sort found for " ++ name ++ " in qualifier (variable not declared)"
-          Just sort -> sort
-
-        formalSortMap :: [Formula] -> Map Id Sort
-        formalSortMap formals = Map.fromList $ map boxVar formals
-          where
-            boxVar :: Formula -> (Id, Sort)
-            boxVar (Var sort name) = (name, sort)
 
     -- | TODO make this check the sorts of the elements against eachother, so that the applied sort is continually updated
     resolveSet :: Formula -> Formula
@@ -203,11 +186,51 @@ resolveSorts env ins = map targetUpdate ins
         ap = FunctionApplication name (init $ (predMap env) ! name) fs f
         (FunctionApplication _ _ fs' _) = checkAp ap
 
+    -- | Lookup the variable sort from the formals
+    lookupVar :: Formula -> [Formula] -> Formula
+    lookupVar (Var sort name) vs
+      | sort == AnyS  = Var sort' name
+      | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
+      where
+        sort' = case Map.lookup name (formalSortMap vs) of
+          Nothing -> error $ "no sort found for " ++ name ++ " in qualifier (variable not declared)"
+          Just sort -> sort
+
+        formalSortMap :: [Formula] -> Map Id Sort
+        formalSortMap formals = Map.fromList $ map boxVar formals
+          where
+            boxVar :: Formula -> (Id, Sort)
+            boxVar (Var sort name) = (name, sort)
+
     -- | Lookup the sort of an uninterpreted func
     lookupFunc :: Formula -> Formula
     lookupFunc (Func _ name fs) = Func sort name fs
       where
         sort = last $ (predMap env) ! name
+
+    -- | Ensure that the correct number of formals are passed
+    lookupCons :: Formula -> Formula
+    lookupCons c@(Cons sort name fs) = verifySortDecl c name fs
+
+    -- | Ensure that all construct sorts are passed the correct number of arguments
+    checkDataS :: Formula -> Formula
+    checkDataS f = seq (mapSort checkDataS' $ sortOf f) f
+      where
+        checkDataS' :: Sort -> Sort
+        checkDataS' s@(DataS name ss) = verifySortDecl s name ss
+        checkDataS' s = s
+
+    -- | Determine if the proper number of arguments are passed to a declared sort/cons
+    -- if so, simply forward the passed in argument
+    verifySortDecl :: Show a => a -> Id -> [a] -> a
+    verifySortDecl a name args = if numArgs == expectedArgs then a
+      else
+        error $ name ++ " expects " ++ show expectedArgs ++ " arguments, but instead received " ++ show numArgs ++ " in " ++ show a
+      where
+        expectedArgs = case Map.lookup name (consMap env) of
+          Nothing -> error $ "Sort " ++ name ++ " has not been declared"
+          Just n  -> n
+        numArgs = length args
 
 type PolyMap = Map Id Sort
 
@@ -250,12 +273,12 @@ applySortM s f = do
     applySort' :: Sort -> Formula -> Formula
     applySort' AnyS f     = f
     applySort' (VarS _) f = f
-    -- | TODO DataS
     applySort' (SetS s) (SetLit _ elems)     = SetLit s elems
     applySort' (MapS ksort _) (MapLit _ val) = MapLit ksort val
     applySort' s (Var _ name)                = Var s name
     applySort' s (Func _ name fs)            = Func s name fs
-    applySort' s (Cons _ name fs)            = Cons s name fs
+    applySort' s@(DataS name _) (Cons _ name' fs)
+      | name == name'  = Cons s name fs
     applySort' _ f                           = f
 
 -- | Poly map needs to have multiple keys go to the same value

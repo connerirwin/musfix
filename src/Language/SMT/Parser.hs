@@ -245,9 +245,9 @@ parseSort (Symbol s)
 -- | Sort literal
 parseSort (Symbol s) = Map.lookup s sorts
 -- | Constructor
-parseSort (List ((Symbol n):f:fs))
+parseSort (List ((Symbol n):fs))
   | Char.isUpper $ T.head n = do
-      formals <- mapM parseSort (f:fs)
+      formals <- mapM parseSort fs
       return $ DataS name formals
     where
       name = T.unpack n

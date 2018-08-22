@@ -1,7 +1,7 @@
 ; the weakest solution is `$k0 -> len v0 == 1 + len [], elems v0 == v1 + elems []`
 
 ; num is the number of sorts that this takes
-(declare-sort List 1)
+; (declare-sort List 1)
 
 (declare-fun len   ((List @0)) Int)
 (declare-fun elems ((List @0)) (Set @0))
