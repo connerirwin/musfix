@@ -1,5 +1,6 @@
--Add support for Constructors (add sort)
--Improve bash script (liquid fixpoint export script)
 -Improve the cmd parser (try using optparse-applicative)
 -Map_union
 -Better method for logging (error stops the program, not everything should be IO)
+-add constants as uninterpreted functions that take no args (declare-const name val)
+-Rework binary op, unary op system to make adding new var-arg operands easier?
+-Create Multikey Map

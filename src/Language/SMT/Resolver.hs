@@ -79,9 +79,6 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     -- | ensures that all mappings are one-to-one
     validMappings = filter (isSet . Map.elems) fullMappings
 
-    -- | TODO improve polymorphic qualifiers
-    -- Is any polymorphic qualifier will currently just let things through,
-    -- since unification will happen later on... hopefully
     sameSort :: Formula -> Formula -> Bool
     sameSort (Var s1 _) (Var s2 _) = s1 == s2 || isAnyPoly s1 || isAnyPoly s2
     sameSort _          _          = False
@@ -105,7 +102,6 @@ prepareInputs ins = resolve ins
     env = createEnvironment ins
     resolve = resolveSorts env
 
--- | TODO make this a single pass
 createEnvironment :: [InputExpr] -> Environment
 createEnvironment ins = env
   where
@@ -245,7 +241,6 @@ checkAp ap = case checkApM ap of
     expr = show $ expression ap
 
 -- | Check var sorts against eachother
--- TODO add some sort of Environment to clean up the two pass polymorphic unification
 checkApM :: FunctionApplication -> Maybe FunctionApplication
 checkApM ap = do
     let formalSorts = signature ap
@@ -281,7 +276,7 @@ applySortM s f = do
       | name == name'  = Cons s name fs
     applySort' _ f                           = f
 
--- | Poly map needs to have multiple keys go to the same value
+-- | TODO Poly map needs to have multiple keys go to the same value
 -- Multikey map
 -- Either, have two maps, or have an key that indexes a VarS keep looking until it reaches a concrete sort
 updateMap :: Id -> Sort -> StateT PolyMap Maybe ()

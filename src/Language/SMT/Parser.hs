@@ -124,10 +124,6 @@ parseInputExpr :: Lisp -> Parser InputExpr
 parseInputExpr = parseLisp
 
 {- Formulas -}
--- | TODO Cons (DataS ...) ...
--- add constants as uninterpreted functions that take no args
--- (declare-const name val)
--- Rework binary op, unary op system to make adding new var-arg operands easier?
 instance FromLisp Formula where
   -- | Basic literals
   parseLisp (Symbol "False")          = pure $ BoolLit False
