@@ -182,13 +182,13 @@ mapSort :: (Sort -> Sort) -> Sort -> Sort
 mapSort func b@(BoolS)         = func b
 mapSort func i@(IntS)          = func i
 mapSort func v@(VarS _)        = func v
-mapSort func   (DataS name ss) = DataS name ss'
+mapSort func   (DataS name ss) = func $ DataS name ss'
   where
     ss' = map (mapSort func) ss
-mapSort func   (SetS s)        = SetS s'
+mapSort func   (SetS s)        = func $ SetS s'
   where
     s' = mapSort func s
-mapSort func   (MapS s1 s2)    = MapS s1' s2'
+mapSort func   (MapS s1 s2)    = func $ MapS s1' s2'
   where
     s1' = mapSort func s1
     s2' = mapSort func s2
