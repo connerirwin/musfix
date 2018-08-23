@@ -155,11 +155,20 @@ resolveSorts env ins = map targetUpdate ins
     resolve _  c@(Cons sort name fs) = lookupCons c
     resolve _  a@(All f1 f2)         = a
 
-    -- | TODO make this check the sorts of the elements against eachother, so that the applied sort is continually updated
+    -- | Check all elements in a set literal against eachother
     resolveSet :: Formula -> Formula
-    resolveSet (SetLit sort elems) = SetLit sort elems'
+    resolveSet s@(SetLit sort elems) = case resolveSet' s of
+      Nothing -> error $ "This should never fail"
+      Just  f -> f
       where
-        elems' = map (applySort sort) elems
+        resolveSet' :: Formula -> Maybe Formula
+        resolveSet' (SetLit sort elems) = do
+          -- | Unify, then apply generated map (this is two pass unification)
+          (partialElems, polymap) <- runStateT (mapM (applySortM sort) elems) Map.empty
+          let elems' = map (applyMap polymap sort) partialElems
+
+          let sort' = if length elems' > 0 then sortOf $ head elems' else AnyS
+          return $ SetLit sort' elems'
 
     -- | Replaces the key with the correct parameter, updates the variable sorts
     resolveUnknown :: Formula -> Formula

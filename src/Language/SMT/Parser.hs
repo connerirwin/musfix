@@ -167,7 +167,7 @@ instance FromLisp Formula where
   --     map2    <- parseFormula m2
   --     return $ MapUni map1 map2
   -- | Variable
-  -- TODO This currently incorrectly matches against declared constants, which are then later resolved
+  -- This currently incorrectly matches against declared constants, which are then later resolved
   parseLisp (Symbol v)
     | Set.notMember v reserved
       && ((Char.isLower $ T.head v) || (T.head v == '_'))
