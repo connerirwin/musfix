@@ -223,7 +223,12 @@ resolveSorts env ins = map targetUpdate ins
     -- | Ensure that the correct number of formals are passed
     -- TODO use this number to generate a set of AnyS that are then unified with the actual arguments
     lookupCons :: Formula -> Formula
-    lookupCons c@(Cons sort name fs) = verifySortDecl c name fs
+    lookupCons c@(Cons sort name fs) = Cons sort' name fs'
+      where
+        (Cons _ _ fs') = verifySortDecl c name fs
+        -- ^ Currently disregards sort, what if somehow the sort what previously unified?
+        sort' = DataS name $ map sortOf fs
+
 
     -- | Ensure that all construct sorts are passed the correct number of arguments
     checkDataS :: Formula -> Formula
