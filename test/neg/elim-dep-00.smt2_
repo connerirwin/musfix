@@ -1,0 +1,22 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+(qualif False ((v Int)) (= 0 1))
+(qualif Zero ((v Int)) (= 0 v))
+(qualif One ((v Int)) (= 1 v))
+
+
+; Well-formedness constraints
+(wf $k2 ((v Int)))
+(wf $k1 ((v Int)))
+
+
+; Horn constraints
+(constraint (forall ((v1 Int)) (=> (= v1 0) ($k1 v1))))
+(constraint (forall ((x Int)(v2 Int)) (=> (and ($k2 v) (= v2 (+ x 1))) ($k1 v2))))
+(constraint (forall ((v3 Int)) (=> ($k1 v3) ($k2 v3))))
+(constraint (forall ((v4 Int)) (=> ($k2 v4) (= 0 v4))))

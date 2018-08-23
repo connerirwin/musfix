@@ -1,0 +1,14 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun Prop (GHC.Types.Bool) Bool)
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints

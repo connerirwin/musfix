@@ -1,0 +1,16 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun One Peano)
+(declare-fun Zero Peano)
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((xZero Peano)(xOne Peano)(v1 Int)) (=> (and (= xZero Zero) (and (= xOne One) True)) (= xZero xOne))))

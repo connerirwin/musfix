@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+(declare-sort LL 0)
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((n Int)(m Int)(v1 Int)) (=> (and True (and True (= (con n (con m emp)) (con m (con n emp))))) (= m n))))

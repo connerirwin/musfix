@@ -349,7 +349,7 @@ unifySortsM (MapS k1 v1) (MapS k2 v2) = do
 unifySortsM AnyS b  = pure b
 unifySortsM a AnyS  = pure a
 unifySortsM a@(VarS na) b@(VarS nb) = do
-      updateMap na b
+      updateMap na b  -- TODO fix this by creating a new data structure
       updateMap nb AnyS
       pure a
 unifySortsM (VarS name) b = do

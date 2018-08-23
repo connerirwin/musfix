@@ -1,0 +1,16 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+(wf $k_0 ((v Int)))
+
+
+; Horn constraints
+(constraint (forall ((x Int)(y Int)(v1 Int)) (=> (and True (and True True)) ($k_0 x))))
+(constraint (forall ((x Int)(y Int)(v2 Int)) (=> (and True (and True ($k_0 y))) (= y x))))

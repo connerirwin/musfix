@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun adder (Int) (Int) Int)
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((v1 Int)) (=> (= (apply (apply adder 5) 6) (+ 5 6)) (= (apply (apply adder 5) 6) 11))))

@@ -1,0 +1,17 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+(wf $k ((m Int)(v Int)))
+
+
+; Horn constraints
+(constraint (forall ((m Int)(z Int)(v1 Int)) (=> (and True (and (= z (- m 1)) (= v1 (+ z 2)))) ($k m v1))))
+(constraint (forall ((m Int)(x1 Int)(v2 Int)) (=> (and True (and True ($k m v2))) (= v2 x1))))
+(constraint (forall ((m Int)(x1 Int)(v3 Int)) (=> (and True (and True (= v3 (+ x1 1)))) (= v3 (+ m 2)))))

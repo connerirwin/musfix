@@ -1,0 +1,14 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun foo (@a0) @a0)
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints

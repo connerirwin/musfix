@@ -1,0 +1,14 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+(qualif Auto ((v Int)(x Int)) (= v (ite (> x 0) 0 0)))
+
+
+; Well-formedness constraints
+
+
+; Horn constraints

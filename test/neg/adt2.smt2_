@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+(declare-sort Vec 1)
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((x Int)(xs (Vec Int))(l1 (Vec Int))(l3 (Vec Int))(v4 Int)) (=> (and True (and (= xs mkNil) (and (= l1 (mkCons x xs)) (and True (= l1 l3))))) (= y (head l3)))))

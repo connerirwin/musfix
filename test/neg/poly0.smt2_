@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun offset (Int) (Int) @a0)
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((x (BitVec Size32))(v1 (BitVec Size32))) (=> (and (= VV (apply (apply offset 0) 0)) (= v1 x)) (not (= v1 x)))))

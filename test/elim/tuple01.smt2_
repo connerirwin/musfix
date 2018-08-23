@@ -1,0 +1,32 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+(wf $k_3_2 ((v Int)))
+(wf $k_4_2 ((v Int)))
+(wf $k_1_1 ((v Int)))
+(wf $k_2_2 ((v Int)))
+(wf $k_4_1 ((v Int)))
+(wf $k_5_1 ((v Int)))
+(wf $k_1_2 ((v Int)))
+(wf $k_2_1 ((v Int)))
+(wf $k_3_1 ((v Int)))
+
+
+; Horn constraints
+(constraint (forall ((cat Int)(dog Int)(frog Int)(mouse Int)(hippo Int)(goose Int)(crow Int)(pig Int)(v1 Int)) (=> (and (= cat 100) (and (= dog 200) (and (= frog 400) (and (= mouse 500) (and (= hippo 600) (and (= goose 700) (and (= crow 800) (and (= pig 900) (= v1 1))))))))) ($k_1_1 v1))))
+(constraint (forall ((cat Int)(dog Int)(frog Int)(mouse Int)(hippo Int)(goose Int)(crow Int)(pig Int)(v2 Int)) (=> (and (= cat 100) (and (= dog 200) (and (= frog 400) (and (= mouse 500) (and (= hippo 600) (and (= goose 700) (and (= crow 800) (and (= pig 900) (= v2 2))))))))) ($k_1_2 v2))))
+(constraint (forall ((x_1_1 Int)(x_1_2 Int)(v3 Int)) (=> (and ($k_1_1 v) (and ($k_1_2 v) (= v3 x_1_1))) ($k_2_1 v3))))
+(constraint (forall ((x_1_1 Int)(x_1_2 Int)(v4 Int)) (=> (and ($k_1_1 v) (and ($k_1_2 v) (= v4 x_1_2))) ($k_2_2 v4))))
+(constraint (forall ((v5 Int)(x_2_1 Int)(x_2_2 Int)) (=> (and (= v5 x_2_1) (and ($k_2_1 v) ($k_2_2 v))) ($k_3_1 v5))))
+(constraint (forall ((v6 Int)(x_2_1 Int)(x_2_2 Int)) (=> (and (= v6 x_2_2) (and ($k_2_1 v) ($k_2_2 v))) ($k_3_2 v6))))
+(constraint (forall ((v7 Int)(x_3_1 Int)(x_3_2 Int)) (=> (and (= v7 x_3_1) (and ($k_3_1 v) ($k_3_2 v))) ($k_4_1 v7))))
+(constraint (forall ((v8 Int)(x_3_1 Int)(x_3_2 Int)) (=> (and (= v8 x_3_2) (and ($k_3_1 v) ($k_3_2 v))) ($k_4_2 v8))))
+(constraint (forall ((v9 Int)(x_4_1 Int)(x_4_2 Int)) (=> (and (= v9 x_4_1) (and ($k_4_1 v) ($k_4_2 v))) ($k_5_1 v9))))
+(constraint (forall ((v11 Int)) (=> ($k_5_1 v11) (= v11 1))))

@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun in (@a0) ((FAppTy Set @a0)) Bool)
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((v1 Int)) (=> (> v1 10) (> v1 10))))

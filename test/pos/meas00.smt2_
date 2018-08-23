@@ -1,0 +1,19 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun thinginess (Tree) Int)
+
+
+; Qualifiers
+(qualif Sz ((v Tree)) (< 0 (thinginess v)))
+(qualif Sz ((v Tree)) (< 1 0))
+
+
+; Well-formedness constraints
+(wf $k1 ((v Tree)))
+
+
+; Horn constraints
+(constraint (forall ((v1 Tree)) (=> (< 666 (apply thinginess v1)) ($k1 v1))))
+(constraint (forall ((v2 Tree)) (=> ($k1 v2) (< 0 (apply thinginess v2)))))

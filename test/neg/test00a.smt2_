@@ -1,0 +1,18 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+(qualif Zog ((v @a0)) (<= 10 v))
+
+
+; Well-formedness constraints
+(wf $k0 ((v Int)))
+
+
+; Horn constraints
+(constraint (forall ((x Int)(v1 Int)) (=> (and True (= x 9)) ($k0 x))))
+(constraint (forall ((y Int)(v2 Int)) (=> (and True (= y 20)) ($k0 y))))
+(constraint (forall ((z Int)(v3 Int)) (=> (and True ($k0 z)) (<= 10 z))))

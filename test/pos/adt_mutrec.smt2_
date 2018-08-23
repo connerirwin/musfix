@@ -1,0 +1,16 @@
+; Uninterpreted Sorts
+(declare-sort Val 0)
+(declare-sort VEnv 0)
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((env VEnv)(val Val)(x Int)(y Int)(envx VEnv)(envy VEnv)(v1 Int)) (=> (and True (and True (and True (and True (and (= envx (VBind x val env)) (and (= envy (VBind y val env)) (= x y))))))) (= envx envy))))

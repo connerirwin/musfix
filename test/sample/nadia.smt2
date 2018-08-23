@@ -1,4 +1,6 @@
 ; the weakest solution is `$k0 -> len v0 == 1 + len nil, elems v0 == v1 + elems nil`
+; x:x:[]
+
 
 ; num is the number of sorts that this takes
 (declare-sort List 1)

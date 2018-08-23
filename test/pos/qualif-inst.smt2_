@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun elems ((Goo.T @a0)) (Set @a0))
+
+
+; Qualifiers
+(qualif Cmp ((v @a0)(fix##126#X @a0)) (>= v fix##126#X))
+
+
+; Well-formedness constraints
+
+
+; Horn constraints

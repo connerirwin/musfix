@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+(declare-sort Either 2)
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((escobar Int)(junk (Either Bool Int))(punk (Either Int Int))(v1 Int)) (=> (and True (and (= junk (left escobar)) (and True True))) (= punk (left escobar)))))

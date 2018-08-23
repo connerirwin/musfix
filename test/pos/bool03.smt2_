@@ -1,0 +1,20 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+(declare-fun lit#cat Str)
+(declare-fun lit$36$not$45$the$45$hippopotamus Str)
+(declare-fun lit#dog Str)
+
+
+; Qualifiers
+(qualif LE ((v @a0)(x @a0)) (<= x v))
+
+
+; Well-formedness constraints
+(wf $k1 ((bx Bool)(v Bool)))
+
+
+; Horn constraints
+(constraint (forall ((bx Bool)(v1 Bool)) (=> (and True (<= (apply cast_as_int bx) (apply cast_as_int v1))) ($k1 bx v1))))
+(constraint (forall ((bx Bool)(zx Bool)(v2 Bool)) (=> (and True (and (not (= lit#cat lit#dog)) ($k1 bx v2))) (<= (apply cast_as_int bx) (apply cast_as_int v2)))))

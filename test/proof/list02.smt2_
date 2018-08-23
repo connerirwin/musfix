@@ -1,0 +1,21 @@
+; Uninterpreted Sorts
+(declare-sort Blob 0)
+(declare-sort Vec 1)
+
+
+; Uninterpreted Functions
+(declare-fun bob Blob)
+(declare-fun tt (Vec Bool))
+(declare-fun hen (Blob) Int)
+(declare-fun foo (Blob) Blob)
+(declare-fun len ((Vec @a0)) Int)
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((thing Int)(v1 Int)) (=> (and True (and (= (apply len (VCons 1)) 10) (= (apply len (VCons 1)) (apply hen (apply foo (VBlob 12)))))) (= (apply len (VCons 1)) 10))))

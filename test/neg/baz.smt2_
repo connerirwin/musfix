@@ -1,0 +1,15 @@
+; Uninterpreted Sorts
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness constraints
+
+
+; Horn constraints
+(constraint (forall ((v0 Int)) (=> (= v0 6) False)))
+(constraint (forall ((x Int)(v1 Int)) (=> (and False (= v1 x)) (= v1 0))))
