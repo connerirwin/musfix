@@ -4,4 +4,6 @@
 stack build &&
 
 TEST_RUN='stack exec -- musfix --verbose test/*/*.smt2'
-diff <(${TEST_RUN}) correct_program_output | vim -R -
+${TEST_RUN} &> tmp_verification_file
+git diff --no-index --word-diff --patience --color tmp_verification_file correct_program_output
+rm tmp_verification_file

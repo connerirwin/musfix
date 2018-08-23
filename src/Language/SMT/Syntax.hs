@@ -73,6 +73,7 @@ valueSort (MapS _ s) = s
 isData (DataS _ _) = True
 isData _ = False
 sortArgsOf (DataS _ sArgs) = sArgs
+sortArgsOf _ = [AnyS]
 varSortName (VarS name) = name
 
 isAnyPoly (VarS _) = True
