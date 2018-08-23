@@ -21,11 +21,16 @@ import Data.Set (Set)
 import qualified Data.Text as T
 import Data.Text (Text)
 
+import Debug.Trace
+
 {- Utility functions -}
+debugOut a = traceShow a a
+
 getInt :: S.Scientific -> Int
 getInt n = case S.floatingOrInteger n of
   Left  f -> error $ "non-integral value not supported " ++ (show n)
   Right i -> i
+
 
 -- | Unary operators
 unaryOps :: Map Text UnOp
@@ -92,9 +97,14 @@ instance FromLisp InputExpr where
     return $ SortDecl (T.unpack n) (getInt num)
   -- | Uninterpreted function declaration
   parseLisp (List [(Symbol "declare-fun"), (Symbol n), List ps, rt]) = do
-    params <- mapM parseSortM ps
-    output <- parseSortM rt
-    return $ UninterpFunction (T.unpack n) params output
+      params <- mapM parseSortM ps
+      output <- parseSortM rt
+      return $ UninterpFunction (T.unpack n) params output
+  -- | Constants
+  -- TODO this is currently implemented very poorly
+  parseLisp (List [(Symbol "declare-const"), (Symbol n), rt]) = do
+      output <- parseSortM rt
+      return $ UninterpFunction (T.unpack n) [] output
   -- | Qualifiers
   parseLisp (List [(Symbol "qualif"), (Symbol n), List xs, y]) = do
       vars <- mapM parseFormula xs
@@ -157,9 +167,12 @@ instance FromLisp Formula where
   --     map2    <- parseFormula m2
   --     return $ MapUni map1 map2
   -- | Variable
+  -- TODO This currently incorrectly matches against declared constants, which are then later resolved
   parseLisp (Symbol v)
     | Set.notMember v reserved
-      && ((Char.isLower $ T.head v) || (T.head v == '_')) = pure $ Var AnyS (T.unpack v)
+      && ((Char.isLower $ T.head v) || (T.head v == '_'))
+      && T.head v /= '$'
+      = pure $ Var AnyS (T.unpack v)
   -- | Variable sort assignment
   parseLisp (List [(Symbol v), s])
     | Set.notMember v reserved      -- ^ Variable name is not a reserved keyword
@@ -239,7 +252,8 @@ parseSort (Symbol s)
     where
       name = T.unpack $ T.tail s
 -- | Sort literal
-parseSort (Symbol s) = Map.lookup s sorts
+parseSort (Symbol s)
+  | Map.member s sorts = Map.lookup s sorts
 -- | Constructor
 parseSort (List ((Symbol n):fs))
   | Char.isUpper $ T.head n = do
@@ -247,6 +261,10 @@ parseSort (List ((Symbol n):fs))
       return $ DataS name formals
     where
       name = T.unpack n
+-- | In order to allow a no-arg constructor to not need parenthesis
+parseSort (Symbol n)
+  | Char.isUpper $ T.head n = do
+      return $ DataS (T.unpack n) []
 parseSort _ = Nothing
 
 isSort :: Lisp -> Bool

@@ -40,6 +40,12 @@ data Environment = Environment {
   consMap :: Map Id Int          -- Keeps track of the number of parameters that a new sort takes
 }
 
+getFormalSorts :: [Sort] -> [Sort]
+getFormalSorts s = take (length s - 1) s
+
+getReturnSort :: [Sort] -> Sort
+getReturnSort = last
+
 {- Debug Testing -}
 resolverDebug :: IO ()
 resolverDebug = do
@@ -171,26 +177,27 @@ resolveSorts env ins = map targetUpdate ins
     resolveAp :: Formula -> Formula
     resolveAp u@(Unary op f)        = Unary op f'
       where
-        ap = FunctionApplication (show op) (init $ unOpSort op) [f] u
+        ap = FunctionApplication (show op) (getFormalSorts $ unOpSort op) [f] u
         (FunctionApplication _ _ [f'] _) = checkAp ap
     resolveAp b@(Binary op f1 f2)   = Binary op f1' f2'
       where
-        ap = FunctionApplication (show op) (init $ binOpSort op) [f1, f2] b
+        ap = FunctionApplication (show op) (getFormalSorts $ binOpSort op) [f1, f2] b
         (FunctionApplication _ _ [f1', f2'] _) = checkAp ap
     resolveAp f@(Func sort name fs) = Func sort name fs'
       where
-        ap = FunctionApplication name (init $ (predMap env) ! name) fs f
+        ap = FunctionApplication name (getFormalSorts $ (predMap env) ! name) fs f
         (FunctionApplication _ _ fs' _) = checkAp ap
 
     -- | Lookup the variable sort from the formals
     lookupVar :: Formula -> [Formula] -> Formula
     lookupVar (Var sort name) vs
+      | Map.member name $ predMap env  = Func (getReturnSort $ (predMap env) ! name) name []  -- ^ TODO this is a hack
       | sort == AnyS  = Var sort' name
       | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
       where
         sort' = case Map.lookup name (formalSortMap vs) of
           Nothing -> error $ "no sort found for " ++ name ++ " in qualifier (variable not declared)"
-          Just sort -> sort
+          Just s  -> s
 
         formalSortMap :: [Formula] -> Map Id Sort
         formalSortMap formals = Map.fromList $ map boxVar formals
@@ -202,7 +209,7 @@ resolveSorts env ins = map targetUpdate ins
     lookupFunc :: Formula -> Formula
     lookupFunc (Func _ name fs) = Func sort name fs
       where
-        sort = last $ (predMap env) ! name
+        sort = getReturnSort $ (predMap env) ! name
 
     -- | Ensure that the correct number of formals are passed
     lookupCons :: Formula -> Formula
