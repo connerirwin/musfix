@@ -1,17 +1,17 @@
 (declare-sort Tuple 2)
 
-(declare-fun len (@0 @1) Int)
+(declare-fun len (Set @1) Int) ; TODO ask ranjit
 
 (qualif ListZ ((v (Set @0))) (>= (len v) 0))
 
-(wf (Set $k0) ((v (Set (Tuple Int @a)))))
+(wf $k0 ((v (Set (Tuple Int @a)))))
 
 (constraint
   (forall ((v (Set (Tuple Int @a))))
     (=> (>= (len v) 0)
-        ((Set $k0)))))
+        ($k0 v))))
 
 (constraint
   (forall ((v (Set (Tuple Int @a))))
-    (=> ((Set $k0))
+    (=> ($k0 v)
         (>= (len v) 0))))
