@@ -142,7 +142,7 @@ instance FromLisp Formula where
     Left  f -> fail $ "non-integral value not supported " ++ (show n)
     Right i -> pure $ IntLit i
   -- | Set
-  parseLisp (Symbol "[]") = do
+  parseLisp (Symbol "{}") = do
       pure $ SetLit AnyS []
   parseLisp (List ((Symbol "Set"):v:vs))
     | not $ isSort v  = do

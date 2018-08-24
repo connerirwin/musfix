@@ -221,7 +221,6 @@ resolveSorts env ins = map targetUpdate ins
         sort = getReturnSort $ (predMap env) ! name
 
     -- | Ensure that the correct number of formals are passed
-    -- TODO use this number to generate a set of AnyS that are then unified with the actual arguments
     lookupCons :: Formula -> Formula
     lookupCons c@(Cons sort name fs) = Cons sort' name fs'
       where
