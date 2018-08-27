@@ -1,5 +1,4 @@
 -Convert map_select to binOp
--Create Multikey Map
 -Improve the cmd parser (try using optparse-applicative)
 -Map_union
 -Better method for logging (error stops the program, not everything should be IO)

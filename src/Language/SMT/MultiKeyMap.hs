@@ -55,9 +55,6 @@ delete k m = m { keyMap = keyMap', valMap = valMap' }
     internalKeys = Map.elems $ keyMap m
     valMap' = Map.filterWithKey (\k _ -> k `elem` internalKeys) $ valMap m
 
-adjust :: Ord k => (a -> a) -> k -> MultiKeyMap k a -> MultiKeyMap k a
-adjust f k m = m
-
 -- | Query
 lookup :: Ord k => k -> MultiKeyMap k a -> Maybe a
 lookup k m = do
@@ -69,7 +66,7 @@ member k m = Map.member k $ keyMap m
 
 -- | Conversion
 elems :: MultiKeyMap k a -> [a]
-elems m = []
+elems m = Map.elems $ valMap m
 
 keys :: MultiKeyMap k a -> [k]
-keys m = []
+keys m = Map.keys $ keyMap m

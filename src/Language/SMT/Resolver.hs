@@ -202,7 +202,7 @@ resolveSorts env ins = map targetUpdate ins
     -- | Lookup the variable sort from the formals
     lookupVar :: Formula -> [Formula] -> Formula
     lookupVar (Var sort name) vs
-      | Map.member name $ predMap env  = Func (getReturnSort $ (predMap env) ! name) name []  -- ^ TODO this is a hack
+      | Map.member name $ predMap env  = Func (getReturnSort $ (predMap env) ! name) name []  -- ^ TODO this is a hack that replaces vars with constants
       | sort == AnyS  = Var sort' name
       | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
       where
