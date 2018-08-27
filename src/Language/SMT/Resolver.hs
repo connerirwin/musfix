@@ -4,6 +4,8 @@ module Language.SMT.Resolver (
   resolverDebug,
 ) where
 
+import qualified Language.SMT.MultiKeyMap as MultiKeyMap
+import Language.SMT.MultiKeyMap (MultiKeyMap)
 import Language.SMT.Syntax
 
 import Language.Synquid.HornSolver
@@ -164,7 +166,7 @@ resolveSorts env ins = map targetUpdate ins
         resolveSet' :: Formula -> Maybe Formula
         resolveSet' (SetLit sort elems) = do
           -- | Unify, then apply generated map (this is two pass unification)
-          (partialElems, polymap) <- runStateT (mapM (applySortM sort) elems) Map.empty
+          (partialElems, polymap) <- runStateT (mapM (applySortM sort) elems) MultiKeyMap.empty
           let elems' = map (applyMap polymap sort) partialElems
 
           let sort' = if length elems' > 0 then sortOf $ head elems' else AnyS
@@ -249,7 +251,7 @@ resolveSorts env ins = map targetUpdate ins
           Just n  -> n
         numArgs = length args
 
-type PolyMap = Map Id Sort
+type PolyMap = MultiKeyMap Id Sort
 
 checkAp :: FunctionApplication -> FunctionApplication
 checkAp ap = case checkApM ap of
@@ -266,14 +268,14 @@ checkApM :: FunctionApplication -> Maybe FunctionApplication
 checkApM ap = do
     let formalSorts = signature ap
     let args = arguments ap
-    (partialFormals, polymap) <- runStateT (zipWithM applySortM formalSorts args) Map.empty
+    (partialFormals, polymap) <- runStateT (zipWithM applySortM formalSorts args) MultiKeyMap.empty
 
     let formals' = zipWith (applyMap polymap) formalSorts partialFormals
     return $ ap { arguments = formals' }
 
 -- Error reporting
 applySort :: Sort -> Formula -> Formula
-applySort s f = case evalStateT (applySortM s f) Map.empty of
+applySort s f = case evalStateT (applySortM s f) MultiKeyMap.empty of
     Nothing -> error $ "Sort mismatch:  Cannot apply sort " ++ show s ++ " to " ++ show f
     Just a  -> a
 
@@ -297,13 +299,10 @@ applySortM s f = do
       | name == name'  = Cons s name fs
     applySort' _ f                           = f
 
--- | TODO Poly map needs to have multiple keys go to the same value
--- Multikey map
--- Either, have two maps, or have an key that indexes a VarS keep looking until it reaches a concrete sort
-updateMap :: Id -> Sort -> StateT PolyMap Maybe ()
-updateMap name s = do
+updateMap :: [Id] -> Sort -> StateT PolyMap Maybe ()
+updateMap names s = do
     m <- get
-    let m' = Map.insertWith (unifySortsMap m) name s m
+    let m' = MultiKeyMap.insertWith (unifySortsMap m) names s m
     put m'
 
 unifySortsMap :: PolyMap -> Sort -> Sort -> Sort
@@ -314,18 +313,18 @@ unifySortsMap m a b = case evalStateT (unifySortsM a b) m of
 -- | This needs to check the old sorts of the formals
 -- | If any of the formals used to be VarS, this should update them
 applyMap :: PolyMap -> Sort -> Formula -> Formula
-applyMap m (VarS name) f = case Map.lookup name m of
+applyMap m (VarS name) f = case MultiKeyMap.lookup name m of
     Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
     Just s  -> applySort s f
 applyMap m _ f
-  | (VarS name) <- sortOf f = case Map.lookup name m of
+  | (VarS name) <- sortOf f = case MultiKeyMap.lookup name m of
     Nothing -> error $ "Polymap lookup failed: " ++ show name ++ " is not present in map " ++ show m
     Just s  -> applySort s f
 applyMap _ _ f = f
 
 -- | Error reporting
 unifySorts :: Sort -> Sort -> Sort
-unifySorts a b = case evalStateT (unifySortsM a b) Map.empty of
+unifySorts a b = case evalStateT (unifySortsM a b) MultiKeyMap.empty of
     Nothing -> error $ "Sort mismatch:  Cannot unify sorts " ++ show a ++ " and " ++ show b
     Just s  -> s
 
@@ -348,13 +347,12 @@ unifySortsM (MapS k1 v1) (MapS k2 v2) = do
 unifySortsM AnyS b  = pure b
 unifySortsM a AnyS  = pure a
 unifySortsM a@(VarS na) b@(VarS nb) = do
-      updateMap na b  -- TODO fix this by creating a new data structure
-      updateMap nb AnyS
+      updateMap [na, nb] AnyS
       pure a
 unifySortsM (VarS name) b = do
-      updateMap name b
+      updateMap [name] b
       pure b
 unifySortsM a (VarS name) = do
-      updateMap name a
+      updateMap [name] a
       pure a
 unifySortsM _ _        = fail "sort mismatch"
