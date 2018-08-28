@@ -40,7 +40,9 @@ unaryOps = Map.fromList [ ("not",     Not)
 
 -- | Binary operators
 binaryOps :: Map Text BinOp
-binaryOps = Map.fromList [ ("*",     Times) -- ^ TODO why don't we support division?
+binaryOps = Map.fromList [ ("*",     Times)
+                         -- , ("/",       Div)
+                          -- TODO why don't we support division? this could be added to z3 fairly easily with mkDiv
                          , ("+",      Plus)
                          , ("-",     Minus)
                          , ("==",       Eq)
@@ -89,8 +91,6 @@ checkVars fs = foldr ((&&) . isVar) True fs
     isVar (Var _ _) = True
     isVar _         = False
 
--- | TODO replace parseFormula & checkvars with parseVars
--- parseVars will have better error reporting
 instance FromLisp InputExpr where
   -- | Custom Sorts
   parseLisp (List [(Symbol "declare-sort"), (Symbol n), (Number num)]) =
@@ -101,7 +101,8 @@ instance FromLisp InputExpr where
       output <- parseSortM rt
       return $ UninterpFunction (T.unpack n) params output
   -- | Constants
-  -- TODO this is currently implemented very poorly
+  -- TODO Constants are currently hacked in as uninterpreted functions that take no arguments
+  -- Additionally, since the parser cannot identify them, they are treated as variables and then replaced in the resolver
   parseLisp (List [(Symbol "declare-const"), (Symbol n), rt]) = do
       output <- parseSortM rt
       return $ UninterpFunction (T.unpack n) [] output

@@ -95,9 +95,6 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     isSet :: Eq a => [a] -> Bool
     isSet a = nub a == a
 
--- | TODO I bet that it is possible to combine these into a single pass.
--- What if we switch from Maybe to either? something like this:
--- resolveRefinement :: Environment -> Formula -> Either ErrorMessage Formula
 prepareInputs :: [InputExpr] -> [InputExpr]
 prepareInputs ins = resolve ins
   where
