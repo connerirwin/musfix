@@ -2,3 +2,8 @@
 -Improve the cmd parser (try using optparse-applicative)
 -Map_union
 -Better method for logging (error stops the program, not everything should be IO)
+
+
+-Set_sng => Set
+-turn data constructors into uninterpreted functions
+-horn solver preamble? distinct vars

@@ -41,8 +41,6 @@ unaryOps = Map.fromList [ ("not",     Not)
 -- | Binary operators
 binaryOps :: Map Text BinOp
 binaryOps = Map.fromList [ ("*",     Times)
-                         -- , ("/",       Div)
-                          -- TODO why don't we support division? this could be added to z3 fairly easily with mkDiv
                          , ("+",      Plus)
                          , ("-",     Minus)
                          , ("==",       Eq)
