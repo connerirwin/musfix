@@ -70,6 +70,7 @@ isMapS (MapS _ _) = True
 isMapS _ = False
 keySort (MapS s _) = s
 valueSort (MapS _ s) = s
+kvSort (MapS k v) = [k, v]
 isData (DataS _ _) = True
 isData _ = False
 sortArgsOf (DataS _ sArgs) = sArgs

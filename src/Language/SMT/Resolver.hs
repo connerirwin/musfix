@@ -138,10 +138,10 @@ resolveSorts env ins = map targetUpdate ins
     resolve :: [Formula] -> Formula -> Formula
     resolve _  b@(BoolLit bool)      = b
     resolve _  i@(IntLit val)        = i
-    resolve _  s@(SetLit sort elems) = resolveSet s -- ^ check sort of elems
+    resolve _  s@(SetLit sort elems) = resolveSet s
     resolve _  m@(MapLit ksort val)  = m
-    resolve _  ms@(MapSel m k)       = ms -- ^ TODO resolveAp ?
-    resolve _  mu@(MapUpd m k v)     = mu
+    resolve _  ms@(MapSel m k)       = resolveAp ms
+    resolve _  mu@(MapUpd m k v)     = resolveAp mu
     resolve vs v@(Var sort name)     = lookupVar v vs
     resolve _  wf@(Unknown sub name) = resolveUnknown wf
     resolve _  u@(Unary op f)        = resolveAp u
@@ -192,6 +192,14 @@ resolveSorts env ins = map targetUpdate ins
       where
         ap = FunctionApplication name (getFormalSorts $ (predMap env) ! name) fs f
         (FunctionApplication _ _ fs' _) = checkAp ap
+    resolveAp ms@(MapSel m k) = MapSel m k'
+      where
+        ap = FunctionApplication "Map_select" [keySort $ sortOf m] [k] ms
+        (FunctionApplication _ _ [k'] _) = checkAp ap
+    resolveAp mu@(MapUpd m k v) = MapUpd m k' v'
+      where
+        ap = FunctionApplication "Map_update" (kvSort $ sortOf m) [k, v] mu
+        (FunctionApplication _ _ [k', v'] _) = checkAp ap
 
     -- | Lookup the variable sort from the formals
     lookupVar :: Formula -> [Formula] -> Formula
