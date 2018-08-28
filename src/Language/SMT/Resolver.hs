@@ -42,12 +42,6 @@ data Environment = Environment {
   consMap :: Map Id Int          -- Keeps track of the number of parameters that a new sort takes
 }
 
-getFormalSorts :: [Sort] -> [Sort]
-getFormalSorts s = take (length s - 1) s
-
-getReturnSort :: [Sort] -> Sort
-getReturnSort = last
-
 {- Debug Testing -}
 resolverDebug :: IO ()
 resolverDebug = do

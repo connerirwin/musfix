@@ -80,6 +80,12 @@ isAnyPoly (VarS _) = True
 isAnyPoly AnyS     = True
 isAnyPoly _        = False
 
+getFormalSorts :: [Sort] -> [Sort]
+getFormalSorts s = take (length s - 1) s
+
+getReturnSort :: [Sort] -> Sort
+getReturnSort = last
+
 -- | Unary operators
 data UnOp =
     Neg |                           -- ^ Int -> Int
@@ -205,13 +211,8 @@ sortOf (MapSel m _)                              = valueSort $ sortOf m
 sortOf (MapUpd m _ _)                            = sortOf m
 sortOf (Var s _ )                                = s
 sortOf (Unknown _ _)                             = BoolS
-sortOf (Unary op _)
-  | op == Neg                                    = IntS
-  | otherwise                                    = BoolS
-sortOf (Binary op e1 _)
-  | op == Times || op == Plus || op == Minus     = IntS
-  | op == Union || op == Intersect || op == Diff = sortOf e1
-  | otherwise                                    = BoolS
+sortOf (Unary op _)                              = getReturnSort $ unOpSort op
+sortOf (Binary op e1 _)                          = getReturnSort $ binOpSort op
 sortOf (Ite _ e1 _)                              = sortOf e1
 sortOf (Func s _ _)                              = s
 sortOf (Cons s _ _)                              = s
