@@ -1,9 +1,17 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+(declare-const One Peano)
+(declare-const Zero Peano)
+
+
+; Distinct Constants
+(assert (distinct One Zero))
 
 
 ; Uninterpreted Functions
-(declare-fun One Peano)
-(declare-fun Zero Peano)
 
 
 ; Qualifiers

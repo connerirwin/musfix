@@ -1,13 +1,21 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+(declare-const year Str)
+(declare-const star Str)
+(declare-const title Str)
+(declare-const director Str)
+
+
+; Distinct Constants
+(assert (distinct year star title director))
 
 
 ; Uninterpreted Functions
 (declare-fun listElts (LLChar) (Set Str))
 (declare-fun Set_sng (@a0) (Set @a0))
-(declare-fun lit$year Str)
-(declare-fun lit$star Str)
-(declare-fun lit$title Str)
-(declare-fun lit$director Str)
 
 
 ; Qualifiers

@@ -1,11 +1,18 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
 (declare-sort Bin 0)
 (declare-sort Binary 0)
 
 
+; Constants
+
+
+; Distinct Constants
+
+
 ; Uninterpreted Functions
 (declare-fun prop (@a0) @a1)
-(declare-fun gibber (Int) (Int) Int)
+(declare-fun gibber (Int Int) Int)
 
 
 ; Qualifiers

@@ -1,10 +1,17 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+(declare-const Nil (Main.List @a0))
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun len ((Main.List @a0)) Int)
-(declare-fun Nil (Main.List @a0))
-(declare-fun Cons (@a0) ((Main.List @a0)) (Main.List @a0))
+(declare-fun Cons (@a0 (Main.List @a0)) (Main.List @a0))
 
 
 ; Qualifiers

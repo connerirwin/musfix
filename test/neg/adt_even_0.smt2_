@@ -1,7 +1,14 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
 (declare-sort Peano 0)
 (declare-sort Ev 0)
 (declare-sort Even 0)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions

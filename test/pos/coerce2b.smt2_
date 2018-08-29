@@ -1,4 +1,11 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -12,4 +19,4 @@
 
 
 ; Horn constraints
-(constraint (forall ((b ([] Int))(pig [b])(v1 Int)) (=> (and True (and (= (apply len pig) 10) True)) (> (apply len pig) 5))))
+(constraint (forall ((b (List Int))(pig Obj b)(v1 Int)) (=> (and True (and (= (apply len pig) 10) True)) (> (apply len pig) 5))))

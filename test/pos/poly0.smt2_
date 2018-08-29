@@ -1,8 +1,15 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
-(declare-fun offset (Int) (Int) @a0)
+(declare-fun offset (Int Int) @a0)
 
 
 ; Qualifiers

@@ -1,8 +1,15 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
-(declare-fun adder (Int) (Int) Int)
+(declare-fun adder (Int Int) Int)
 
 
 ; Qualifiers

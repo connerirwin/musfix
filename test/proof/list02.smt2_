@@ -1,11 +1,18 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
 (declare-sort Blob 0)
 (declare-sort Vec 1)
 
 
+; Constants
+(declare-const bob Blob)
+(declare-const tt (Vec Bool))
+
+
+; Distinct Constants
+
+
 ; Uninterpreted Functions
-(declare-fun bob Blob)
-(declare-fun tt (Vec Bool))
 (declare-fun hen (Blob) Int)
 (declare-fun foo (Blob) Blob)
 (declare-fun len ((Vec @a0)) Int)

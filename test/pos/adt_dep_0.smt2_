@@ -1,6 +1,13 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
 (declare-sort Zob 0)
 (declare-sort LL 0)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions

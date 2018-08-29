@@ -1,8 +1,15 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
-(declare-fun in (@a0) ((FAppTy Set @a0)) Bool)
+(declare-fun in (@a0 (FAppTy Set @a0)) Bool)
 
 
 ; Qualifiers

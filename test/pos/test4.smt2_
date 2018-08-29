@@ -1,4 +1,11 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -9,9 +16,9 @@
 
 
 ; Well-formedness constraints
-(wf $k__511 ((VV510 [a_ax6])(ds_dxx [a_ax6])))
+(wf $k__511 ((VV510 Obj a_ax6)(ds_dxx Obj a_ax6)))
 
 
 ; Horn constraints
-(constraint (forall ((ds_dxx [a_ax6])(v4 [a_ax6])) (=> (and True ($k__511 v4 ds_dxx)) (= v4 ds_dxx))))
-(constraint (forall ((ds_dxx [a_ax6])(v9 [a_ax6])) (=> (and True (= v9 ds_dxx)) ($k__511 v9 ds_dxx))))
+(constraint (forall ((ds_dxx Obj a_ax6)(v4 Obj a_ax6)) (=> (and True ($k__511 v4 ds_dxx)) (= v4 ds_dxx))))
+(constraint (forall ((ds_dxx Obj a_ax6)(v9 Obj a_ax6)) (=> (and True (= v9 ds_dxx)) ($k__511 v9 ds_dxx))))

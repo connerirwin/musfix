@@ -1,4 +1,11 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -11,4 +18,4 @@
 
 
 ; Horn constraints
-(constraint (forall ((v3 (Set [a_aTp]))) (=> (Set_emp v3) (= v3 []))))
+(constraint (forall ((v3 (Set Obj a_aTp))) (=> (Set_emp v3) (= v3 {}))))

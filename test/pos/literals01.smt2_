@@ -1,8 +1,16 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+(declare-const cat Str)
+
+
+; Distinct Constants
+(assert (distinct cat))
 
 
 ; Uninterpreted Functions
-(declare-fun lit$cat Str)
 
 
 ; Qualifiers
@@ -12,4 +20,4 @@
 
 
 ; Horn constraints
-(constraint (forall ((v1 Str)) (=> (= v1 lit$cat) (= (strLen v1) 3))))
+(constraint (forall ((v1 Str)) (=> (= v1 cat) (= (strLen v1) 3))))

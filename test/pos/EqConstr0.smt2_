@@ -1,4 +1,11 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -11,4 +18,4 @@
 
 
 ; Horn constraints
-(constraint (forall ((a Int)(x Int)(y [a])(v1 Int)) (=> (and True (and True (and True (= x y)))) (= y x))))
+(constraint (forall ((a Int)(x Int)(y Obj a)(v1 Int)) (=> (and True (and True (and True (= x y)))) (= y x))))

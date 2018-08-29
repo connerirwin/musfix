@@ -1,8 +1,15 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
-(declare-fun sem (Int) (Int) (Set Int))
+(declare-fun sem (Int Int) (Set Int))
 
 
 ; Qualifiers

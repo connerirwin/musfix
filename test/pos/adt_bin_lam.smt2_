@@ -1,5 +1,12 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
 (declare-sort Bin 0)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions

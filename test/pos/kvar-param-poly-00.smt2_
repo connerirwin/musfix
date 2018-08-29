@@ -1,4 +1,11 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -9,9 +16,9 @@
 
 
 ; Well-formedness constraints
-(wf $k0 ((x [alpha])(v [alpha])))
+(wf $k0 ((x Obj alpha)(v Obj alpha)))
 
 
 ; Horn constraints
-(constraint (forall ((x [alpha])(v1 [alpha])) (=> (and True (= v1 x)) ($k0 x v1))))
+(constraint (forall ((x Obj alpha)(v1 Obj alpha)) (=> (and True (= v1 x)) ($k0 x v1))))
 (constraint (forall ((a Int)(b Int)(v2 Int)) (=> (and (= a 10) (and ($k0 a v) (= v2 b))) (= v2 10))))

@@ -1,4 +1,11 @@
 ; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -9,9 +16,9 @@
 
 
 ; Well-formedness constraints
-(wf $k0 ((v [alpha])(alpha unknown [given FNum])))
+(wf $k0 ((v Obj alpha)(alpha unknown [given FNum])))
 
 
 ; Horn constraints
-(constraint (forall ((alpha unknown [given FNum])(v1 [alpha])) (=> (and True (= v1 10)) ($k0 v1))))
-(constraint (forall ((alpha unknown [given FNum])(v2 [alpha])) (=> (and True ($k0 v2)) (<= 0 v2))))
+(constraint (forall ((alpha unknown [given FNum])(v1 Obj alpha)) (=> (and True (= v1 10)) ($k0 v1))))
+(constraint (forall ((alpha unknown [given FNum])(v2 Obj alpha)) (=> (and True ($k0 v2)) (<= 0 v2))))
