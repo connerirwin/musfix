@@ -4,6 +4,7 @@
   (forall ((v Int) (m1 (Set Int)))
     (=> (= m1 {})
         (not (in 100 m1)))))
+; In the negative version, the not has been removed 
 
 (constraint
   (forall ((v Int) (m1 (Set Int)) (m2 (Set Int)))
@@ -32,7 +33,7 @@
           (= m3 (union (union m1 (Set 20)) (Set 10))))
           (= m4 (union m1 (Set 10))))
           (= m5 (union m1 (Set 20))))
-        (= m2 m3))))
+        (= m2 (union m4 m5)))))
 
 ; (constraint
 ;   (forall ()

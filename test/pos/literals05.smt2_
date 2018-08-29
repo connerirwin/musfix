@@ -15,7 +15,6 @@
 
 ; Uninterpreted Functions
 (declare-fun listElts (LLChar) (Set Str))
-(declare-fun Set_sng (@a0) (Set @a0))
 
 
 ; Qualifiers
@@ -25,4 +24,4 @@
 
 
 ; Horn constraints
-(constraint (forall ((a Str)(things LLChar)(v1 Int)) (=> (and (= a director) (and (= (apply listElts things) (union (Set_sng year) (union (Set_sng star) (union (Set_sng director) (Set_sng title))))) True)) (in a (apply listElts things)))))
+(constraint (forall ((a Str)(things LLChar)(v1 Int)) (=> (and (= a director) (and (= (apply listElts things) (union (Set year) (union (Set star) (union (Set director) (Set title))))) True)) (in a (apply listElts things)))))
