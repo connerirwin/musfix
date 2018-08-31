@@ -1,7 +1,6 @@
 module Language.SMT.Resolver (
   generateQualifiers,
   prepareInputs,
-  resolverDebug,
 ) where
 
 import qualified Language.SMT.MultiKeyMap as MultiKeyMap
@@ -14,7 +13,6 @@ import Language.Synquid.Program hiding (Environment)
 import Language.Synquid.Util
 import Language.Synquid.Z3
 
-import Control.Lens
 import Control.Monad
 import Control.Monad.State
 
@@ -41,11 +39,6 @@ data Environment = Environment {
   predMap :: Map Id [Sort],
   consMap :: Map Id Int          -- Keeps track of the number of parameters that a new sort takes
 }
-
-{- Debug Testing -}
-resolverDebug :: IO ()
-resolverDebug = do
-  print "nothing for now"
 
 -- | Create a qualifier (refinement) map from a set of possible qualifiers for a
 -- given unknown

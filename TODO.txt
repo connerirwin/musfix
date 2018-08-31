@@ -4,7 +4,7 @@ Conner
 -Constuctor function export: turn data constructors into uninterpreted functions
 
 Kevin
--Change IO to generate something internally so can use unit testing
+-Change IO to write to a file with a flag
 -Unit testing through stack test, haskell tags
 -Convert map_select to binOp (this might mess with the z3 bindings)
 -Map_union

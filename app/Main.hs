@@ -41,7 +41,6 @@ help    = putStrLn "\nOptions:\n\
                    \  --verbose\tOutput additional logging\n\
                    \  -h, --help\tShow this help text\n\
                    \  --version\tShow current version"
-debug   = resolverDebug
 
 main :: IO ()
 main = do
@@ -59,7 +58,6 @@ parseArgs o (x:y:xs)
       o' = o { programOutputFile = y }
       m  = "Setting output file to " ++ y
 parseArgs o (x:xs)
-    | x == "-d"             = debug               >> continue o
     | x == "-p"             = continue $ o { printProgramOutput = True }
     | x == "-l"             = continue $ o { programUsesLeastFixpoint = True }
     | x == "--verbose"      = continue $ o { programVerboseLogging = True }
@@ -75,21 +73,20 @@ readConstraints :: ProgramOptions -> String -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
     let lisp = topSExprs $ s
-        ins = prepareInputs $ topInputs lisp
-        qmap = generateQualifiers ins
-        horns = map formulas $ allHornConstraints ins
-      in do
-        verboseLog o $ "Preparing to find " ++ (fixPointType o) ++ " fixpoint..."
-        verboseLog o "\nInputs\n--------"
-        verboseLog o $ "Reading from file " ++ f
-        mapM_ ((verboseLog o) . show) ins
-        verboseLog o "\nQMAP\n--------"
-        verboseLog o $ show qmap
-        verboseLog o "\nCandidates\n--------"
-        candidates <- findFixPoint (programUsesLeastFixpoint o) horns qmap
-        verboseLog o $ show candidates
-        verboseLog o "\n\nFinal candidates:"
-        mapM_ ((finalOutput o) . show . pretty) candidates
+    let ins = prepareInputs $ topInputs lisp
+    let qmap = generateQualifiers ins
+    let horns = map formulas $ allHornConstraints ins
+    verboseLog o $ "Preparing to find " ++ (fixPointType o) ++ " fixpoint..."
+    verboseLog o "\nInputs\n--------"
+    verboseLog o $ "Reading from file " ++ f
+    mapM_ ((verboseLog o) . show) ins
+    verboseLog o "\nQMAP\n--------"
+    verboseLog o $ show qmap
+    verboseLog o "\nCandidates\n--------"
+    candidates <- findFixPoint (programUsesLeastFixpoint o) horns qmap
+    verboseLog o $ show candidates
+    verboseLog o "\n\nFinal candidates:"
+    mapM_ ((finalOutput o) . show . pretty) candidates
 
 formulas :: InputExpr -> Formula
 formulas (HornConstraint vs f) = f

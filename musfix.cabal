@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0781d5f198b52c8a0b9f0f2369d4325a36d9314fa11b5792886f73023ea14362
+-- hash: fd21dd4fd3ec0210b7e9d5c76416a8864222916ba4c4581a7779aec4ced8aa51
 
 name:           musfix
 version:        0.1.0.0
@@ -51,7 +51,7 @@ library
     , parsec ==3.1.*
     , scientific >=0.3
     , tasty
-    , tasty-hunit
+    , tasty-golden
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
@@ -93,7 +93,7 @@ executable musfix
     , parsec ==3.1.*
     , scientific >=0.3
     , tasty
-    , tasty-hunit
+    , tasty-golden
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
@@ -138,7 +138,7 @@ test-suite test
     , parsec ==3.1.*
     , scientific >=0.3
     , tasty
-    , tasty-hunit
+    , tasty-golden
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
