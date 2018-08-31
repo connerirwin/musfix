@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+module Main where
+
 import Language.SMT.Parser
 import Language.SMT.Resolver
 import Language.SMT.Solve

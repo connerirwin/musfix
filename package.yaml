@@ -21,6 +21,8 @@ dependencies:
 - mtl >=2.2 && <2.3
 - parsec ==3.1.*
 - scientific >=0.3
+- tasty
+- tasty-hunit
 - text >=1.2
 - transformers >=0.3 && <0.5
 - z3 >4.0
@@ -37,3 +39,10 @@ executable:
 # - -fwarn-incomplete-uni-patterns
 # - -fwarn-incomplete-record-updates
 # - -O2
+tests:
+  test:
+    main: MusfixTests.hs
+    source-dirs:
+    - app
+    - src
+    - test

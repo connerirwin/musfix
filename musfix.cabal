@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4c03ecb66eeafd8d771a44f67a3d0b8d206b4fd492eaa13b5bd6f3a0eed4e8d4
+-- hash: 0781d5f198b52c8a0b9f0f2369d4325a36d9314fa11b5792886f73023ea14362
 
 name:           musfix
 version:        0.1.0.0
@@ -50,6 +50,8 @@ library
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
     , scientific >=0.3
+    , tasty
+    , tasty-hunit
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
@@ -90,6 +92,53 @@ executable musfix
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
     , scientific >=0.3
+    , tasty
+    , tasty-hunit
+    , text >=1.2
+    , transformers >=0.3 && <0.5
+    , z3 >4.0
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: MusfixTests.hs
+  other-modules:
+      Main
+      Language.SMT.MultiKeyMap
+      Language.SMT.Parser
+      Language.SMT.Resolver
+      Language.SMT.Solve
+      Language.SMT.Syntax
+      Language.Synquid.Error
+      Language.Synquid.HornSolver
+      Language.Synquid.Logic
+      Language.Synquid.Pretty
+      Language.Synquid.Program
+      Language.Synquid.SolverMonad
+      Language.Synquid.Tokens
+      Language.Synquid.Type
+      Language.Synquid.Util
+      Language.Synquid.Z3
+      Paths_musfix
+  hs-source-dirs:
+      app
+      src
+      test
+  build-depends:
+      ansi-terminal >=0.6
+    , ansi-wl-pprint >=0.6 && <0.7
+    , atto-lisp ==0.2.*
+    , attoparsec >=0.10 && <0.14
+    , base >=4.6 && <4.9
+    , bimap >=0.2
+    , bytestring >=0.10
+    , containers >=0.5 && <0.6
+    , lens >=3.7
+    , mtl >=2.2 && <2.3
+    , parsec ==3.1.*
+    , scientific >=0.3
+    , tasty
+    , tasty-hunit
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
