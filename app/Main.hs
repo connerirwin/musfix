@@ -20,23 +20,24 @@ import System.Environment
 import System.Exit
 
 data ProgramOptions = ProgramOptions {
-  printProgramOutput :: Bool,
-  programOutputFile :: String,
-  programVerboseLogging :: Bool,
-  programUsesLeastFixpoint :: Bool
+  printOutput    :: Bool,
+  outputFile     :: String,
+  verboseLogging :: Bool,
+  leastFixpoint  :: Bool
 } deriving (Show, Eq)
 
 defaultProgramOptions = ProgramOptions {
-  printProgramOutput = False,
-  programOutputFile = "out.txt",
-  programVerboseLogging = False,
-  programUsesLeastFixpoint = False
+  printOutput    = True,
+  outputFile     = "out.txt",
+  verboseLogging = False,
+  leastFixpoint  = False
 }
 
 version = putStrLn "musfix 0.1.0.0"
-usage   = putStrLn "Usage: musfix [-p] [-l] [--verbose] [-h|--help] [--version] [file...]"
+usage   = putStrLn "Usage: musfix [-o FILE] [-s|--silent] [-l] [--verbose] [-h|--help] [--version] [file...]"
 help    = putStrLn "\nOptions:\n\
-                   \  -p\t\tPrint results to standard out\n\
+                   \  -o\t\tPrint results to the specified file\n\
+                   \  -s, --silent\t\tRun the program without printing results to standard out\n\
                    \  -l\t\tUse a least fixpoint solver (default is greatest fixpoint)\n\
                    \  --verbose\tOutput additional logging\n\
                    \  -h, --help\tShow this help text\n\
@@ -47,24 +48,26 @@ main = do
   args <- getArgs
   parseArgs defaultProgramOptions args
 
+-- TODO add ProgramOptions as State
+
 -- | TODO make argument parsing more robust - add support for arguments in any
 -- order, multiple flags with a single dash, clean up the help and usage
 -- information
 -- Consider using a library? (optparse-applicative)
 parseArgs :: ProgramOptions -> [String] -> IO ()
 parseArgs o (x:y:xs)
-    | x == "-o"   = verboseLog o' m >> parseArgs o' xs
-    where
-      o' = o { programOutputFile = y }
-      m  = "Setting output file to " ++ y
+    | x == "-o"   = do
+      let o' = o { outputFile = y }
+      verboseLog o' $ "Setting output file to " ++ y
+      writeFile y "" -- ^ Wipe the outputFile
+      parseArgs o' xs
 parseArgs o (x:xs)
-    | x == "-p"             = continue $ o { printProgramOutput = True }
-    | x == "-l"             = continue $ o { programUsesLeastFixpoint = True }
-    | x == "--verbose"      = continue $ o { programVerboseLogging = True }
-    | x == "-h"             = usage >> help       >> exitSuccess
-    | x == "--help"         = usage >> help       >> exitSuccess
-    | x == "--version"      = version             >> exitSuccess
-    | otherwise   = readConstraints o x           >> continue o
+    | x `elem` ["-s", "--silent"] = continue $ o { printOutput    = False }
+    | x == "-l"                   = continue $ o { leastFixpoint  = True }
+    | x == "--verbose"            = continue $ o { verboseLogging = True }
+    | x `elem` ["-h", "--help"]   = usage >> help       >> exitSuccess
+    | x == "--version"            = version             >> exitSuccess
+    | otherwise                   = readConstraints o x >> continue o
     where
       continue o' = parseArgs o' xs
 parseArgs _ _               = exitSuccess
@@ -72,37 +75,37 @@ parseArgs _ _               = exitSuccess
 readConstraints :: ProgramOptions -> String -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
-    let lisp = topSExprs $ s
+    let lisp = topSExprs s
     let ins = prepareInputs $ topInputs lisp
     let qmap = generateQualifiers ins
     let horns = map formulas $ allHornConstraints ins
     verboseLog o $ "Preparing to find " ++ (fixPointType o) ++ " fixpoint..."
-    verboseLog o "\nInputs\n--------"
+    verboseLog o $"\nInputs\n--------"
     verboseLog o $ "Reading from file " ++ f
     mapM_ ((verboseLog o) . show) ins
-    verboseLog o "\nQMAP\n--------"
+    verboseLog o $ "\nQMAP\n--------"
     verboseLog o $ show qmap
-    verboseLog o "\nCandidates\n--------"
-    candidates <- findFixPoint (programUsesLeastFixpoint o) horns qmap
+    verboseLog o $ "\nCandidates\n--------"
+    candidates <- findFixPoint (leastFixpoint o) horns qmap
     verboseLog o $ show candidates
-    verboseLog o "\n\nFinal candidates:"
-    mapM_ ((finalOutput o) . show . pretty) candidates
+    verboseLog o $ "\n\nFinal candidates: "
+    mapM_ ((normalLog o) . show . pretty) candidates
+    normalLog o $ "\n"
+
+verboseLog :: ProgramOptions -> String -> IO ()
+verboseLog o s = when (verboseLogging o) $ normalLog o s
+
+normalLog :: ProgramOptions -> String -> IO ()
+normalLog o s = do
+  when (printOutput o) $ putStrLn s
+  when (length (outputFile o) > 0) $ appendFile (outputFile o) $ "\n" ++ s
 
 formulas :: InputExpr -> Formula
 formulas (HornConstraint vs f) = f
 formulas _ = error "non-horn constraint in constraints"
 
-finalOutput :: ProgramOptions -> String -> IO ()
-finalOutput o s = putStrLn s
-
-verboseLog :: ProgramOptions -> String -> IO ()
-verboseLog o s = if programVerboseLogging o then
-    putStrLn $ s
-  else
-    return ()
-
 fixPointType :: ProgramOptions -> String
-fixPointType o = if programUsesLeastFixpoint o then "least" else "greatest"
+fixPointType o = if leastFixpoint o then "least" else "greatest"
 
 topSExprs :: ByteString -> [L.Lisp]
 topSExprs l = case A.parseOnly (A.many1 L.lisp) l of

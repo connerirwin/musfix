@@ -1,3 +1,4 @@
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -15,8 +16,10 @@ Candidates
 [Candidate {solution = fromList [], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [] (0 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -40,8 +43,10 @@ Candidates
 [Candidate {solution = fromList [("$k1",fromList [Binary Implies (Var BoolS "bx") (Var BoolS "v")])], validConstraints = fromList [Binary Implies (Binary And (BoolLit True) (Binary And (Unary Not (Binary Eq (Func (DataS "Str" []) "cat" []) (Func (DataS "Str" []) "dog" []))) (Unknown (fromList [("bx",Var BoolS "bx"),("v",Var BoolS "v2")]) "$k1"))) (Binary Implies (Var BoolS "bx") (Var BoolS "v2")),Binary Implies (Binary And (BoolLit True) (Binary Or (Unary Not (Var BoolS "bx")) (Var BoolS "v1"))) (Unknown (fromList [("bx",Var BoolS "bx"),("v",Var BoolS "v1")]) "$k1")], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k1 -> {bx [37m==>[0m v}] (2 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -59,8 +64,10 @@ Candidates
 [Candidate {solution = fromList [], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [] (0 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -80,9 +87,11 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [Binary Eq (Var IntS "v1") (Var IntS "v0")])], validConstraints = fromList [Binary Implies (Unknown (fromList [("v0",Var IntS "v2"),("v1",Var IntS "v3")]) "$k0") (Binary Eq (Func BoolS "bar" [Var IntS "v2"]) (Func BoolS "bar" [Var IntS "v3"]))], invalidConstraints = fromList [], label = "0.0"},Candidate {solution = fromList [("$k0",fromList [Binary Eq (Var IntS "v0") (Var IntS "v1")])], validConstraints = fromList [Binary Implies (Unknown (fromList [("v0",Var IntS "v2"),("v1",Var IntS "v3")]) "$k0") (Binary Eq (Func BoolS "bar" [Var IntS "v2"]) (Func BoolS "bar" [Var IntS "v3"]))], invalidConstraints = fromList [], label = "0.1"}]
 
 
-Final candidates:
+Final candidates: 
 0.0: [$k0 -> {v1 [37m==[0m v0}] (1 0)
 0.1: [$k0 -> {v0 [37m==[0m v1}] (1 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -105,8 +114,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [Binary Le (IntLit 0) (Var IntS "v0")])], validConstraints = fromList [Binary Implies (Unknown (fromList [("v0",Var IntS "v1")]) "$k0") (Binary Lt (IntLit 0) (Binary Plus (Var IntS "v1") (IntLit 1))),Binary Implies (Binary Eq (Var IntS "v2") (IntLit 10)) (Unknown (fromList [("v0",Var IntS "v2")]) "$k0")], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {[36m0[0m [37m<=[0m v0}] (2 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -132,8 +143,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [Binary Lt (Var IntS "v0") (IntLit 10),Binary Le (IntLit 0) (Var IntS "v0")])], validConstraints = fromList [Binary Implies (Unknown (fromList [("v0",Var IntS "v1")]) "$k0") (Binary Lt (IntLit 0) (Binary Plus (Var IntS "v1") (IntLit 1))),Binary Implies (Unknown (fromList [("v0",Var IntS "v3")]) "$k0") (Binary Gt (IntLit 11) (Binary Plus (Var IntS "v3") (IntLit 1))),Binary Implies (Binary Eq (Var IntS "v2") (IntLit 9)) (Unknown (fromList [("v0",Var IntS "v2")]) "$k0"),Binary Implies (Binary And (Binary Lt (Var IntS "v4") (IntLit 9)) (Binary Gt (Var IntS "v4") (IntLit 3))) (Unknown (fromList [("v0",Var IntS "v4")]) "$k0")], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {v0 [37m<[0m [36m10[0m, [36m0[0m [37m<=[0m v0}] (4 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -159,8 +172,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [Binary Lt (Var IntS "b1") (IntLit 10),Binary Le (IntLit 0) (Var IntS "b1")])], validConstraints = fromList [Binary Implies (Unknown (fromList [("b1",Var IntS "v1")]) "$k0") (Binary Lt (IntLit 0) (Binary Plus (Var IntS "v1") (IntLit 1))),Binary Implies (Unknown (fromList [("b1",Var IntS "v3")]) "$k0") (Binary Gt (IntLit 11) (Binary Plus (Var IntS "v3") (IntLit 1))),Binary Implies (Binary Eq (Var IntS "v2") (IntLit 9)) (Unknown (fromList [("b1",Var IntS "v2")]) "$k0"),Binary Implies (Binary And (Binary Lt (Var IntS "v4") (IntLit 9)) (Binary Gt (Var IntS "v4") (IntLit 3))) (Unknown (fromList [("b1",Var IntS "v4")]) "$k0")], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {b1 [37m<[0m [36m10[0m, [36m0[0m [37m<=[0m b1}] (4 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -182,7 +197,9 @@ Candidates
 []
 
 
-Final candidates:
+Final candidates: 
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -203,8 +220,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [])], validConstraints = fromList [Binary Implies (Binary Eq (Var (MapS BoolS BoolS) "m1") (MapLit BoolS (BoolLit True))) (Binary Eq (MapSel (Var (MapS BoolS BoolS) "m1") (BoolLit False)) (BoolLit True)),Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m1") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var IntS "q") (IntLit 0))) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0")], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {}] (2 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -224,8 +243,10 @@ Candidates
 [Candidate {solution = fromList [], validConstraints = fromList [Binary Implies (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m1") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var IntS "v") (IntLit 0)),Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m2") (IntLit 10))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var (MapS IntS IntS) "m2") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 10) (IntLit 1)) (IntLit 20) (IntLit 1)))) (Binary Eq (Var IntS "v") (IntLit 1)),Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m2") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var (MapS IntS IntS) "m2") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 10) (IntLit 1)) (IntLit 20) (IntLit 1)))) (Binary Eq (Var IntS "v") (IntLit 0)),Binary Implies (Binary And (Binary And (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0))) (Binary Eq (Var (MapS IntS IntS) "m2") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 10) (IntLit 1)) (IntLit 20) (IntLit 1)))) (Binary Eq (Var (MapS IntS IntS) "m3") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 20) (IntLit 1)) (IntLit 10) (IntLit 1)))) (Binary Eq (Var (MapS IntS IntS) "m2") (Var (MapS IntS IntS) "m3"))], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [] (4 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -251,9 +272,11 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "v0"]) (Binary Plus (IntLit 1) (Func IntS "len" [Var (DataS "List" [VarS "0"]) "nil"])),Binary Eq (Func (SetS (VarS "0")) "elems" [Var (DataS "List" [VarS "0"]) "v0"]) (SetLit (VarS "0") [])])], validConstraints = fromList [Binary Implies (Binary And (Binary And (Binary And (Binary And (Binary Eq (Func (SetS (VarS "0")) "elems" [Var (DataS "List" [VarS "0"]) "nil"]) (SetLit (VarS "0") [])) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "nil"]) (IntLit 0))) (Unknown (fromList [("nil",Var (DataS "List" [VarS "0"]) "nil"),("v0",Var (DataS "List" [VarS "0"]) "x4"),("v1",Var IntS "x")]) "$k0")) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "_v"]) (Binary Plus (IntLit 1) (Func IntS "len" [Var (DataS "List" [VarS "0"]) "x4"])))) (Binary Ge (Func IntS "len" [Var (DataS "List" [VarS "0"]) "x4"]) (IntLit 0))) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "_v"]) (IntLit 2)),Binary Implies (Binary And (Binary And (Binary And (Binary And (Binary Eq (Func (SetS (VarS "0")) "elems" [Var (DataS "List" [VarS "0"]) "nil"]) (SetLit (VarS "0") [])) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "nil"]) (IntLit 0))) (Unknown (fromList [("nil",Var (DataS "List" [VarS "0"]) "nil"),("v0",Var (DataS "List" [VarS "0"]) "x4"),("v1",Var IntS "x")]) "$k0")) (Binary Eq (Func (SetS (VarS "_a")) "elems" [Var (DataS "List" [VarS "0"]) "_v"]) (Binary Union (SetLit IntS [Var IntS "x"]) (Func (SetS (VarS "_a")) "elems" [Var (DataS "List" [VarS "0"]) "x4"])))) (Binary Ge (Func IntS "len" [Var (DataS "List" [VarS "0"]) "x4"]) (IntLit 0))) (Binary Eq (Func (SetS IntS) "elems" [Var (DataS "List" [VarS "0"]) "_v"]) (SetLit IntS [Var IntS "x"]))], invalidConstraints = fromList [], label = "0.0"},Candidate {solution = fromList [("$k0",fromList [Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "v0"]) (Binary Plus (IntLit 1) (Func IntS "len" [Var (DataS "List" [VarS "0"]) "nil"])),Binary Eq (Func (SetS (VarS "_a")) "elems" [Var (DataS "List" [VarS "0"]) "v0"]) (Binary Union (SetLit (VarS "_a") [Var IntS "v1"]) (Func (SetS (VarS "_a")) "elems" [Var (DataS "List" [VarS "0"]) "nil"]))])], validConstraints = fromList [Binary Implies (Binary And (Binary And (Binary And (Binary And (Binary Eq (Func (SetS (VarS "0")) "elems" [Var (DataS "List" [VarS "0"]) "nil"]) (SetLit (VarS "0") [])) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "nil"]) (IntLit 0))) (Unknown (fromList [("nil",Var (DataS "List" [VarS "0"]) "nil"),("v0",Var (DataS "List" [VarS "0"]) "x4"),("v1",Var IntS "x")]) "$k0")) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "_v"]) (Binary Plus (IntLit 1) (Func IntS "len" [Var (DataS "List" [VarS "0"]) "x4"])))) (Binary Ge (Func IntS "len" [Var (DataS "List" [VarS "0"]) "x4"]) (IntLit 0))) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "_v"]) (IntLit 2)),Binary Implies (Binary And (Binary And (Binary And (Binary And (Binary Eq (Func (SetS (VarS "0")) "elems" [Var (DataS "List" [VarS "0"]) "nil"]) (SetLit (VarS "0") [])) (Binary Eq (Func IntS "len" [Var (DataS "List" [VarS "0"]) "nil"]) (IntLit 0))) (Unknown (fromList [("nil",Var (DataS "List" [VarS "0"]) "nil"),("v0",Var (DataS "List" [VarS "0"]) "x4"),("v1",Var IntS "x")]) "$k0")) (Binary Eq (Func (SetS (VarS "_a")) "elems" [Var (DataS "List" [VarS "0"]) "_v"]) (Binary Union (SetLit IntS [Var IntS "x"]) (Func (SetS (VarS "_a")) "elems" [Var (DataS "List" [VarS "0"]) "x4"])))) (Binary Ge (Func IntS "len" [Var (DataS "List" [VarS "0"]) "x4"]) (IntLit 0))) (Binary Eq (Func (SetS IntS) "elems" [Var (DataS "List" [VarS "0"]) "_v"]) (SetLit IntS [Var IntS "x"]))], invalidConstraints = fromList [], label = "0.1"}]
 
 
-Final candidates:
+Final candidates: 
 0.0: [$k0 -> {len v0 [37m==[0m [36m1[0m [37m+[0m len nil, elems v0 [37m==[0m [37m[[0m[37m][0m}] (2 0)
 0.1: [$k0 -> {len v0 [37m==[0m [36m1[0m [37m+[0m len nil, elems v0 [37m==[0m [37m[[0mv1[37m][0m [37m+[0m elems nil}] (2 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -274,8 +297,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList []),("$k1",fromList []),("$k2",fromList [])], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {}, $k1 -> {}, $k2 -> {}] (0 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -293,8 +318,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [])], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {}] (0 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -312,8 +339,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [])], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {}] (0 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -333,8 +362,10 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList []),("$k1",fromList [])], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {}, $k1 -> {}] (0 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -355,8 +386,10 @@ Candidates
 [Candidate {solution = fromList [], validConstraints = fromList [Binary Implies (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m1"))),Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 10])) (SetLit IntS [IntLit 20])))) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m2"))),Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 10])) (SetLit IntS [IntLit 20])))) (Binary Member (IntLit 10) (Var (SetS IntS) "m2")),Binary Implies (Binary And (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 10])) (SetLit IntS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m3") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 20])) (SetLit IntS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m2") (Var (SetS IntS) "m3")),Binary Implies (Binary And (Binary And (Binary And (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 10])) (SetLit IntS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m3") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 20])) (SetLit IntS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m4") (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 10])))) (Binary Eq (Var (SetS IntS) "m5") (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 20])))) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Var (SetS IntS) "m4") (Var (SetS IntS) "m5")))], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [] (5 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -376,9 +409,11 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [Binary Eq (Var IntS "x") (Var IntS "v")])], validConstraints = fromList [Binary Implies (Binary Eq (Var IntS "v") (Var IntS "q")) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0"),Binary Implies (Binary And (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "y")]) "$k0") (Binary Eq (Var IntS "y") (IntLit 10))) (Binary Eq (Var IntS "v") (IntLit 10))], invalidConstraints = fromList [], label = "0.0"},Candidate {solution = fromList [("$k0",fromList [Binary Eq (Var IntS "v") (Var IntS "x")])], validConstraints = fromList [Binary Implies (Binary Eq (Var IntS "v") (Var IntS "q")) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0"),Binary Implies (Binary And (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "y")]) "$k0") (Binary Eq (Var IntS "y") (IntLit 10))) (Binary Eq (Var IntS "v") (IntLit 10))], invalidConstraints = fromList [], label = "0.1"}]
 
 
-Final candidates:
+Final candidates: 
 0.0: [$k0 -> {x [37m==[0m v}] (2 0)
 0.1: [$k0 -> {v [37m==[0m x}] (2 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -396,8 +431,10 @@ Candidates
 [Candidate {solution = fromList [], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [] (0 0)
+
+
 Preparing to find greatest fixpoint...
 
 Inputs
@@ -414,5 +451,6 @@ Candidates
 [Candidate {solution = fromList [("$k0",fromList [])], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
+Final candidates: 
 0: [$k0 -> {}] (0 0)
+
