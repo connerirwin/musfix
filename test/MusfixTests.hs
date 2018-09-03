@@ -1,6 +1,8 @@
-module Harness where
+module Test.Harness where
 
 import Main hiding (main)
+
+import qualified Data.ByteString.Lazy as LBS
 
 import System.Directory
 import System.FilePath
@@ -17,13 +19,14 @@ goldenTests :: IO TestTree
 goldenTests = do
     smt2Files <- findByExtension [".smt2"] "test/."
     return $ testGroup "Smt2 golden tests" [
-      goldenVsFile (takeBaseName smt2File) (replaceExtension smt2File ".golden")
-        tmpOut $ action smt2File tmpOut
-        | smt2File <- smt2Files,
-        let tmpOut = replaceExtension smt2File ".tmp"
+      goldenVsString (takeBaseName smt2File) (replaceExtension smt2File ".golden")
+        $ action smt2File
+        | smt2File <- smt2Files
       ]
   where
-    action :: FilePath -> FilePath -> IO ()
-    action inFile outFile = do
-      readConstraints (ProgramOptions False False outFile True False) inFile
-      -- removeFile outFile
+    action :: FilePath -> IO LBS.ByteString
+    action inFile = do
+      readConstraints (ProgramOptions False False "test_output.tmp" True False) inFile
+      o <- LBS.readFile "test_output.tmp"
+      removeFile "test_output.tmp"
+      return o

@@ -42,9 +42,19 @@ Example ghc arguments:
 
 A full list can be found [here](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html)
 
-To run rudimentary integration testing (this will diff your output against rubric)
+# Integration Testing
 
-    verify.sh
+To run the integration tests
+
+    stack test
+
+To accept changes to the test suite and regenerate the template files
+
+    TASTY_ACCEPT=true stack test
+
+To verify changes to the tests
+
+    git diff --word-diff --patience --color
 
 # Debugging in GHCi
 
