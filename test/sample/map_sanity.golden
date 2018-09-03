@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/./sample/map_sanity.smt2
+Reading from file test/sample/map_sanity.smt2
 Qualifier "Equiv" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
 Qualifier "False" [Var (VarS "a") "a",Var (VarS "b") "b"] (BoolLit False)
 WFConstraint "$k0" [Var IntS "v",Var IntS "x"]

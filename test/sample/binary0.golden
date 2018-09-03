@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/./sample/binary0.smt2
+Reading from file test/sample/binary0.smt2
 Qualifier "Pos" [Var IntS "v"] (Binary Le (IntLit 0) (Var IntS "v"))
 Qualifier "Neg" [Var IntS "v"] (Binary Le (Var IntS "v") (IntLit 0))
 

@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/./sample/test3.smt2
+Reading from file test/sample/test3.smt2
 Qualifier "Zog" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
 WFConstraint "$k0" [Var IntS "v",Var IntS "x"]
 HornConstraint [Var IntS "v",Var IntS "q"] (Binary Implies (Binary Eq (Var IntS "v") (Var IntS "q")) (Unknown (fromList [("v",Var IntS "v"),("x",Var IntS "q")]) "$k0"))

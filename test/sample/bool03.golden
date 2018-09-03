@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/./sample/bool03.smt2
+Reading from file test/sample/bool03.smt2
 SortDecl "Str" 0
 UninterpFunction "cat" [] (DataS "Str" [])
 UninterpFunction "not_the_hippopotamus" [] (DataS "Str" [])

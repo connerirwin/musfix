@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/./sample/sets01.smt2
+Reading from file test/sample/sets01.smt2
 HornConstraint [Var IntS "v",Var (SetS IntS) "m1"] (Binary Implies (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m1"))))
 HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2"] (Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 10])) (SetLit IntS [IntLit 20])))) (Unary Not (Binary Member (IntLit 100) (Var (SetS IntS) "m2"))))
 HornConstraint [Var IntS "v",Var (SetS IntS) "m1",Var (SetS IntS) "m2"] (Binary Implies (Binary And (Binary Eq (Var (SetS IntS) "m1") (SetLit IntS [])) (Binary Eq (Var (SetS IntS) "m2") (Binary Union (Binary Union (Var (SetS IntS) "m1") (SetLit IntS [IntLit 10])) (SetLit IntS [IntLit 20])))) (Binary Member (IntLit 10) (Var (SetS IntS) "m2")))

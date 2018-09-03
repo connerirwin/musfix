@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/./sample/maps.smt2
+Reading from file test/sample/maps.smt2
 HornConstraint [Var IntS "v",Var (MapS IntS IntS) "m1"] (Binary Implies (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m1") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var IntS "v") (IntLit 0)))
 HornConstraint [Var IntS "v",Var (MapS IntS IntS) "m1",Var (MapS IntS IntS) "m2"] (Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m2") (IntLit 100))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var (MapS IntS IntS) "m2") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 10) (IntLit 1)) (IntLit 20) (IntLit 1)))) (Binary Eq (Var IntS "v") (IntLit 0)))
 HornConstraint [Var IntS "v",Var (MapS IntS IntS) "m1",Var (MapS IntS IntS) "m2"] (Binary Implies (Binary And (Binary And (Binary Eq (Var IntS "v") (MapSel (Var (MapS IntS IntS) "m2") (IntLit 10))) (Binary Eq (Var (MapS IntS IntS) "m1") (MapLit IntS (IntLit 0)))) (Binary Eq (Var (MapS IntS IntS) "m2") (MapUpd (MapUpd (Var (MapS IntS IntS) "m1") (IntLit 10) (IntLit 1)) (IntLit 20) (IntLit 1)))) (Binary Eq (Var IntS "v") (IntLit 1)))

@@ -49,4 +49,4 @@ tests:
     - src
     - test
     main: MusfixTests.hs
-    ghc-options: -main-is Harness
+    ghc-options: -main-is Test.Harness

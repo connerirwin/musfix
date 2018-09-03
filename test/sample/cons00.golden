@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/./sample/cons00.smt2
+Reading from file test/sample/cons00.smt2
 SortDecl "List" 1
 Qualifier "eq" [Var (DataS "List" [IntS]) "x"] (Binary Eq (Var (DataS "List" [IntS]) "x") (Cons (DataS "List" [IntS]) "List" [IntLit 2]))
 

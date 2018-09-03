@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c2260cc9b1152a2c4911c23fd0bca0f1deeee0243bd3fee398f6ed5ac7eb3ede
+-- hash: c0cc4ff1b83658fd1b1994f084d8e68a75397cb5061bb1570e6efddbd24eba45
 
 name:           musfix
 version:        0.1.0.0
@@ -128,7 +128,7 @@ test-suite specs
       app
       src
       test
-  ghc-options: -main-is Harness
+  ghc-options: -main-is Test.Harness
   build-depends:
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7
