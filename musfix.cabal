@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fd21dd4fd3ec0210b7e9d5c76416a8864222916ba4c4581a7779aec4ced8aa51
+-- hash: b89a20c8449b96d00b245c33f6dd58a3a8b988828307ab786d5aad86a7e2b658
 
 name:           musfix
 version:        0.1.0.0
@@ -46,6 +46,7 @@ library
     , bimap >=0.2
     , bytestring >=0.10
     , containers >=0.5 && <0.6
+    , filepath
     , lens >=3.7
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
@@ -88,6 +89,7 @@ executable musfix
     , bimap >=0.2
     , bytestring >=0.10
     , containers >=0.5 && <0.6
+    , filepath
     , lens >=3.7
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
@@ -99,7 +101,7 @@ executable musfix
     , z3 >4.0
   default-language: Haskell2010
 
-test-suite test
+test-suite goldenTests
   type: exitcode-stdio-1.0
   main-is: MusfixTests.hs
   other-modules:
@@ -133,6 +135,7 @@ test-suite test
     , bimap >=0.2
     , bytestring >=0.10
     , containers >=0.5 && <0.6
+    , filepath
     , lens >=3.7
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*

@@ -17,6 +17,7 @@ dependencies:
 - bimap >= 0.2
 - bytestring >= 0.10
 - containers >=0.5 && <0.6
+- filepath
 - lens >=3.7
 - mtl >=2.2 && <2.3
 - parsec ==3.1.*
@@ -40,7 +41,7 @@ executable:
 # - -fwarn-incomplete-record-updates
 # - -O2
 tests:
-  test:
+  goldenTests:
     main: MusfixTests.hs
     source-dirs:
     - app

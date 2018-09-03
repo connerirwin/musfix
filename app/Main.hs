@@ -28,7 +28,7 @@ data ProgramOptions = ProgramOptions {
 
 defaultProgramOptions = ProgramOptions {
   printOutput    = True,
-  outputFile     = "out.txt",
+  outputFile     = "",
   verboseLogging = False,
   leastFixpoint  = False
 }
