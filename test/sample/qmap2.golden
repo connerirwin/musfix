@@ -1,0 +1,23 @@
+
+Preparing to find greatest fixpoint...
+
+Inputs
+--------
+Reading from file test/./sample/qmap2.smt2
+Qualifier "Less" [Var IntS "a",Var IntS "b"] (Binary Lt (Var IntS "a") (Var IntS "b"))
+Qualifier "Or" [Var BoolS "a",Var BoolS "b"] (Binary Or (Var BoolS "a") (Var BoolS "b"))
+WFConstraint "$k0" [Var IntS "v0",Var IntS "v1"]
+WFConstraint "$k1" [Var BoolS "v0",Var BoolS "v1"]
+
+QMAP
+--------
+fromList [("$k0",QSpace {_qualifiers = [Binary Lt (Var IntS "v0") (Var IntS "v1"),Binary Lt (Var IntS "v1") (Var IntS "v0")], _maxCount = 2}),("$k1",QSpace {_qualifiers = [Binary Or (Var BoolS "v0") (Var BoolS "v1"),Binary Or (Var BoolS "v1") (Var BoolS "v0")], _maxCount = 2})]
+
+Candidates
+--------
+[Candidate {solution = fromList [("$k0",fromList []),("$k1",fromList [])], validConstraints = fromList [], invalidConstraints = fromList [], label = "0"}]
+
+
+Final candidates: 
+0: [$k0 -> {}, $k1 -> {}] (0 0)
+

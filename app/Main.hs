@@ -21,6 +21,7 @@ import System.Exit
 
 data ProgramOptions = ProgramOptions {
   printOutput    :: Bool,
+  appendOutput   :: Bool,
   outputFile     :: String,
   verboseLogging :: Bool,
   leastFixpoint  :: Bool
@@ -28,6 +29,7 @@ data ProgramOptions = ProgramOptions {
 
 defaultProgramOptions = ProgramOptions {
   printOutput    = True,
+  appendOutput   = False,
   outputFile     = "",
   verboseLogging = False,
   leastFixpoint  = False
@@ -53,13 +55,12 @@ main = do
 -- | TODO make argument parsing more robust - add support for arguments in any
 -- order, multiple flags with a single dash, clean up the help and usage
 -- information
--- Consider using a library? (optparse-applicative)
+-- Consider using a library? (optparse-applicative), this library is now required already by dependencies
 parseArgs :: ProgramOptions -> [String] -> IO ()
 parseArgs o (x:y:xs)
     | x == "-o"   = do
       let o' = o { outputFile = y }
       verboseLog o' $ "Setting output file to " ++ y
-      writeFile y "" -- ^ Wipe the outputFile
       parseArgs o' xs
 parseArgs o (x:xs)
     | x `elem` ["-s", "--silent"] = continue $ o { printOutput    = False }
@@ -79,6 +80,7 @@ readConstraints o f = do
     let ins = prepareInputs $ topInputs lisp
     let qmap = generateQualifiers ins
     let horns = map formulas $ allHornConstraints ins
+    prepOutput o
     verboseLog o $ "Preparing to find " ++ (fixPointType o) ++ " fixpoint..."
     verboseLog o $"\nInputs\n--------"
     verboseLog o $ "Reading from file " ++ f
@@ -91,6 +93,9 @@ readConstraints o f = do
     verboseLog o $ "\n\nFinal candidates: "
     mapM_ ((normalLog o) . show . pretty) candidates
     normalLog o $ "\n"
+
+prepOutput :: ProgramOptions -> IO ()
+prepOutput o = unless (appendOutput o) $ writeFile (outputFile o) "" -- ^ Wipe the outputFile
 
 verboseLog :: ProgramOptions -> String -> IO ()
 verboseLog o s = when (verboseLogging o) $ normalLog o s

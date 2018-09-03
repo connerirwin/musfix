@@ -1,0 +1,24 @@
+
+Preparing to find greatest fixpoint...
+
+Inputs
+--------
+Reading from file test/./sample/func0.smt2
+Qualifier "Eq" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
+UninterpFunction "bar" [IntS] BoolS
+WFConstraint "$k0" [Var IntS "v0",Var IntS "v1"]
+HornConstraint [Var IntS "v2",Var IntS "v3"] (Binary Implies (Unknown (fromList [("v0",Var IntS "v2"),("v1",Var IntS "v3")]) "$k0") (Binary Eq (Func BoolS "bar" [Var IntS "v2"]) (Func BoolS "bar" [Var IntS "v3"])))
+
+QMAP
+--------
+fromList [("$k0",QSpace {_qualifiers = [Binary Eq (Var IntS "v0") (Var IntS "v1"),Binary Eq (Var IntS "v1") (Var IntS "v0")], _maxCount = 2})]
+
+Candidates
+--------
+[Candidate {solution = fromList [("$k0",fromList [Binary Eq (Var IntS "v1") (Var IntS "v0")])], validConstraints = fromList [Binary Implies (Unknown (fromList [("v0",Var IntS "v2"),("v1",Var IntS "v3")]) "$k0") (Binary Eq (Func BoolS "bar" [Var IntS "v2"]) (Func BoolS "bar" [Var IntS "v3"]))], invalidConstraints = fromList [], label = "0.0"},Candidate {solution = fromList [("$k0",fromList [Binary Eq (Var IntS "v0") (Var IntS "v1")])], validConstraints = fromList [Binary Implies (Unknown (fromList [("v0",Var IntS "v2"),("v1",Var IntS "v3")]) "$k0") (Binary Eq (Func BoolS "bar" [Var IntS "v2"]) (Func BoolS "bar" [Var IntS "v3"]))], invalidConstraints = fromList [], label = "0.1"}]
+
+
+Final candidates: 
+0.0: [$k0 -> {v1 [37m==[0m v0}] (1 0)
+0.1: [$k0 -> {v0 [37m==[0m v1}] (1 0)
+

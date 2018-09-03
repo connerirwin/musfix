@@ -42,6 +42,11 @@ extra-deps:
 - git: https://github.com/connerirwin/atto-lisp.git
   commit: 39f336ae75d25ee1f8114fab370ad8581bf225dc
 - z3-4.3.1
+# These are required for golden testing
+- optparse-applicative-0.14.2.0
+- tasty-1.1.0.3
+- tasty-golden-2.3.2
+- wcwidth-0.0.2
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

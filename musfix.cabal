@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b89a20c8449b96d00b245c33f6dd58a3a8b988828307ab786d5aad86a7e2b658
+-- hash: c2260cc9b1152a2c4911c23fd0bca0f1deeee0243bd3fee398f6ed5ac7eb3ede
 
 name:           musfix
 version:        0.1.0.0
@@ -46,13 +46,14 @@ library
     , bimap >=0.2
     , bytestring >=0.10
     , containers >=0.5 && <0.6
+    , directory
     , filepath
     , lens >=3.7
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
     , scientific >=0.3
-    , tasty
-    , tasty-golden
+    , tasty >=1.0.1
+    , tasty-golden >=2.3.2
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
@@ -89,19 +90,20 @@ executable musfix
     , bimap >=0.2
     , bytestring >=0.10
     , containers >=0.5 && <0.6
+    , directory
     , filepath
     , lens >=3.7
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
     , scientific >=0.3
-    , tasty
-    , tasty-golden
+    , tasty >=1.0.1
+    , tasty-golden >=2.3.2
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
   default-language: Haskell2010
 
-test-suite goldenTests
+test-suite specs
   type: exitcode-stdio-1.0
   main-is: MusfixTests.hs
   other-modules:
@@ -126,6 +128,7 @@ test-suite goldenTests
       app
       src
       test
+  ghc-options: -main-is Harness
   build-depends:
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7
@@ -135,13 +138,14 @@ test-suite goldenTests
     , bimap >=0.2
     , bytestring >=0.10
     , containers >=0.5 && <0.6
+    , directory
     , filepath
     , lens >=3.7
     , mtl >=2.2 && <2.3
     , parsec ==3.1.*
     , scientific >=0.3
-    , tasty
-    , tasty-golden
+    , tasty >=1.0.1
+    , tasty-golden >=2.3.2
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
