@@ -69,7 +69,7 @@ initZ3Data env env' = Z3Data {
 type Z3State = StateT Z3Data IO
 
 instance MonadSMT Z3State where
-  initSolver env = do
+  initSolver env pre = do
     -- Disable MBQI:
     params <- mkParams
     symb <- mkStringSymbol "mbqi"
@@ -80,7 +80,11 @@ instance MonadSMT Z3State where
 
     boolAux <- withAuxSolver mkBoolSort
     boolSortAux .= Just boolAux
-
+    
+    -- Declare preamble
+    declConstants $ preambleConstants pre
+    assertDistincts (preambleConstants pre) (preambleDistinctAssertions pre)
+    
   isSat fml = do
       res <- local $ (fmlToAST >=> assert) fml >> check
 
@@ -330,15 +334,57 @@ toAST expr = case expr of
     findDecl cName decls = do
       declNames <- mapM (\d -> getDeclName d >>= getSymbolString) decls
       return $ decls !! fromJust (elemIndex cName declNames)
+      
+-- | Declares constants
+declConstants :: [(Id, Sort)] -> Z3State ()
+declConstants cs = do
+    cs' <- mapM cons cs
+    return ()
+  where
+    cons (name, s) = do
+      return $ function s name []
+      
+assertDistincts :: [(Id, Sort)] -> [[Id]] -> Z3State ()
+assertDistincts cs ds = do
+    mapM_ dist ds
+    return ()
+  where
+    dist names = do
+      apps <- mapM app names
+      mkDistinct apps
+    app name = do
+      f <- func name
+      mkApp f []
+    func name = function (sortOf name cs) name []
+    sortOf name [] = error "assert distinct for unknown constant"
+    sortOf name ((n, s):xs)
+      | n == name     = s
+      | otherwise     = sortOf name xs
+    
+-- | Sort as Z3 sees it
+asZ3Sort :: Sort -> Sort
+asZ3Sort s = case s of
+  VarS _ -> IntS
+  DataS _ (_:_) -> IntS
+  SetS el -> SetS (asZ3Sort el)
+  MapS k v -> MapS (asZ3Sort k) (asZ3Sort v)
+  _ -> s
 
-    -- | Sort as Z3 sees it
-    asZ3Sort s = case s of
-      VarS _ -> IntS
-      DataS _ (_:_) -> IntS
-      SetS el -> SetS (asZ3Sort el)
-      MapS k v -> MapS (asZ3Sort k) (asZ3Sort v)
-      _ -> s
-
+-- | Lookup or create a function declaration with name `name', return type `resT', and argument types `argTypes'
+function :: Sort -> Id -> [Sort] -> Z3State FuncDecl
+function resT name argTypes = do
+  let name' = name ++ concatMap (show . asZ3Sort) (resT : argTypes)
+  declMb <- uses functions (Map.lookup name')
+  case declMb of
+    Just d -> return d
+    Nothing -> do
+      symb <- mkStringSymbol name'
+      argSorts <- mapM toZ3Sort argTypes
+      resSort <- toZ3Sort resT
+      decl <- mkFuncDecl symb argSorts resSort
+      functions %= Map.insert name' decl
+      -- return $ traceShow (text "DECLARE" <+> text name <+> pretty argTypes <+> pretty resT) decl
+      return decl
 
 -- | 'getAllMUSs' @assumption mustHave fmls@ : find all minimal unsatisfiable subsets of @fmls@ with @mustHave@, which contain @mustHave@, assuming @assumption@
 -- (implements Marco algorithm by Mark H. Liffiton et al.)

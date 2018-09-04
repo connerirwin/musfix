@@ -94,8 +94,8 @@ readConstraints o f = do
         useLeastFixpoint = leastFixpoint o,
         constraints = horns,
         qualifierMap = qmap,
-        constants = cs,
-        distincts = ds
+        inConsts = cs,
+        inDistinctConsts = ds
       }
     candidates <- findFixPoint params
     verboseLog o $ show candidates
