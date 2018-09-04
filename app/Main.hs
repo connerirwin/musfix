@@ -95,7 +95,7 @@ readConstraints o f = do
     normalLog o $ "\n"
 
 prepOutput :: ProgramOptions -> IO ()
-prepOutput o = unless (appendOutput o) $ writeFile (outputFile o) "" -- ^ Wipe the outputFile
+prepOutput o = unless (length (outputFile o) == 0 || appendOutput o) $ writeFile (outputFile o) "" -- ^ Wipe the outputFile
 
 verboseLog :: ProgramOptions -> String -> IO ()
 verboseLog o s = when (verboseLogging o) $ normalLog o s
