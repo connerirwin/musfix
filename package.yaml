@@ -29,6 +29,8 @@ dependencies:
 - text >= 1.2
 - transformers >= 0.3 && < 0.5
 - z3 > 4.0
+default-extensions:
+- DisambiguateRecordFields
 library:
   source-dirs: src
 executable:

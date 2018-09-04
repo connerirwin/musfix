@@ -5,9 +5,9 @@ Inputs
 --------
 Reading from file test/sample/bool03.smt2
 SortDecl "Str" 0
-UninterpFunction "cat" [] (DataS "Str" [])
-UninterpFunction "not_the_hippopotamus" [] (DataS "Str" [])
-UninterpFunction "dog" [] (DataS "Str" [])
+ConstantDecl "cat" (DataS "Str" [])
+ConstantDecl "not_the_hippopotamus" (DataS "Str" [])
+ConstantDecl "dog" (DataS "Str" [])
 Qualifier "Implies" [Var BoolS "v",Var BoolS "x"] (Binary Implies (Var BoolS "x") (Var BoolS "v"))
 WFConstraint "$k1" [Var BoolS "bx",Var BoolS "v"]
 HornConstraint [Var BoolS "bx",Var BoolS "v1"] (Binary Implies (Binary And (BoolLit True) (Binary Implies (Var BoolS "bx") (Var BoolS "v1"))) (Unknown (fromList [("bx",Var BoolS "bx"),("v",Var BoolS "v1")]) "$k1"))

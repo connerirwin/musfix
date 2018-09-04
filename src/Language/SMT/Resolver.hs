@@ -10,7 +10,7 @@ import Language.SMT.Syntax
 import Language.Synquid.HornSolver
 import Language.Synquid.Logic hiding (unifySorts)
 import Language.Synquid.Program hiding (Environment)
-import Language.Synquid.Util
+import Language.Synquid.Util hiding (constMap)
 import Language.Synquid.Z3
 
 import Control.Monad
@@ -35,9 +35,10 @@ data FunctionApplication = FunctionApplication {
 }
 
 data Environment = Environment {
-  wfMap   :: Map Id [Formula],
-  predMap :: Map Id [Sort],
-  consMap :: Map Id Int          -- Keeps track of the number of parameters that a new sort takes
+  wfMap    :: Map Id [Formula],
+  predMap  :: Map Id [Sort],
+  sortMap  :: Map Id Int,        -- Keeps track of the number of parameters that a new sort takes
+  constMap :: Map Id Sort        -- Record the sorts of constants
 }
 
 -- | Create a qualifier (refinement) map from a set of possible qualifiers for a
@@ -106,10 +107,14 @@ createEnvironment ins = env
     boxSD :: InputExpr -> (Id, Int)
     boxSD (SortDecl name numSorts) = (name, numSorts)
 
+    boxCD :: InputExpr -> (Id, Sort)
+    boxCD (ConstantDecl name sort) = (name, sort)
+
     env = Environment {
-      wfMap   = Map.fromList $ map boxWF $ allWFConstraints ins,
-      predMap = Map.fromList $ map boxUf $ allUninterpFunction ins,
-      consMap = Map.fromList $ map boxSD $ allSortDecl ins
+      wfMap    = Map.fromList $ map boxWF $ allWFConstraints ins,
+      predMap  = Map.fromList $ map boxUf $ allUninterpFunction ins,
+      sortMap  = Map.fromList $ map boxSD $ allSortDecl ins,
+      constMap = Map.fromList $ map boxCD $ allConstants ins
     }
 
 -- | Resolves the sorts of expression, or throws an error
@@ -194,7 +199,7 @@ resolveSorts env ins = map targetUpdate ins
     -- | Lookup the variable sort from the formals
     lookupVar :: Formula -> [Formula] -> Formula
     lookupVar (Var sort name) vs
-      | Map.member name $ predMap env  = Func (getReturnSort $ (predMap env) ! name) name []  -- ^ TODO this is a hack that replaces vars with constants
+      | Map.member name $ constMap env = Func ((constMap env) ! name) name []  -- ^ TODO this is a hack that replaces vars with constants
       | sort == AnyS  = Var sort' name
       | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
       where
@@ -238,7 +243,7 @@ resolveSorts env ins = map targetUpdate ins
       else
         error $ name ++ " expects " ++ show expectedArgs ++ " arguments, but instead received " ++ show numArgs ++ " in " ++ show a
       where
-        expectedArgs = case Map.lookup name (consMap env) of
+        expectedArgs = case Map.lookup name (sortMap env) of
           Nothing -> error $ "Sort " ++ name ++ " has not been declared"
           Just n  -> n
         numArgs = length args

@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c0cc4ff1b83658fd1b1994f084d8e68a75397cb5061bb1570e6efddbd24eba45
+-- hash: 9989c9645d7d680dfdd2604f771316a8cbd830f445de0beeac740f0513c79da5
 
 name:           musfix
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
       Paths_musfix
   hs-source-dirs:
       src
+  default-extensions: DisambiguateRecordFields
   build-depends:
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7
@@ -81,6 +82,7 @@ executable musfix
   hs-source-dirs:
       src
       app
+  default-extensions: DisambiguateRecordFields
   build-depends:
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7
@@ -128,6 +130,7 @@ test-suite specs
       app
       src
       test
+  default-extensions: DisambiguateRecordFields
   ghc-options: -main-is Test.Harness
   build-depends:
       ansi-terminal >=0.6
