@@ -1,0 +1,24 @@
+
+Preparing to find greatest fixpoint...
+
+Inputs
+--------
+Reading from file test/pos/lit00.smt2
+SortDecl "List" 1
+SortDecl "Peano" 0
+ConstantDecl "one" (DataS "Peano" [])
+ConstantDecl "zero" (DataS "Peano" [])
+DistinctDecl ["one","zero"]
+HornConstraint [Var (DataS "Peano" []) "xZero",Var (DataS "Peano" []) "xOne",Var IntS "v1"] (Binary Implies (Binary And (Binary Eq (Var (DataS "Peano" []) "xZero") (Func (DataS "Peano" []) "zero" [])) (Binary And (Binary Eq (Var (DataS "Peano" []) "xOne") (Func (DataS "Peano" []) "one" [])) (BoolLit True))) (Unary Not (Binary Eq (Var (DataS "Peano" []) "xZero") (Var (DataS "Peano" []) "xOne"))))
+
+QMAP
+--------
+fromList []
+
+Candidates
+--------
+[]
+
+
+Final candidates:
+0: [] (0 0)
