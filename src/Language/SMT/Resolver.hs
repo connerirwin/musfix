@@ -199,7 +199,9 @@ resolveSorts env ins = map targetUpdate ins
     -- | Lookup the variable sort from the formals
     lookupVar :: Formula -> [Formula] -> Formula
     lookupVar (Var sort name) vs
-      | Map.member name $ constMap env = Func ((constMap env) ! name) name []  -- ^ TODO this is a hack that replaces vars with constants
+      -- | Constants cannot be distinguished from vars when parsing, so they must be converted
+      -- TODO this is a hack that uses a no-arg Func to represent a constant
+      | Map.member name $ constMap env = Func ((constMap env) ! name) name []
       | sort == AnyS  = Var sort' name
       | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
       where
