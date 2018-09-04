@@ -62,8 +62,8 @@ type FixPointSolver s = ReaderT HornSolverParams s
 evalFixPointSolver = runReaderT
 
 instance MonadSMT s => MonadHorn (FixPointSolver s) where
-  initHornSolver env = do
-    lift (initSolver env)
+  initHornSolver env pre = do
+    lift (initSolver env pre)
     return initialCandidate
 
   preprocessConstraint = preprocess

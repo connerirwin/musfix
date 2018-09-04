@@ -138,7 +138,6 @@ type Substitution = Map Id Formula
 data Formula =
   BoolLit Bool |                      -- ^ Boolean literal
   IntLit Integer |                    -- ^ Integer literal
-  Constant Sort Id |                  -- ^ Constant
   SetLit Sort [Formula] |             -- ^ Set literal ([1, 2, 3])
   MapLit Sort Formula |               -- ^ Map literal; key sort, default value
   MapSel Formula Formula |            -- ^ Map select

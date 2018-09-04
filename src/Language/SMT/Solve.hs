@@ -1,6 +1,6 @@
 module Language.SMT.Solve (
   findFixPoint,
-  SolverInputs (..)
+  SolverInputs (..),
 ) where
 
 import Language.SMT.Syntax
@@ -35,8 +35,8 @@ data SolverInputs = SolverInputs {
   useLeastFixpoint :: Bool,
   constraints :: [Formula],
   qualifierMap :: QMap,
-  constants :: [(Id, Sort)],
-  distincts :: [[Id]]
+  inConsts :: [(Id, Sort)],
+  inDistinctConsts :: [[Id]]
 }
 
 -- | Finds fix point canidates
@@ -51,7 +51,11 @@ prepareEnv ins = emptyEnv
 -- | Compute the fix points
 computeFixPoints :: SolverInputs -> HornSolver [Candidate]
 computeFixPoints ins = do
-    initCand <- initHornSolver emptyEnv
+    let pre = Preamble {
+      preambleConstants = inConsts ins,
+      preambleDistinctAssertions = inDistinctConsts ins
+    }
+    initCand <- initHornSolver emptyEnv pre
     procCons <- mapM preprocessConstraint $ constraints ins
     let procCons' = foldl (++) [] procCons
     let qmap = qualifierMap ins
