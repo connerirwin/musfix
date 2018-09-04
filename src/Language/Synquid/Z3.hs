@@ -346,7 +346,8 @@ declConstants cs = do
       
 assertDistincts :: [(Id, Sort)] -> [[Id]] -> Z3State ()
 assertDistincts cs ds = do
-    mapM_ dist ds
+    dists <- mapM dist ds
+    mapM_ assert dists
     return ()
   where
     dist names = do

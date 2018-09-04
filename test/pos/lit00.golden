@@ -17,8 +17,9 @@ fromList []
 
 Candidates
 --------
-[]
+[Candidate {solution = fromList [], validConstraints = fromList [Binary Implies (Binary And (Binary Eq (Var (DataS "Peano" []) "xZero") (Func (DataS "Peano" []) "zero" [])) (Binary And (Binary Eq (Var (DataS "Peano" []) "xOne") (Func (DataS "Peano" []) "one" [])) (BoolLit True))) (Unary Not (Binary Eq (Var (DataS "Peano" []) "xZero") (Var (DataS "Peano" []) "xOne")))], invalidConstraints = fromList [], label = "0"}]
 
 
-Final candidates:
-0: [] (0 0)
+Final candidates: 
+0: [] (1 0)
+
