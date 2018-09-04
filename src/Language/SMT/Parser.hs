@@ -92,18 +92,24 @@ checkVars fs = foldr ((&&) . isVar) True fs
 instance FromLisp InputExpr where
   -- | Custom Sorts
   parseLisp (List [(Symbol "declare-sort"), (Symbol n), (Number num)]) =
-    return $ SortDecl (T.unpack n) (getInt num)
+      return $ SortDecl (T.unpack n) (getInt num)
   -- | Uninterpreted function declaration
   parseLisp (List [(Symbol "declare-fun"), (Symbol n), List ps, rt]) = do
       params <- mapM parseSortM ps
       output <- parseSortM rt
       return $ UninterpFunction (T.unpack n) params output
   -- | Constants
-  -- TODO Constants are currently hacked in as uninterpreted functions that take no arguments
-  -- Additionally, since the parser cannot identify them, they are treated as variables and then replaced in the resolver
   parseLisp (List [(Symbol "declare-const"), (Symbol n), rt]) = do
       output <- parseSortM rt
-      return $ UninterpFunction (T.unpack n) [] output
+      return $ ConstantDecl (T.unpack n) output
+  -- | Distinct assertion
+  parseLisp (List [(Symbol "assert"), List ((Symbol "distinct"):xs)]) = do
+      let names = map sym xs
+      return $ DistinctDecl names
+    where
+      sym :: Lisp -> Id
+      sym (Symbol n) = T.unpack n
+      sym _          = error "invalid symbol in distinct"
   -- | Qualifiers
   parseLisp (List [(Symbol "qualif"), (Symbol n), List xs, y]) = do
       vars <- mapM parseFormula xs
@@ -121,12 +127,12 @@ instance FromLisp InputExpr where
         return $ WFConstraint (T.unpack n) vars
   -- | Horn constraint
   parseLisp (List [(Symbol "constraint"), List [(Symbol "forall"), List xs, y]]) = do
-    vars <- mapM parseFormula xs
-    if not $ checkVars vars then
-      fail "invalid variable in constraint forall"
-    else do
-        formula <- parseFormula y
-        return $ HornConstraint vars formula
+      vars <- mapM parseFormula xs
+      if not $ checkVars vars then
+        fail "invalid variable in constraint forall"
+      else do
+          formula <- parseFormula y
+          return $ HornConstraint vars formula
   parseLisp _ = fail "unknown top-level construct"
 
 parseInputExpr :: Lisp -> Parser InputExpr

@@ -18,6 +18,8 @@ data InputExpr =
   | HornConstraint [Formula] Formula        -- ^ Horn constraint
   | UninterpFunction Id [Sort] Sort         -- ^ Uninterpreted function with input types and a return type (this is the way that z3 does it)
   | SortDecl Id Int                         -- ^ Sort declaration
+  | ConstantDecl Id Sort                    -- ^ Declares a constant
+  | DistinctDecl [Id]                       -- ^ Declares constants as distinct
   deriving (Show, Eq, Ord)
 
 isQualifier (Qualifier _ _ _) = True
@@ -30,6 +32,10 @@ isUninterpFunction (UninterpFunction _ _ _) = True
 isUninterpFunction _ = False
 isSortDecl (SortDecl _ _) = True
 isSortDecl _ = False
+isConstant (ConstantDecl _ _ ) = True
+isConstant _ = False
+isDistinct (DistinctDecl _) = True
+isDistinct _ = False
 
 -- | Gets all the qualifiers in an input expression list
 allQualifiers :: [InputExpr] -> [InputExpr]
@@ -48,6 +54,12 @@ allUninterpFunction = filter isUninterpFunction
 
 allSortDecl :: [InputExpr] -> [InputExpr]
 allSortDecl = filter isSortDecl
+
+allConstants :: [InputExpr] -> [InputExpr]
+allConstants = filter isConstant
+
+allDistincts :: [InputExpr] -> [InputExpr]
+allDistincts = filter isDistinct
 
 wfName :: InputExpr -> Id
 wfName (WFConstraint name _) = name
@@ -126,6 +138,7 @@ type Substitution = Map Id Formula
 data Formula =
   BoolLit Bool |                      -- ^ Boolean literal
   IntLit Integer |                    -- ^ Integer literal
+  Constant Sort Id |                  -- ^ Constant
   SetLit Sort [Formula] |             -- ^ Set literal ([1, 2, 3])
   MapLit Sort Formula |               -- ^ Map literal; key sort, default value
   MapSel Formula Formula |            -- ^ Map select

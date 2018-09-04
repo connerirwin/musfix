@@ -80,6 +80,8 @@ readConstraints o f = do
     let ins = prepareInputs $ topInputs lisp
     let qmap = generateQualifiers ins
     let horns = map formulas $ allHornConstraints ins
+    let cs = map constant $ allConstants ins
+    let ds = map distinct $ allDistincts ins
     prepOutput o
     verboseLog o $ "Preparing to find " ++ (fixPointType o) ++ " fixpoint..."
     verboseLog o $"\nInputs\n--------"
@@ -88,7 +90,14 @@ readConstraints o f = do
     verboseLog o $ "\nQMAP\n--------"
     verboseLog o $ show qmap
     verboseLog o $ "\nCandidates\n--------"
-    candidates <- findFixPoint (leastFixpoint o) horns qmap
+    let params = SolverInputs {
+        useLeastFixpoint = leastFixpoint o,
+        constraints = horns,
+        qualifierMap = qmap,
+        constants = cs,
+        distincts = ds
+      }
+    candidates <- findFixPoint params
     verboseLog o $ show candidates
     verboseLog o $ "\n\nFinal candidates: "
     mapM_ ((normalLog o) . show . pretty) candidates
@@ -108,6 +117,14 @@ normalLog o s = do
 formulas :: InputExpr -> Formula
 formulas (HornConstraint vs f) = f
 formulas _ = error "non-horn constraint in constraints"
+
+constant :: InputExpr -> (Id, Sort)
+constant (ConstantDecl n s) = (n, s)
+constant _ = error "non-constant expression in constants"
+
+distinct :: InputExpr -> [Id]
+distinct (DistinctDecl ns) = ns
+distinct _ = error "non-distinct expression in distincts"
 
 fixPointType :: ProgramOptions -> String
 fixPointType o = if leastFixpoint o then "least" else "greatest"

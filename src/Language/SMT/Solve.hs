@@ -1,5 +1,6 @@
 module Language.SMT.Solve (
   findFixPoint,
+  SolverInputs (..)
 ) where
 
 import Language.SMT.Syntax
@@ -22,7 +23,6 @@ type HornSolver = FixPointSolver Z3State
 defaultHornSolverParams = HornSolverParams {
   pruneQuals = True,
   isLeastFixpoint = False,
-  --isLeastFixpoint = True,
   optimalValuationsStrategy = MarcoValuations,
   semanticPrune = True,
   agressivePrune = True,
@@ -30,21 +30,32 @@ defaultHornSolverParams = HornSolverParams {
   constraintPickStrategy = SmallSpaceConstraint,
   solverLogLevel = 0
   }
+  
+data SolverInputs = SolverInputs {
+  useLeastFixpoint :: Bool,
+  constraints :: [Formula],
+  qualifierMap :: QMap,
+  constants :: [(Id, Sort)],
+  distincts :: [[Id]]
+}
 
 -- | Finds fix point canidates
-findFixPoint :: Bool -> [Formula] -> QMap -> IO [Candidate]
-findFixPoint useLeastFixpoint constraints qmap = evalZ3State $ evalFixPointSolver (computeFixPoints constraints qmap) params
+findFixPoint :: SolverInputs -> IO [Candidate]
+findFixPoint inputs = evalZ3State $ evalFixPointSolver (computeFixPoints inputs) params
   where
-    params = defaultHornSolverParams { isLeastFixpoint = useLeastFixpoint }
+    params = defaultHornSolverParams { isLeastFixpoint = (useLeastFixpoint inputs) }
+    
+prepareEnv :: SolverInputs -> Environment
+prepareEnv ins = emptyEnv
 
 -- | Compute the fix points
-computeFixPoints :: [Formula] -> QMap -> HornSolver [Candidate]
-computeFixPoints constraints qmap = do
+computeFixPoints :: SolverInputs -> HornSolver [Candidate]
+computeFixPoints ins = do
     initCand <- initHornSolver emptyEnv
-    procCons <- mapM preprocessConstraint constraints
+    procCons <- mapM preprocessConstraint $ constraints ins
     let procCons' = foldl (++) [] procCons
-      in do
-        allCandidates <- refineCandidates procCons' qmap nothing [initCand]
-        return allCandidates
+    let qmap = qualifierMap ins
+    allCandidates <- refineCandidates procCons' qmap nothing [initCand]
+    return allCandidates
   where
     nothing = \_ -> Set.empty
