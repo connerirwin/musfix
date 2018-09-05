@@ -1,5 +1,5 @@
 # MUSFix
-General purpose version of Synquid's greatest-fixpoint Horn clause solver.
+General purpose version of Synquid's Horn clause solver.
 
 # Building MUSFix
 1. Install [Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
@@ -24,9 +24,31 @@ General purpose version of Synquid's greatest-fixpoint Horn clause solver.
 
 4. Run MUSFix
 
-        stack exec -- musfix --help
+        stack exec -- musfix
 
-# Using development scripts
+# Command Line Options
+
+Usage:
+
+    musfix INPUT_FILES [-o|--output FILE] [-a|--append] [-s|--silent] [--verbose] [-l|--least-fixpoint] [--version]
+
+Run a fixpoint solver on INPUT_FILES to find all solutions satisfying the constraints
+
+Available options:
+
+    -h,--help                Show this help text
+    -o,--output FILE         Prints results to the specified file
+    -a,--append              Append file output
+    -s,--silent              Supresses command-line output
+    --verbose                Output additional logging
+    -l,--least-fixpoint      Use a least-fixpoint solver (default is greatest)
+    --version                Show current version
+
+# .smt2 File Format
+
+TODO
+
+# Using Development Scripts
 
 To run the program quickly
 

@@ -38,25 +38,29 @@ data ProgramOptions = ProgramOptions {
 
 cmdParser :: Parser ProgramOptions
 cmdParser = ProgramOptions
-  <$> some (argument str (metavar "INPUT FILE"))
+  <$> some (argument str (metavar "INPUT_FILES"))
   <*> strOption (long "output" <> short 'o' <> metavar "FILE" <> value "" <> help "Prints results to the specified file")
   <*> switch (long "append" <> short 'a' <> help "Append file output")
   <*> switch (long "silent" <> short 's' <> help "Supresses command-line output")
   <*> switch (long "verbose" <> help "Output additional logging")
-  <*> switch (long "least-fixpoint" <> short 'l' <> help "Use a least fixpoint solver (default is greatest fixpoint)")
+  <*> switch (long "least-fixpoint" <> short 'l' <> help "Use a least-fixpoint solver (default is greatest)")
 
 versionOption :: Parser (a -> a)
 versionOption = infoOption (concat ["musfix", showVersion version, " git commit ", $(gitHash)])
                            (long "version" <> help "Show current version")
 
-opts :: ParserInfo ProgramOptions
-opts = info (helper <*> versionOption <*> cmdParser)
-            (fullDesc <> progDesc "\nRun a fixpoint solver on INPUT FILE" <> header "Musfix")
+options :: ParserInfo ProgramOptions
+options = info (helper <*> cmdParser <**> versionOption)
+               (fullDesc <> progDesc "Run a fixpoint solver on INPUT_FILES to find all solutions satisfying the constraints"
+                         <> header "Musfix - General purpose version of Synquid's Horn clause solver")
+
+preferences :: ParserPrefs
+preferences = prefs showHelpOnEmpty
 
 main :: IO ()
 main = do
-  options <- execParser opts
-  mapM_ (readConstraints options) $ inputFiles options
+  progOpts <- customExecParser preferences options
+  mapM_ (readConstraints progOpts) $ inputFiles progOpts
 
 -- TODO add ProgramOptions as State
 readConstraints :: ProgramOptions -> FilePath -> IO ()
