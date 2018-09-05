@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 
 module Main where
 
@@ -7,7 +7,7 @@ import Language.SMT.Resolver
 import Language.SMT.Solve
 import Language.SMT.Syntax
 
-import Language.Synquid.Pretty
+import Language.Synquid.Pretty hiding ((<>))
 
 import Control.Monad
 
@@ -15,65 +15,51 @@ import qualified Data.Attoparsec.ByteString as A
 import qualified Data.AttoLisp as L
 import qualified Data.ByteString as ByteString
 import Data.ByteString (ByteString)
+import Data.Semigroup ((<>))
+import Data.Version (showVersion)
+
+import Development.GitRev (gitHash)
+
+import Options.Applicative
+
+import Paths_musfix (version)
 
 import System.Environment
 import System.Exit
 
 data ProgramOptions = ProgramOptions {
-  printOutput    :: Bool,
-  appendOutput   :: Bool,
+  inputFiles     :: [String],
   outputFile     :: String,
+  appendOutput   :: Bool,
+  suppressOutput :: Bool,
   verboseLogging :: Bool,
   leastFixpoint  :: Bool
 } deriving (Show, Eq)
 
-defaultProgramOptions = ProgramOptions {
-  printOutput    = True,
-  appendOutput   = False,
-  outputFile     = "",
-  verboseLogging = False,
-  leastFixpoint  = False
-}
+cmdParser :: Parser ProgramOptions
+cmdParser = ProgramOptions
+  <$> some (argument str (metavar "INPUT FILE"))
+  <*> strOption (long "output" <> short 'o' <> metavar "FILE" <> value "" <> help "Prints results to the specified file")
+  <*> switch (long "append" <> short 'a' <> help "Append file output")
+  <*> switch (long "silent" <> short 's' <> help "Supresses command-line output")
+  <*> switch (long "verbose" <> help "Output additional logging")
+  <*> switch (long "least-fixpoint" <> short 'l' <> help "Use a least fixpoint solver (default is greatest fixpoint)")
 
-version = putStrLn "musfix 0.1.0.0"
-usage   = putStrLn "Usage: musfix [-o FILE] [-s|--silent] [-l] [--verbose] [-h|--help] [--version] [file...]"
-help    = putStrLn "\nOptions:\n\
-                   \  -o\t\tPrint results to the specified file\n\
-                   \  -s, --silent\t\tRun the program without printing results to standard out\n\
-                   \  -l\t\tUse a least fixpoint solver (default is greatest fixpoint)\n\
-                   \  --verbose\tOutput additional logging\n\
-                   \  -h, --help\tShow this help text\n\
-                   \  --version\tShow current version"
+versionOption :: Parser (a -> a)
+versionOption = infoOption (concat ["musfix", showVersion version, " git commit ", $(gitHash)])
+                           (long "version" <> help "Show current version")
+
+opts :: ParserInfo ProgramOptions
+opts = info (helper <*> versionOption <*> cmdParser)
+            (fullDesc <> progDesc "\nRun a fixpoint solver on INPUT FILE" <> header "Musfix")
 
 main :: IO ()
 main = do
-  args <- getArgs
-  parseArgs defaultProgramOptions args
+  options <- execParser opts
+  mapM_ (readConstraints options) $ inputFiles options
 
 -- TODO add ProgramOptions as State
-
--- | TODO make argument parsing more robust - add support for arguments in any
--- order, multiple flags with a single dash, clean up the help and usage
--- information
--- Consider using a library? (optparse-applicative), this library is now required already by dependencies
-parseArgs :: ProgramOptions -> [String] -> IO ()
-parseArgs o (x:y:xs)
-    | x == "-o"   = do
-      let o' = o { outputFile = y }
-      verboseLog o' $ "Setting output file to " ++ y
-      parseArgs o' xs
-parseArgs o (x:xs)
-    | x `elem` ["-s", "--silent"] = continue $ o { printOutput    = False }
-    | x == "-l"                   = continue $ o { leastFixpoint  = True }
-    | x == "--verbose"            = continue $ o { verboseLogging = True }
-    | x `elem` ["-h", "--help"]   = usage >> help       >> exitSuccess
-    | x == "--version"            = version             >> exitSuccess
-    | otherwise                   = readConstraints o x >> continue o
-    where
-      continue o' = parseArgs o' xs
-parseArgs _ _               = exitSuccess
-
-readConstraints :: ProgramOptions -> String -> IO ()
+readConstraints :: ProgramOptions -> FilePath -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
     let lisp = topSExprs s
@@ -111,7 +97,7 @@ verboseLog o s = when (verboseLogging o) $ normalLog o s
 
 normalLog :: ProgramOptions -> String -> IO ()
 normalLog o s = do
-  when (printOutput o) $ putStrLn s
+  unless (suppressOutput o) $ putStrLn s
   when (length (outputFile o) > 0) $ appendFile (outputFile o) $ "\n" ++ s
 
 formulas :: InputExpr -> Formula

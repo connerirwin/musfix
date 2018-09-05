@@ -30,7 +30,15 @@ mkTest f = goldenVsString (takeBaseName f) (replaceExtension f ".golden") $ acti
 
 action :: FilePath -> IO LBS.ByteString
 action inFile = do
-  readConstraints (ProgramOptions False False "test_output.tmp" True False) inFile
+  let opts = ProgramOptions {
+    inputFiles = [inFile],
+    outputFile = "test_output.tmp",
+    appendOutput = False,
+    suppressOutput = True,
+    verboseLogging = True,
+    leastFixpoint = False
+  }
+  readConstraints opts inFile
   o <- LBS.readFile "test_output.tmp"
   removeFile "test_output.tmp"
   return o

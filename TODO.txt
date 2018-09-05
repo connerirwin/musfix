@@ -7,7 +7,3 @@ Conner
 Kevin
 -Convert map_select to binOp (this might mess with the z3 bindings)
 -Map_union
-
-Misc
--Improve the cmd parser (try using optparse-applicative)
--Better method for logging (error stops the program, not everything should be IO)

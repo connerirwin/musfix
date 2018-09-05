@@ -19,11 +19,13 @@ dependencies:
 - containers >= 0.5 && < 0.6
 - directory
 - filepath
+- gitrev
 - lens >= 3.7
 - mtl >= 2.2 && < 2.3
-# - optparse-applicative >= 0.14
+- optparse-applicative >= 0.14
 - parsec == 3.1.*
 - scientific >= 0.3
+- semigroups
 - tasty >= 1.0.1
 - tasty-golden >= 2.3.2
 - text >= 1.2
