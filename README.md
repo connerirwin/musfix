@@ -30,8 +30,7 @@ General purpose version of Synquid's Horn clause solver.
 
 Usage:
 
-    musfix INPUT_FILES [-o|--output FILE] [-a|--append] [-s|--silent]
-           [--verbose] [-l|--least-fixpoint] [--version]
+    musfix INPUT_FILES [-o|--output FILE] [-a|--append] [-s|--silent] [--verbose] [-l|--least-fixpoint] [--version]
 
 Run a fixpoint solver on INPUT_FILES to find all solutions satisfying the constraints
 
@@ -77,9 +76,9 @@ Horn Constraints
 
 Example Files
 
-[Sorts, Functions, Qualifiers](test/sample/nadia.smt2)
+[Sorts, Functions, Qualifiers](test/sample/nadia.msmt)
 
-[Distinct Constants](test/pos/lit00.smt2)
+[Distinct Constants](test/pos/lit00.msmt)
 
 
 # Using Development Scripts

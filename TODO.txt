@@ -9,3 +9,4 @@ Kevin
 -Map_union
 
 -declare sort missing
+-polymorphic declared sort name len00.msmt
