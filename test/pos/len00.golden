@@ -1,0 +1,26 @@
+
+Preparing to find greatest fixpoint...
+
+Inputs
+--------
+Reading from file test/pos/len00.msmt
+SortDecl "List" 1
+SortDecl "Tuple" 2
+SortDecl "Obj" 0
+UninterpFunction "len" [DataS "_any" [VarS "a1"]] IntS
+Qualifier "ListZ" [Var (DataS "List" [VarS "a0"]) "v"] (Binary Ge (Func IntS "len" [Var (DataS "List" [VarS "a1"]) "v"]) (IntLit 0))
+WFConstraint "$k0" [Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "v"]
+HornConstraint [Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "yoink",Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "v1"] (Binary Implies (Binary And (Binary Ge (Func IntS "len" [Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "yoink"]) (IntLit 0)) (Binary Eq (Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "v1") (Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "yoink"))) (Unknown (fromList [("v",Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "v1")]) "$k0"))
+HornConstraint [Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "v2"] (Binary Implies (Unknown (fromList [("v",Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "v2")]) "$k0") (Binary Ge (Func IntS "len" [Var (DataS "List" [DataS "Tuple" [IntS,DataS "Obj" []]]) "v2"]) (IntLit 0)))
+
+QMAP
+--------
+fromList [("$k0",QSpace {_qualifiers = [], _maxCount = 0})]
+
+Candidates
+--------
+[]
+
+
+Final candidates: 
+

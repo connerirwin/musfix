@@ -261,15 +261,17 @@ parseSort (Symbol s)
   | Map.member s sorts = Map.lookup s sorts
 -- | Constructor
 parseSort (List ((Symbol n):fs))
-  | Char.isUpper $ T.head n = do
+  | (Char.isUpper $ T.head n) || (T.head n == '@') = do
       formals <- mapM parseSort fs
       return $ DataS name formals
     where
-      name = T.unpack n
+      name = if T.head n == '@' then "_any" else T.unpack n
 -- | In order to allow a no-arg constructor to not need parenthesis
 parseSort (Symbol n)
-  | Char.isUpper $ T.head n = do
-      return $ DataS (T.unpack n) []
+  | (Char.isUpper $ T.head n) || (T.head n == '@') = do
+      return $ DataS name []
+    where
+      name = if T.head n == '@' then "_any" else T.unpack n
 parseSort _ = Nothing
 
 isSort :: Lisp -> Bool

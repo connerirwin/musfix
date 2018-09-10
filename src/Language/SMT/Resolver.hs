@@ -230,7 +230,7 @@ resolveSorts env ins = map targetUpdate ins
         sort' = DataS name $ map sortOf fs
 
 
-    -- | Ensure that all construct sorts are passed the correct number of arguments
+    -- | Ensure that all constructed sorts are passed the correct number of arguments
     checkDataS :: Formula -> Formula
     checkDataS f = seq (mapSort checkDataS' $ sortOf f) f
       where
@@ -243,7 +243,7 @@ resolveSorts env ins = map targetUpdate ins
     verifySortDecl :: Show a => a -> Id -> [a] -> a
     verifySortDecl a name args = if numArgs == expectedArgs then a
       else
-        error $ name ++ " expects " ++ show expectedArgs ++ " arguments, but instead received " ++ show numArgs ++ " in " ++ show a
+        error $ "Argument mismatch: " ++ name ++ " expects " ++ show expectedArgs ++ " arguments, but instead received " ++ show numArgs ++ " in sort:  " ++ show a
       where
         expectedArgs = case Map.lookup name (sortMap env) of
           Nothing -> error $ "Sort " ++ name ++ " has not been declared"
@@ -333,9 +333,10 @@ unifySortsM :: Sort -> Sort -> StateT PolyMap Maybe Sort
 unifySortsM a b
   | a == b    = pure a
 unifySortsM (DataS n1 args1) (DataS n2 args2)
-  | n1 == n2  = do
+  | (n1 == n2) || (n1 == "_any") || (n2 == "_any") = do
+      let name = if n1 == "_any" then n2 else n1
       args' <- zipWithM unifySortsM args1 args2
-      return $ DataS n1 args'
+      return $ DataS name args'
 unifySortsM (SetS e1) (SetS e2) = do
       e' <- unifySortsM e1 e2
       return $ SetS e'
