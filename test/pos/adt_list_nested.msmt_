@@ -1,0 +1,22 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+(declare-sort LL 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((junk (LL Int))(v1 Int)) (=> (and True True) (= emp (ite (< 1 2) emp (con junk emp))))))

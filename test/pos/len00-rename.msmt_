@@ -1,0 +1,25 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+(declare-fun len ((@a0 @a1)) Int)
+
+
+; Qualifiers
+(qualif ListZ ((v (List @a0))) (>= (len v) 0))
+
+
+; Well-formedness Constraints
+(wf $k0 ((v0 (List (Tuple Int Obj a)))))
+
+
+; Horn Constraints
+(constraint (forall ((y (List (Tuple Int Obj a)))(v1 (List (Tuple Int Obj a)))) (=> (and (>= (apply len y) 0) (= v1 y)) ($k0 v1))))
+(constraint (forall ((v2 (List (Tuple Int Obj a)))) (=> ($k0 v2) (>= (apply len v2) 0))))

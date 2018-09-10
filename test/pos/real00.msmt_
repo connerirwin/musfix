@@ -1,0 +1,21 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((xZero unknown [given FReal])(xOne unknown [given FReal])(v1 Int)) (=> (and (= xZero 0.00000) (and (= xOne 1.00000) True)) (not (= xZero xOne)))))

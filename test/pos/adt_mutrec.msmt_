@@ -1,0 +1,23 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+(declare-sort Val 0)
+(declare-sort VEnv 0)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((env VEnv)(val Val)(x Int)(y Int)(envx VEnv)(envy VEnv)(v1 Int)) (=> (and True (and True (and True (and True (and (= envx (VBind x val env)) (and (= envy (VBind y val env)) (= x y))))))) (= envx envy))))

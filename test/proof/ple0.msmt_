@@ -1,0 +1,22 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+(declare-fun adder (Int Int) Int)
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((v1 Int)) (=> (= (apply (apply adder 5) 6) (+ 5 6)) (= (apply (apply adder 5) 6) 11))))

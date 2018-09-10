@@ -1,0 +1,22 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+(declare-fun mkEmp (Int) @a0)
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((junk Bool)(punk Int)(v0 Int)) (=> (and (= junk (apply mkEmp 0)) (and (= punk (apply mkEmp 0)) (= v0 (apply mkEmp 10)))) (= v0 (apply mkEmp 10)))))

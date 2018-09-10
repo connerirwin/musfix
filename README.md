@@ -30,7 +30,8 @@ General purpose version of Synquid's Horn clause solver.
 
 Usage:
 
-    musfix INPUT_FILES [-o|--output FILE] [-a|--append] [-s|--silent] [--verbose] [-l|--least-fixpoint] [--version]
+    musfix INPUT_FILES [-o|--output FILE] [-a|--append] [-s|--silent]
+           [--verbose] [-l|--least-fixpoint] [--version]
 
 Run a fixpoint solver on INPUT_FILES to find all solutions satisfying the constraints
 
@@ -44,9 +45,42 @@ Available options:
     -l,--least-fixpoint      Use a least-fixpoint solver (default is greatest)
     --version                Show current version
 
-# .smt2 File Format
+# .msmt File Format
 
-TODO
+Uninterpreted Sorts
+
+    (declare-sort NAME NUM_ARGS)
+
+Constants
+
+    (declare-const NAME SORT)
+
+Distinct Constants
+
+    (assert (distinct NAMES))
+
+Uninterpreted Functions
+
+    (declare-fun NAME (ARGUMENT_SORTS) RETURN_SORT)
+
+Qualifiers
+
+    (qualif NAME ((VAR_NAME VAR_SORT)...) (EXPRESSION))
+
+Well-formedness Constraints
+
+    (wf $NAME (VARS))
+
+Horn Constraints
+
+    (constraint (forall ((VARS)) (=> EXPRESSION EXPRESSION)))
+
+Example Files
+
+[Sorts, Functions, Qualifiers](test/sample/nadia.smt2)
+
+[Distinct Constants](test/pos/lit00.smt2)
+
 
 # Using Development Scripts
 

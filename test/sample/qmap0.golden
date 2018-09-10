@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/sample/qmap0.smt2
+Reading from file test/sample/qmap0.msmt
 Qualifier "Discard" [Var BoolS "b"] (Binary Eq (Var BoolS "b") (Var BoolS "b"))
 Qualifier "Accept" [Var IntS "v"] (Binary Le (Var IntS "v") (IntLit 0))
 WFConstraint "$k0" [Var IntS "v0"]

@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/sample/len00.smt2
+Reading from file test/sample/len00.msmt
 SortDecl "Tuple" 2
 UninterpFunction "len" [SetS (VarS "1")] IntS
 Qualifier "ListZ" [Var (SetS (VarS "0")) "v"] (Binary Ge (Func IntS "len" [Var (SetS (VarS "1")) "v"]) (IntLit 0))

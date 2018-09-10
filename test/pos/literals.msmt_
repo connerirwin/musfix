@@ -1,0 +1,24 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+(declare-const foo Str)
+(declare-const bar Str)
+
+
+; Distinct Constants
+(assert (distinct foo bar))
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((v1 Int)) (=> True (not (= bar foo)))))

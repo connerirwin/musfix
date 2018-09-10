@@ -7,3 +7,5 @@ Conner
 Kevin
 -Convert map_select to binOp (this might mess with the z3 bindings)
 -Map_union
+
+-declare sort missing

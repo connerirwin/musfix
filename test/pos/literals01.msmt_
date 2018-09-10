@@ -1,0 +1,23 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+(declare-const cat Str)
+
+
+; Distinct Constants
+(assert (distinct cat))
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((v1 Str)) (=> (= v1 cat) (= (strLen v1) 3))))

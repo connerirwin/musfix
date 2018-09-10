@@ -18,12 +18,12 @@ testDirs = ["crash", "cut", "elim", "minimize", "neg", "pos", "proof", "sample",
 goldenTests :: IO TestTree
 goldenTests = do
   testGroups <- mapM mkTestGroup testDirs
-  return $ testGroup "Smt2 Golden Tests" testGroups
+  return $ testGroup "Golden Tests" testGroups
 
 mkTestGroup :: FilePath -> IO TestTree
 mkTestGroup dir = do
-  smt2Files <- findByExtension [".smt2"] $ "test/" ++ dir
-  return $ testGroup dir [mkTest smt2File | smt2File <- smt2Files]
+  testFiles <- findByExtension [".msmt"] $ "test/" ++ dir
+  return $ testGroup dir [mkTest testFile | testFile <- testFiles]
 
 mkTest :: FilePath -> TestTree
 mkTest f = goldenVsString (takeBaseName f) (replaceExtension f ".golden") $ action f

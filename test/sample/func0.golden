@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/sample/func0.smt2
+Reading from file test/sample/func0.msmt
 Qualifier "Eq" [Var (VarS "a") "v",Var (VarS "b") "z"] (Binary Eq (Var (VarS "a") "v") (Var (VarS "b") "z"))
 UninterpFunction "bar" [IntS] BoolS
 WFConstraint "$k0" [Var IntS "v0",Var IntS "v1"]

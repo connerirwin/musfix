@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/pos/lit00.smt2
+Reading from file test/pos/lit00.msmt
 SortDecl "List" 1
 SortDecl "Peano" 0
 ConstantDecl "one" (DataS "Peano" [])

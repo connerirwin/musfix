@@ -1,0 +1,27 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+(declare-const year Str)
+(declare-const star Str)
+(declare-const title Str)
+(declare-const director Str)
+
+
+; Distinct Constants
+(assert (distinct year star title director))
+
+
+; Uninterpreted Functions
+(declare-fun listElts (LLChar) (Set Str))
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((a Str)(things LLChar)(v1 Int)) (=> (and (= a director) (and (= (apply listElts things) (union (Set year) (union (Set star) (union (Set director) (Set title))))) True)) (in a (apply listElts things)))))

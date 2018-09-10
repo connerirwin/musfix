@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/sample/bool03.smt2
+Reading from file test/sample/bool03.msmt
 SortDecl "Str" 0
 ConstantDecl "cat" (DataS "Str" [])
 ConstantDecl "not_the_hippopotamus" (DataS "Str" [])

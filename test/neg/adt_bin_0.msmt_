@@ -1,0 +1,26 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+(declare-sort Bin 0)
+(declare-sort Binary 0)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+(declare-fun prop (@a0) @a1)
+(declare-fun gibber (Int Int) Int)
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((n Int)(p Binary)(v1 Int)) (=> (and (= (apply (apply gibber 2) 3) 4) (and (and (= (apply prop p) (mkBin n)) (= (apply prop p) (mkBin 0))) True)) (or (= n 0) (= n 1)))))
+(constraint (forall ((n Int)(p Binary)(v2 Int)) (=> (and (= (apply (apply gibber 2) 3) 4) (and (and (= (apply prop p) (mkBin n)) (= (apply prop p) (mkBin 1))) True)) (= n 0))))

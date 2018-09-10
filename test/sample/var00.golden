@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/sample/var00.smt2
+Reading from file test/sample/var00.msmt
 WFConstraint "$k0" [Var IntS "_v",Var IntS "x"]
 
 QMAP

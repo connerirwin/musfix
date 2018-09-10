@@ -1,0 +1,26 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+(declare-sort Peano 0)
+(declare-sort Ev 0)
+(declare-sort Even 0)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+(declare-fun prop (@a0) @a1)
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((n Peano)(p Even)(v1 Even)) (=> (and True (and (and (= (apply prop p) (mkEv (mkS (mkS n)))) (= (apply prop p) (mkEv mkZ))) True)) (= (apply prop v1) (mkEv n)))))
+(constraint (forall ((n Peano)(m Peano)(q Even)(p Even)(v2 Even)) (=> (and True (and True (and (= (apply prop q) (mkEv m)) (and (and (= (apply prop p) (mkEv (mkS (mkS n)))) (= (apply prop p) (mkEv (mkS (mkS m))))) True)))) (= (apply prop v2) (mkEv n)))))

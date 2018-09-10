@@ -1,0 +1,22 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+(declare-sort P 2)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((pig Int)(dog Bool)(v1 Int)) (=> (and True (and True (psnd (P pig dog)))) (= 12 (+ 4 8)))))

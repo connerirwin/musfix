@@ -1,0 +1,23 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+(declare-sort Vec 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+(declare-fun len ((Vec @a0)) Int)
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((v1 Int)) (=> (= (apply len (VCons 1 (VCons 2 (VCons 3 VNil)))) (+ 1 (+ 1 (+ 1 0)))) (= (apply len (VCons 1 (VCons 2 (VCons 3 VNil)))) 3))))

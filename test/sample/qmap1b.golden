@@ -3,7 +3,7 @@ Preparing to find greatest fixpoint...
 
 Inputs
 --------
-Reading from file test/sample/qmap1b.smt2
+Reading from file test/sample/qmap1b.msmt
 Qualifier "Sum" [Var IntS "a",Var IntS "b",Var IntS "c"] (Binary Eq (Binary Plus (Var IntS "a") (Var IntS "b")) (Var IntS "c"))
 WFConstraint "$k0" [Var IntS "v0",Var IntS "v1",Var IntS "v2"]
 

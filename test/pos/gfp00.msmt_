@@ -1,0 +1,27 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+(qualif Pos ((v Int)) (<= 0 v))
+(qualif Neg ((v Int)) (<= v 0))
+(qualif NeqZ ((v Int)) (not (= 0 v)))
+(qualif False ((v Int)) (= 66 77))
+
+
+; Well-formedness Constraints
+(wf $k0 ((v0 Int)))
+
+
+; Horn Constraints
+(constraint (forall ((v1 Int)) (=> ($k0 v1) (< 0 (+ v1 1)))))
+(constraint (forall ((v2 Int)) (=> (= v2 10) ($k0 v2))))

@@ -1,0 +1,26 @@
+; Uninterpreted Sorts
+(declare-sort List 1)
+
+
+; Constants
+
+
+; Distinct Constants
+
+
+; Uninterpreted Functions
+
+
+; Qualifiers
+
+
+; Well-formedness Constraints
+
+
+; Horn Constraints
+(constraint (forall ((v1 Int)) (=> (= v1 10) (> v1 0))))
+(constraint (forall ((v2 Int)) (=> (= v2 20) (> v2 0))))
+(constraint (forall ((v3 Int)) (=> (= v3 20) (> v3 0))))
+(constraint (forall ((v4 Int)) (=> (= v4 10) (> v4 0))))
+(constraint (forall ((v5 Int)) (=> (= v5 20) (> v5 0))))
+(constraint (forall ((v6 Int)) (=> (= v6 20) (> v6 0))))
