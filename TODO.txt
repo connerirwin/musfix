@@ -1,12 +1,8 @@
 Conner
--Change constants from no-arg functions to something that can take a value
--Add distinct var support: update z3Env in init solver, use mkDistinct, lit00.smt2_
 -Constuctor function export: turn data constructors into uninterpreted functions
 -Declare-const needs to be lower case
+-declare sort missing
 
 Kevin
 -Convert map_select to binOp (this might mess with the z3 bindings)
 -Map_union
-
--declare sort missing
--polymorphic declared sort name len00.msmt

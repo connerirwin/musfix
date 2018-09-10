@@ -1,7 +1,9 @@
-# MUSFix
+# Musfix
+
 General purpose version of Synquid's Horn clause solver.
 
-# Building MUSFix
+# Building Musfix
+
 1. Install [Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 
 2. Install the Z3 Theorem Prover v4.7.1
@@ -16,13 +18,13 @@ General purpose version of Synquid's Horn clause solver.
 
         sudo ldconfig
 
-3. Install MUSFix
+3. Install Musfix
 
         git clone https://github.com/connerirwin/musfix.git
         cd musfix
         stack build
 
-4. Run MUSFix
+4. Run Musfix
 
         stack exec -- musfix
 
@@ -46,35 +48,130 @@ Available options:
 
 # .msmt File Format
 
-Uninterpreted Sorts
+## Variable
 
-    (declare-sort NAME NUM_ARGS)
+To declare a variable, use a lower-case or underscore prefixed name followed by a sort
 
-Constants
+`(name Sort)`
 
-    (declare-const NAME SORT)
+Example:
 
-Distinct Constants
+    (i Int)
+    (b Bool)
 
-    (assert (distinct NAMES))
+## Sort
 
-Uninterpreted Functions
+There are built-in sort primitives for `Int`, `Bool`, `Map`, and `Set`.
 
-    (declare-fun NAME (ARGUMENT_SORTS) RETURN_SORT)
+`Map` and `Set` both are constructed sorts that require additional sorts are parameters.
 
-Qualifiers
+Example:
 
-    (qualif NAME ((VAR_NAME VAR_SORT)...) (EXPRESSION))
+    (Map Int Int)
+    (Set Bool)
 
-Well-formedness Constraints
+Additional sorts can be declared with an Upper-case name and a count specifying the number of additional sort parameters.
 
-    (wf $NAME (VARS))
+`(declare-sort Name count)`
 
-Horn Constraints
+Example:
 
-    (constraint (forall ((VARS)) (=> EXPRESSION EXPRESSION)))
+    (declare-sort List 1)
+    (x (List Int))
 
-Example Files
+It is also possible to use polymorphic sorts anywhere that a sort is required by preceding a name with an @. This can also be done with constructed sorts.
+
+`@Name`
+
+Example:
+
+    (declare-sort List 1)
+
+    (x (List Int)) ; x is a List of Int
+
+    (y (List @0)) ; y is a List of anything
+
+    (z (@A @B)) ; z is any constructed sort that takes one sort
+
+    ; All of these variables can be compared with one another, as they can be unified to have the same sort
+
+## Expression
+
+TODO
+
+## Constants
+
+Constants can be used in place of variables. To declare a constant, use a lower-case name followed by a sort.
+
+`(declare-const name Sort)`
+
+Constants can also be declared __distinct__, which ensures that they must be assigned different values
+
+`(assert (distinct names))`
+
+Example:
+
+    (declare-const one Int)
+    (declare-const zero Int)
+
+    (assert (distinct one zero))
+
+## Uninterpreted Functions
+
+Functions can be declared with a lower-case name, a list of the sorts of arguments, and the return sort. When called, this function is uninterpreted, but will sort check its return type and arguments.
+
+`(declare-fun name (Argument_Sorts) Return_Sort)`
+
+Example:
+
+    (declare-fun bar (Int) Bool)
+
+    (v0 Int)
+    (= (bar v0) True)
+
+## Qualifiers
+
+Qualifiers are a set of expressions that can be applied to the arguments of a well-formedness constraint. The horn-solver will then look for the strongest (this is the default option, though this can be configured to instead solve for weakest) set of these qualifiers that satisfy all constraints.
+
+To declare a qualifier, use a name followed by a list of variables and an expression.
+
+`(qualif name (variables) expression)`
+
+Example:
+
+    (qualif Eq ((v @a)(z @a)) (= v z)) ; This will accept any arguments of the same sort
+
+## Well-formedness Constraints
+
+A well-formedness constraint ensures that all of the arguments can be assigned some set of qualifiers. TODO
+
+To declare a well-formedness constraint, use a $ prefixed name followed by a list of variables
+
+`(wf $name (variables))`
+
+Example:
+
+    (wf $k0 ((v0 Int)(v1 Int)))
+
+## Horn Constraints
+ TODO
+Logical implication, the first expression implies the second.
+
+`(constraint (forall (variables) (=> expression expression)))`
+
+[Example:](test/sample/gfp00.msmt)
+
+    (qualif Pos   ((v Int)) (<= 0 v))
+
+    (wf $k0 ((v0 Int)))
+
+    (constraint
+      (forall ((v1 Int))
+       (=> ($k0 v1)
+           (< 0 (+ v1 1)))))
+
+
+## Example Files
 
 [Sorts, Functions, Qualifiers](test/sample/nadia.msmt)
 
