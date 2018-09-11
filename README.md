@@ -48,20 +48,20 @@ Available options:
 
 # .msmt File Format
 
-The musfix smt format uses a lisp-like representation for expressions and other declarations. All expressions are therefore use prefix notation. For example, to write the arithmetic expression `1 + 2`, you would write `(+ 1 2)`.
+The musfix smt format uses a lisp-like representation for expressions and other declarations. All expressions therefore use prefix notation. For example, to write the arithmetic expression `1 + 2`, you would write `(+ 1 2)`.
 
 ## Expression
 
 An expression can consist of:
 
-* Literal
+* Literals:
   * Booleans: `True`, `False`
   * Integers: `1`, `-27`, `42`, etc.
   * Sets: `{}`, `(Set 1 -27 42)`, `(Set True)`, etc.
   * Maps: `(Map_default 7)`, etc.
-* Variable: `v`, `something`, `jack_the_rabbit`, etc.
-* Constant: `v'`, `somethingElse`, `patience`, etc.
-* Function:
+* Variables: `v`, `something`, `jack_the_rabbit`, etc.
+* Constants: `v'`, `somethingElse`, `patience`, etc.
+* Functions:
   * Arithmetic operations: `*`, `+`, `-`
   * Boolean operations: `=`, `!=`, `>`, `>=`, `<`, `<=`, `&&`, `||`, `=>`, `<=>`
   * Set operations: `union`, `intersection`, `diff`
@@ -151,7 +151,7 @@ Example:
 
 ## Uninterpreted Functions
 
-Functions can be declared with a lower-case name, a list of the sorts of arguments, and the return sort. When called, this function is uninterpreted, but will sort check its return type and arguments.
+Functions are declared with a lower-case name, a list of the sorts of arguments, and a return sort. When called, this function is uninterpreted, but will sort check its return type and arguments.
 
 `(declare-fun name (Argument_Sorts) Return_Sort)`
 
