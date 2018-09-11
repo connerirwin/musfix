@@ -16,8 +16,6 @@ import Control.Monad.Reader
 
 import qualified Data.Set as Set
 
-import Debug.Trace
-
 type HornSolver = FixPointSolver Z3State
 
 defaultHornSolverParams = HornSolverParams {
@@ -30,7 +28,7 @@ defaultHornSolverParams = HornSolverParams {
   constraintPickStrategy = SmallSpaceConstraint,
   solverLogLevel = 0
   }
-  
+
 data SolverInputs = SolverInputs {
   useLeastFixpoint :: Bool,
   constraints :: [Formula],
@@ -44,7 +42,7 @@ findFixPoint :: SolverInputs -> IO [Candidate]
 findFixPoint inputs = evalZ3State $ evalFixPointSolver (computeFixPoints inputs) params
   where
     params = defaultHornSolverParams { isLeastFixpoint = (useLeastFixpoint inputs) }
-    
+
 prepareEnv :: SolverInputs -> Environment
 prepareEnv ins = emptyEnv
 

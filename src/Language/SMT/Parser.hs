@@ -21,12 +21,6 @@ import Data.Set (Set)
 import qualified Data.Text as T
 import Data.Text (Text)
 
-import Debug.Trace
-
-{- Utility functions -}
-debugOut a = traceShow a a
-debugOutMsg m a = trace (m ++ show a) a
-
 getInt :: S.Scientific -> Int
 getInt n = case S.floatingOrInteger n of
   Left  f -> error $ "non-integral value not supported " ++ (show n)
