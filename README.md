@@ -81,8 +81,10 @@ To declare a variable, use a lower-case or underscore prefixed name followed by 
 
 Example:
 
-    (i Int)
-    (b Bool)
+```lisp
+(i Int)
+(b Bool)
+```
 
 ## Sort
 
@@ -92,8 +94,10 @@ There are built-in sort primitives for `Int`, `Bool`, `Map`, and `Set`.
 
 Example:
 
-    (Map Int Int)
-    (Set Bool)
+```lisp
+(Map Int Int)
+(Set Bool)
+```
 
 Additional sorts can be declared with the top-level binding `declare-sort` using an upper-case name and a count specifying the number of additional sort parameters.
 
@@ -101,9 +105,11 @@ Additional sorts can be declared with the top-level binding `declare-sort` using
 
 Example:
 
-    (declare-sort List 1)
+```lisp
+(declare-sort List 1)
 
-    ... (x (List Int)) ... ; Inside the binding of a constraint/qualifier
+... (x (List Int)) ... ; Inside the binding of a constraint/qualifier
+```
 
 It is also possible to use polymorphic sorts anywhere that a sort is required by preceding a name with an @. This can also be done with constructed sorts.
 
@@ -111,15 +117,17 @@ It is also possible to use polymorphic sorts anywhere that a sort is required by
 
 Example:
 
-    ; All of these variables can be unified to have the same sort
+```lisp
+; All of these variables can be unified to have the same sort
 
-    (declare-sort List 1)
+(declare-sort List 1)
 
-    (x (List Int)) ; x is a List of Int
+(x (List Int)) ; x is a List of Int
 
-    (y (List @0)) ; y is a List of anything
+(y (List @0)) ; y is a List of anything
 
-    (z (@A @B)) ; z is any constructed sort that takes one sort
+(z (@A @B)) ; z is any constructed sort that takes one sort
+```
 
 
 ## Constants
@@ -134,10 +142,12 @@ Constants can also be declared __distinct__, which ensures that they must be ass
 
 Example:
 
-    (declare-const one Int)
-    (declare-const zero Int)
+```lisp
+(declare-const one Int)
+(declare-const zero Int)
 
-    (assert (distinct one zero))
+(assert (distinct one zero))
+```
 
 ## Uninterpreted Functions
 
@@ -147,11 +157,13 @@ Functions can be declared with a lower-case name, a list of the sorts of argumen
 
 Example:
 
-    (declare-fun foo (Int Int) Bool)
-    (declare-fun bar (Int) Bool)
+```lisp
+(declare-fun foo (Int Int) Bool)
+(declare-fun bar (Int) Bool)
 
-    ; Inside of a constraint/qualifier
-    ... (v0 Int) (v1 Int) ... (= (foo v0 v1) (bar v1))
+; Inside of a constraint/qualifier
+... (v0 Int) (v1 Int) ... (= (foo v0 v1) (bar v1))
+```
 
 ## Qualifiers
 
@@ -163,7 +175,9 @@ To declare a qualifier, use a name followed by a list of variables and an expres
 
 Example:
 
-    (qualif Eq ((v @a)(z @a)) (= v z)) ; This will accept any arguments of the same sort
+```lisp
+(qualif Eq ((v @a)(z @a)) (= v z)) ; This will accept any arguments of the same sort
+```
 
 ## Well-formedness Constraints
 
@@ -175,7 +189,9 @@ To declare a well-formedness constraint, use a $ prefixed name followed by a lis
 
 Example:
 
-    (wf $k0 ((v0 Int)(v1 Int)))
+```lisp
+(wf $k0 ((v0 Int)(v1 Int)))
+```
 
 ## Horn Constraints
 
@@ -185,15 +201,16 @@ A horn constraint contains a logical implication that you wish to verify. Any nu
 
 [Example:](test/sample/gfp00.msmt)
 
-    (qualif Pos ((v Int)) (<= 0 v))
+```lisp
+(qualif Pos ((v Int)) (<= 0 v))
 
-    (wf $k0 ((v0 Int)))
+(wf $k0 ((v0 Int)))
 
-    (constraint
-      (forall ((v1 Int))
-       (=> ($k0 v1)
-           (< 0 (+ v1 1)))))
-
+(constraint
+  (forall ((v1 Int))
+   (=> ($k0 v1)
+       (< 0 (+ v1 1)))))
+```
 
 ## Example Files
 
