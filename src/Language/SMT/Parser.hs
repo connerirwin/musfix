@@ -25,6 +25,7 @@ import Debug.Trace
 
 {- Utility functions -}
 debugOut a = traceShow a a
+debugOutMsg m a = trace (m ++ show a) a
 
 getInt :: S.Scientific -> Int
 getInt n = case S.floatingOrInteger n of
@@ -166,7 +167,7 @@ instance FromLisp Formula where
       key     <- parseFormula k
       val     <- parseFormula v
       return $ MapUpd mapExpr key val
-      -- | TODO this is going to be implemented using the z3 map somehow
+      -- | TODO this is going to be implemented using the z3 mkMap somehow
   -- parseLisp (List [(Symbol "Map_union"), m1, m2]) = do
   --     map1    <- parseFormula m1
   --     map2    <- parseFormula m2

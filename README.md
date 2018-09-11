@@ -48,7 +48,7 @@ Available options:
 
 # .msmt File Format
 
-The musfix smt format uses a lisp-like representation for expressions and other declarations. All expressions are therefore prefix. For example, to write the arithmetic expression `1 + 2`, you would write `(+ 1 2)`.
+The musfix smt format uses a lisp-like representation for expressions and other declarations. All expressions are therefore use prefix notation. For example, to write the arithmetic expression `1 + 2`, you would write `(+ 1 2)`.
 
 ## Expression
 

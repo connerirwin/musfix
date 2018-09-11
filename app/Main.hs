@@ -62,7 +62,6 @@ main = do
   progOpts <- customExecParser preferences options
   mapM_ (readConstraints progOpts) $ inputFiles progOpts
 
--- TODO add ProgramOptions as State
 readConstraints :: ProgramOptions -> FilePath -> IO ()
 readConstraints o f = do
     s <- ByteString.readFile f
@@ -93,8 +92,9 @@ readConstraints o f = do
     mapM_ ((normalLog o) . show . pretty) candidates
     normalLog o $ "\n"
 
+-- | Wipe the outputFile
 prepOutput :: ProgramOptions -> IO ()
-prepOutput o = unless (length (outputFile o) == 0 || appendOutput o) $ writeFile (outputFile o) "" -- ^ Wipe the outputFile
+prepOutput o = unless (length (outputFile o) == 0 || appendOutput o) $ writeFile (outputFile o) ""
 
 verboseLog :: ProgramOptions -> String -> IO ()
 verboseLog o s = when (verboseLogging o) $ normalLog o s

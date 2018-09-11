@@ -1,8 +1,0 @@
-Conner
--Constuctor function export: turn data constructors into uninterpreted functions
--Declare-const needs to be lower case
--declare sort missing
-
-Kevin
--Convert map_select to binOp (this might mess with the z3 bindings)
--Map_union

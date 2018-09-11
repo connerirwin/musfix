@@ -21,12 +21,6 @@ import qualified Data.Map as Map
 import Data.Map (Map, (!))
 import qualified Data.Set as Set
 
-import Debug.Trace
-
-{- Util -}
-debugOut a = traceShow a a
-debugOutMsg m a = trace (m ++ show a) a
-
 data FunctionApplication = FunctionApplication {
   funcName   :: String,
   signature  :: [Sort],
@@ -200,7 +194,7 @@ resolveSorts env ins = map targetUpdate ins
     lookupVar :: Formula -> [Formula] -> Formula
     lookupVar (Var sort name) vs
       -- | Constants cannot be distinguished from vars when parsing, so they must be converted
-      -- TODO this is a hack that uses a no-arg Func to represent a constant
+      -- Constants are represented internally as a no-arg Func, since that is what z3 eventually generates anyways
       | Map.member name $ constMap env = Func ((constMap env) ! name) name []
       | sort == AnyS  = Var sort' name
       | otherwise     = error "qualifier already contains sorts (this shouldn't happen)"
