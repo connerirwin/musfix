@@ -79,20 +79,3 @@ To accept changes to the test suite and regenerate the template files
 To verify changes to the tests
 
     git diff --word-diff --patience --color
-
-# Debugging in GHCi
-
-To set a breakpoint
-
-    :break identifier
-    :break [module] line [column]
-
-To set program arguments
-
-    :set args arguments_to_main
-
-Then run with tracing enabled
-
-    :trace main
-
-More details [here](https://downloads.haskell.org/~ghc/7.4.1/docs/html/users_guide/ghci-debugger.html)
