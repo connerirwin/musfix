@@ -18,7 +18,7 @@ General purpose version of Synquid's Horn clause solver.
 
         sudo ldconfig
 
-3. Install Musfix
+3. Build Musfix
 
         git clone https://github.com/connerirwin/musfix.git
         cd musfix
