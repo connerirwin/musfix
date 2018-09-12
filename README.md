@@ -79,3 +79,9 @@ To accept changes to the test suite and regenerate the template files
 To verify changes to the tests
 
     git diff --word-diff --patience --color
+    
+# Dependencies
+
+For the most part, Musfix relies on dependencies available on Hackage. The lone exception at this time is `atto-lisp` which has been forked and updated to use the `scientific` package to avoid deprecation warnings.
+
+The repository and commit used by musfix are referenced in `stack.yaml`. If a different build system is used, it should be directed to the same repo and branch as the stack file.
