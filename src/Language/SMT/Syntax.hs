@@ -1,5 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- | This module contains the declarations of the main data types, all gathered
+-- into one convenient place. It pulled declarations out of Logic.hs, Util.hs,
+-- as well as containing additional declarations unique to musfix.
+--
+-- It also contains various helper functions for manipulating these data types,
+-- most notably mapFormula and mapSort, which are higher-order-functions that
+-- allow the targeting of specific values without having to worry about
+-- recursing on all variations.
+
 module Language.SMT.Syntax where
 
 import qualified Data.Map as Map

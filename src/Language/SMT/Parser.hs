@@ -1,5 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- | This module contains all of the lisp parsing rules for the .msmt file
+-- format. It is divided into 3 sections, each consisting of a FromLisp instance
+-- followed by a pure function that specifies the types of that instance.
+--
+--  `parseInputExpr` handles top-level expressions
+--  `parseFormula`   creates the Synquid data type Formula
+--  `parseSort`      pattern matches sort literals and constructed sorts
+--
+-- Parsing is done through the atto-lisp package, the specific branch of which
+-- is available at https://github.com/connerirwin/atto-lisp/tree/number-scientific
+-- for more details, view the original documentation
+-- http://hackage.haskell.org/package/atto-lisp-0.2.2.2/docs/Data-AttoLisp.html
+
 module Language.SMT.Parser (
   parseInputExpr,
 ) where
@@ -77,13 +90,6 @@ reserved = collectKeys [Map.keys unaryOps, Map.keys binaryOps, Map.keys sorts]
     collectKeys = foldr (Set.union . Set.fromList) Set.empty
 
 {- Top-level Statements -}
-checkVars :: [Formula] -> Bool
-checkVars fs = foldr ((&&) . isVar) True fs
-  where
-    isVar :: Formula -> Bool
-    isVar (Var _ _) = True
-    isVar _         = False
-
 instance FromLisp InputExpr where
   -- | Custom Sorts
   parseLisp (List [(Symbol "declare-sort"), (Symbol n), (Number num)]) =
@@ -129,6 +135,13 @@ instance FromLisp InputExpr where
           formula <- parseFormula y
           return $ HornConstraint vars formula
   parseLisp _ = fail "unknown top-level construct"
+
+checkVars :: [Formula] -> Bool
+checkVars fs = foldr ((&&) . isVar) True fs
+  where
+    isVar :: Formula -> Bool
+    isVar (Var _ _) = True
+    isVar _         = False
 
 parseInputExpr :: Lisp -> Parser InputExpr
 parseInputExpr = parseLisp

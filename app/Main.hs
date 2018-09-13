@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 
+-- | This module contains the entry function `main :: IO ()`, which calls the
+-- rest of the program. It parses command-line arguments using the
+-- optparse-applicative library. Additional command-line options should be
+-- specified in the ProgramOptions data type, and the parsing details should be
+-- listed in the same order in `cmdParser` For more details on parsing,
+-- check out http://hackage.haskell.org/package/optparse-applicative
+
 module Main where
 
 import Language.SMT.Parser

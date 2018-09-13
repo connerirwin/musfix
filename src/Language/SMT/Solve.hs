@@ -1,3 +1,8 @@
+-- | This is the entry point into the fixpoint solver. Currently, not all horn
+-- solver parameters are configureable through command-line arguments, but if
+-- necessary that could be added fairly easily by adding parameters to
+-- SolverInputs and ProgramOptions in Main.hs
+
 module Language.SMT.Solve (
   findFixPoint,
   SolverInputs (..),

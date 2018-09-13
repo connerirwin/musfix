@@ -1,3 +1,10 @@
+-- | This module is a custom data structure that functions like map, but allows
+-- multiple keys to reference the same value. To make this into a stand-alone
+-- package, it should have all of the functions of Data-Map defined so it can
+-- serve as a better replacement. To improve performance, the valMap could use
+-- an IntMap rather than just a Map, although that would further increase the
+-- the number of dependencies.
+
 module Language.SMT.MultiKeyMap where
 
 import Control.Monad

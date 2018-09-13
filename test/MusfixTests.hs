@@ -1,3 +1,8 @@
+-- | This performs golden tests on all files in a subfolder of the test
+-- directory that end in .msmt. Since it uses the Tasty harness, additionally
+-- testing strategies can be added fairly easily. For more details, see
+-- http://hackage.haskell.org/package/tasty
+
 module Test.Harness where
 
 import Main hiding (main)

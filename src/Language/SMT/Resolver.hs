@@ -1,3 +1,17 @@
+-- | This module has two parts, the generation of the qualifier map and the
+-- resolution of sorts in the InputExpr.
+--
+-- To create the qualifier map, all permutations of the the formal variables to
+-- a wf constraint need to be mapped to the formal variables in all possible
+-- Qualifiers.
+--
+-- To resolve sorts, first an environment of all top-level experssions is
+-- created. This is necessary because the parser is context free. Unfortunately,
+-- that means that some things are abiguious during parsing (constants vs vars).
+-- Sorts are resolved by performing unification on the known sorts and unknown
+-- sorts in an expression. Variable declarations are also distributed from their
+-- bindings to all instances in the expression.
+
 module Language.SMT.Resolver (
   generateQualifiers,
   prepareInputs,
