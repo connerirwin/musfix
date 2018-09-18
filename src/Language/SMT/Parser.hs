@@ -21,6 +21,7 @@ import Language.SMT.Syntax
 
 import Language.Synquid.Logic
 import Language.Synquid.Tokens
+import Language.Synquid.Util
 
 import Control.Monad
 

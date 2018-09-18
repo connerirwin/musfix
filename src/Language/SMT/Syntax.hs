@@ -11,6 +11,8 @@
 
 module Language.SMT.Syntax where
 
+import Language.Synquid.Util
+
 import qualified Data.Map as Map
 import Data.Map (Map)
 
@@ -19,9 +21,6 @@ import Debug.Trace
 {- Utility functions -}
 debugOut a = traceShow a a
 debugOutMsg m a = trace (m ++ show a) a
-
--- | Identifiers
-type Id = String
 
 -- | Top-level input expressions
 --

@@ -4,6 +4,7 @@ module Language.Synquid.SolverMonad where
 import Language.SMT.Syntax
 import Language.Synquid.Logic
 import Language.Synquid.Program
+import Language.Synquid.Util
 import Data.Map
 import Data.Set
 import Control.Applicative
@@ -12,6 +13,8 @@ data Preamble = Preamble {
   preambleConstants :: [(Id, Sort)],
   preambleDistinctAssertions :: [[Id]]
 }
+
+emptyPreamble = Preamble [] []
 
 class (Monad s, Applicative s) => MonadSMT s where
   initSolver :: Environment -> Preamble -> s ()                     -- ^ Initialize solver

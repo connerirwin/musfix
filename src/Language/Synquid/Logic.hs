@@ -1,7 +1,10 @@
 {-# LANGUAGE TemplateHaskell, Rank2Types #-}
 
 -- | Formulas of the refinement logic
-module Language.Synquid.Logic where
+module Language.Synquid.Logic (
+  module Language.Synquid.Logic,
+  module Language.SMT.Syntax,
+) where
 
 import Language.SMT.Syntax
 import Language.Synquid.Util

@@ -1,5 +1,7 @@
 -- | Common types and helper functions
-module Language.Synquid.Util where
+module Language.Synquid.Util (
+  module Language.Synquid.Util -- otherwise synquid can't find Id
+) where
 
 import Data.Maybe
 import Data.Either
@@ -15,6 +17,9 @@ import Control.Monad
 import Control.Lens hiding (both)
 
 import Debug.Trace
+
+-- | Identifiers
+type Id = String
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z

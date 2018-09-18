@@ -1,13 +1,10 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+
 -- | TODO put this on hackage, haddock
 -- predicate horn solver, use stack git
 
 -- Either switch back to Pred or change Synquid to Func
--- Syntax export?
--- put string back into util?
--- initHornSolver takes a preamble, provide interface without
--- Error, HornSolver, Logic, Pretty, Program, SolverMonad, Tokens, Type,
---Z3
+-- initHornSolver takes a preamble, provide interface without?
 
 -- | This module contains the entry function `main :: IO ()`, which calls the
 -- rest of the program. It parses command-line arguments using the
@@ -24,6 +21,7 @@ import Language.SMT.Solve
 import Language.SMT.Syntax
 
 import Language.Synquid.Pretty hiding ((<>))
+import Language.Synquid.Util
 
 import Control.Monad
 
