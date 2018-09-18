@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1dd61340244ab1c7bd2eec03a0d3d36d0afb91456242a065fa92aeaddc683b08
+-- hash: ff96742285f0b8931bf9939e70e2b9347aecc55655e4421694dfd7665c6789b4
 
 name:           musfix
 version:        0.1.0.0
@@ -12,14 +12,13 @@ author:         Nadia Polikarpova,
                 Conner Irwin,
                 Kevin Hine
 maintainer:     cjirwin@ucsd.edu
-license:        OtherLicense
+license:        MIT
 build-type:     Simple
 cabal-version:  >= 1.10
 
 library
   exposed-modules:
       Language.SMT.MultiKeyMap
-      Language.SMT.Parser
       Language.SMT.Resolver
       Language.SMT.Solve
       Language.SMT.Syntax
@@ -34,7 +33,7 @@ library
       Language.Synquid.Util
       Language.Synquid.Z3
   other-modules:
-      Paths_musfix
+      Language.SMT.Parser
   hs-source-dirs:
       src
   default-extensions: DisambiguateRecordFields
@@ -42,22 +41,13 @@ library
       ansi-terminal >=0.6
     , ansi-wl-pprint >=0.6 && <0.7
     , atto-lisp ==0.2.*
-    , attoparsec >=0.10 && <0.14
     , base >=4.6 && <4.9
     , bimap >=0.2
-    , bytestring >=0.10
     , containers >=0.5 && <0.6
-    , directory
-    , filepath
-    , gitrev
     , lens >=3.7
     , mtl >=2.2 && <2.3
-    , optparse-applicative >=0.14
     , parsec ==3.1.*
     , scientific >=0.3
-    , semigroups
-    , tasty >=1.0.1
-    , tasty-golden >=2.3.2
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0
@@ -95,8 +85,6 @@ executable musfix
     , bimap >=0.2
     , bytestring >=0.10
     , containers >=0.5 && <0.6
-    , directory
-    , filepath
     , gitrev
     , lens >=3.7
     , mtl >=2.2 && <2.3
@@ -104,8 +92,6 @@ executable musfix
     , parsec ==3.1.*
     , scientific >=0.3
     , semigroups
-    , tasty >=1.0.1
-    , tasty-golden >=2.3.2
     , text >=1.2
     , transformers >=0.3 && <0.5
     , z3 >4.0

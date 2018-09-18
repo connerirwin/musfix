@@ -48,9 +48,6 @@ findFixPoint inputs = evalZ3State $ evalFixPointSolver (computeFixPoints inputs)
   where
     params = defaultHornSolverParams { isLeastFixpoint = (useLeastFixpoint inputs) }
 
-prepareEnv :: SolverInputs -> Environment
-prepareEnv ins = emptyEnv
-
 -- | Compute the fix points
 computeFixPoints :: SolverInputs -> HornSolver [Candidate]
 computeFixPoints ins = do
@@ -60,9 +57,8 @@ computeFixPoints ins = do
     }
     initCand <- initHornSolver emptyEnv pre
     procCons <- mapM preprocessConstraint $ constraints ins
-    let procCons' = foldl (++) [] procCons
+    let procCons' = concat procCons
     let qmap = qualifierMap ins
-    allCandidates <- refineCandidates procCons' qmap nothing [initCand]
+    let extractAssumptions = \_ -> Set.empty -- instantiateConsAxioms
+    allCandidates <- refineCandidates procCons' qmap extractAssumptions [initCand]
     return allCandidates
-  where
-    nothing = \_ -> Set.empty

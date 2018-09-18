@@ -7,50 +7,62 @@ author:
 - Conner Irwin
 - Kevin Hine
 maintainer: cjirwin@ucsd.edu
-license: OtherLicense
+license: MIT
 dependencies:
 - ansi-wl-pprint >= 0.6 && < 0.7
 - ansi-terminal >= 0.6
 - atto-lisp == 0.2.*
-- attoparsec >= 0.10 && < 0.14
 - base >= 4.6 && < 4.9
 - bimap >= 0.2
-- bytestring >= 0.10
 - containers >= 0.5 && < 0.6
-- directory
-- filepath
-- gitrev
 - lens >= 3.7
 - mtl >= 2.2 && < 2.3
-- optparse-applicative >= 0.14
 - parsec == 3.1.*
 - scientific >= 0.3
-- semigroups
-- tasty >= 1.0.1
-- tasty-golden >= 2.3.2
 - text >= 1.2
 - transformers >= 0.3 && < 0.5
 - z3 > 4.0
+_app-dependencies: &app-dependencies
+  - attoparsec >= 0.10 && < 0.14
+  - bytestring >= 0.10
+  - gitrev
+  - optparse-applicative >= 0.14
+  - semigroups
+_test-dependencies: &test-dependencies
+  # app required, can't merge lists for some reason
+  - attoparsec >= 0.10 && < 0.14
+  - bytestring >= 0.10
+  - gitrev
+  - optparse-applicative >= 0.14
+  - semigroups
+  # test-only
+  - directory
+  - filepath
+  - tasty >= 1.0.1
+  - tasty-golden >= 2.3.2
 default-extensions:
 - DisambiguateRecordFields
 library:
+  other-modules: Language.SMT.Parser
   source-dirs: src
 executable:
+  dependencies: *app-dependencies
   source-dirs:
   - src
   - app
   main: Main.hs
-# ghc-options:
-# - -Wall
-# - -fwarn-tabs
-# - -fwarn-incomplete-uni-patterns
-# - -fwarn-incomplete-record-updates
-# - -O2
 tests:
   specs:
+    dependencies: *test-dependencies
     source-dirs:
     - app
     - src
     - test
     main: MusfixTests.hs
     ghc-options: -main-is Test.Harness
+# ghc-options:
+# - -Wall
+# - -fwarn-tabs
+# - -fwarn-incomplete-uni-patterns
+# - -fwarn-incomplete-record-updates
+# - -O2

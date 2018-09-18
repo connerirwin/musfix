@@ -14,7 +14,7 @@ data Preamble = Preamble {
 }
 
 class (Monad s, Applicative s) => MonadSMT s where
-  initSolver :: Environment -> Preamble ->  s ()                     -- ^ Initialize solver
+  initSolver :: Environment -> Preamble -> s ()                     -- ^ Initialize solver
   isSat :: Formula -> s Bool                                              -- ^ 'isSat' @fml@: is @fml@ satisfiable?
   allUnsatCores :: Formula -> Formula -> [Formula] -> s [[Formula]]       -- ^ 'allUnsatCores' @assumption@ @mustHave@ @fmls@: all minimal unsatisfiable subsets of @fmls@ with @mustHave@, which contain @mustHave@, assuming @assumption@
 
