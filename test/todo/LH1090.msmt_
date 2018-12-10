@@ -1,12 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 (declare-sort Either 2)
-
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -18,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((escobar Int)(junk (Either Bool Int))(punk (Either Int Int))(v1 Int)) (=> (and True (and (= junk (left escobar)) (and True True))) (= punk (left escobar)))))
+;  Constraints
+(constraint (forall ((punk (Either Int Int))(junk (Either Bool Int))(escobar Int)) (=> (and (= junk (left escobar)) True) (= punk (left escobar)))))
+

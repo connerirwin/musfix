@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -14,8 +12,9 @@
 ; Qualifiers
 (qualif Auto ((v Int)(x Int)) (= v (ite (> x 0) 0 0)))
 
-
 ; Well-formedness Constraints
 
 
-; Horn Constraints
+;  Constraints
+
+

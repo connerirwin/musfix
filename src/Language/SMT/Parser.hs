@@ -220,7 +220,7 @@ instance FromLisp Formula where
   -- | uninterpreted function application
   parseLisp (List ((Symbol p):x:xs))
     | Set.notMember p reserved
-      && (Char.isLower . T.head) p = do
+      && ((Char.isLower $ T.head p) || (T.head p == '_')) = do
         args <- mapM parseFormula (x:xs)
         return $ Func AnyS (T.unpack p) args
   -- | Constructor

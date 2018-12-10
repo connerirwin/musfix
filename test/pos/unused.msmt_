@@ -1,16 +1,13 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Tree 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun len (Tree) Int)
-
 
 ; Qualifiers
 
@@ -18,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((v1 Tree)) (=> (< 666 (apply len v1)) (< 66 (apply len v1)))))
+;  Constraints
+(constraint (forall ((_VV##1 Tree)) (=> (< 666 (len _VV##1)) (< 66 (len _VV##1)))))
+

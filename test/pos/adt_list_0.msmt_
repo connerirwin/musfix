@@ -1,12 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-(declare-sort LL 0)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -18,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((n Int)(m Int)(v1 Int)) (=> (and True (and True (= (con n (con m emp)) (con m (con n emp))))) (= m n))))
+;  Constraints
+(constraint (forall ((m Int)(n Int)) (=> (= (con n (con m emp)) (con m (con n emp))) (= m n))))
+

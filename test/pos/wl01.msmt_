@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -14,14 +12,13 @@
 ; Qualifiers
 (qualif Nat ((v Int)) (<= 0 v))
 
-
 ; Well-formedness Constraints
-(wf $k1 ((v Int)))
-(wf $k0 ((v Int)))
+(wf $k1 ((lq_karg$v##k1 Int)))
+(wf $k0 ((lq_karg$v##k0 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)) (=> (= _VV##1 10) ($k0 _VV##1))))
+(constraint (forall ((_VV##2 Int)(x Int)(v Int)) (=> (and ($k0 v) (= _VV##2 (+ x x))) ($k0 _VV##2))))
+(constraint (forall ((_VV##3 Int)(y Int)(x Int)(v Int)) (=> (and ($k0 v) (and ($k0 v) (= _VV##3 (+ x y)))) ($k1 _VV##3))))
+(constraint (forall ((_VV##4 Int)(z Int)(v Int)) (=> (and ($k1 v) (= _VV##4 z)) (<= 0 _VV##4))))
 
-; Horn Constraints
-(constraint (forall ((v1 Int)) (=> (= v1 10) ($k0 v1))))
-(constraint (forall ((x Int)(v2 Int)) (=> (and ($k0 v) (= v2 (+ x x))) ($k0 v2))))
-(constraint (forall ((x Int)(y Int)(v3 Int)) (=> (and ($k0 v) (and ($k0 v) (= v3 (+ x y)))) ($k1 v3))))
-(constraint (forall ((z Int)(v4 Int)) (=> (and ($k1 v) (= v4 z)) (<= 0 v4))))

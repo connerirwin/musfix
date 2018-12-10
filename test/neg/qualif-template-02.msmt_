@@ -1,24 +1,21 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 
 
 ; Qualifiers
-(qualif Prefix2 ((v @a1)(x @a0)(y @a0)) (= v (+ x y)))
-
+(qualif Prefix2 ((v @a0)(x @a1)(y @a1)) (= v (+ x y)))
 
 ; Well-formedness Constraints
-(wf $k0 ((tuesday Int)(v Int)(monday Int)(sunday Int)))
+(wf $k0 ((lq_karg$monday##k0 Int)(lq_karg$sunday##k0 Int)(lq_karg$tuesday##k0 Int)(lq_karg$v##k0 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)(z Int)(y Int)(x Int)) (=> (and (= x 4) (and (= y 6) (and (= z 10) (= _VV##1 10)))) ($k0 y x z _VV##1))))
+(constraint (forall ((_VV##2 Int)(z Int)(y Int)(x Int)) (=> (and (= x 4) (and (= y 6) (and (= z 10) ($k0 y x z _VV##2)))) (= _VV##2 10))))
 
-; Horn Constraints
-(constraint (forall ((x Int)(y Int)(z Int)(v1 Int)) (=> (and (= x 4) (and (= y 6) (and (= z 10) (= v1 10)))) ($k0 z v1 y x))))
-(constraint (forall ((x Int)(y Int)(z Int)(v2 Int)) (=> (and (= x 4) (and (= y 6) (and (= z 10) ($k0 z v2 y x)))) (= v2 10))))

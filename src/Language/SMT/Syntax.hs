@@ -88,6 +88,27 @@ qualifEq (Qualifier _ _ eq) = eq
 data Sort = BoolS | IntS | VarS Id | DataS Id [Sort] | SetS Sort | MapS Sort Sort | AnyS
   deriving (Show, Eq, Ord)
 
+canUnifySorts :: Sort -> Sort -> Bool
+canUnifySorts _ AnyS        = True
+canUnifySorts AnyS _        = True
+
+-- >>> TODO: These are obviously not always true! Need to handle this better
+canUnifySorts (VarS _) _    = True
+canUnifySorts _ (VarS _)    = True
+-- <<<
+
+canUnifySorts s1@(DataS n1 srts1) s2@(DataS n2 srts2)
+  | n1 == n2                = foldl f True $ zip srts1 srts2
+  where
+    f True (srt1, srt2)     = canUnifySorts srt1 srt2
+    f False _               = False
+canUnifySorts (MapS s1 s2) (MapS s1' s2') = u1 && u2
+  where
+    u1 = canUnifySorts s1 s1'
+    u2 = canUnifySorts s2 s2'
+canUnifySorts (SetS s) (SetS s') = canUnifySorts s s'
+canUnifySorts s1 s2         = s1 == s2
+
 isSetS (SetS _) = True
 isSetS _ = False
 elemSort (SetS s) = s

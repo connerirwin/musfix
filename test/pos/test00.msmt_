@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -15,12 +13,11 @@
 (qualif Zog ((v @a0)) (<= 10 v))
 (qualif Bog ((v @a0)(x @a0)) (<= x v))
 
-
 ; Well-formedness Constraints
-(wf $k0 ((v Int)(thang Int)))
+(wf $k0 ((lq_karg$thang##k0 Int)(lq_karg$v##k0 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)) (=> (= _VV##1 10) ($k0 thang _VV##1))))
+(constraint (forall ((_VV##2 Int)) (=> (= _VV##2 20) ($k0 thang _VV##2))))
+(constraint (forall ((_VV##3 Int)(a Int)(va Int)) (=> (and ($k0 thang va) (= _VV##3 a)) (<= 10 _VV##3))))
 
-; Horn Constraints
-(constraint (forall ((v1 Int)) (=> (= v1 10) ($k0 v1 thang))))
-(constraint (forall ((v2 Int)) (=> (= v2 20) ($k0 v2 thang))))
-(constraint (forall ((a Int)(v3 Int)) (=> (and ($k0 va thang) (= v3 a)) (<= 10 v3))))

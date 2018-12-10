@@ -1,15 +1,11 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 (declare-sort Blob 0)
 (declare-sort Vec 1)
-
 
 ; Constants
 (declare-const bob Blob)
 (declare-const tt (Vec Bool))
 
-
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,12 +13,12 @@
 (declare-fun foo (Blob) Blob)
 (declare-fun len ((Vec @a0)) Int)
 
-
 ; Qualifiers
 
 
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((thing Int)(v1 Int)) (=> (and True (and (= (apply len (VCons 1)) 10) (= (apply len (VCons 1)) (apply hen (apply foo (VBlob 12)))))) (= (apply len (VCons 1)) 10))))
+;  Constraints
+(constraint (forall () (=> (and (= (len (VCons 1)) 10) (= (len (VCons 1)) (hen (foo (VBlob 12))))) (= (len (VCons 1)) 10))))
+

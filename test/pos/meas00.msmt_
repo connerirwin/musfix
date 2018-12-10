@@ -1,26 +1,22 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Tree 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun thinginess (Tree) Int)
 
-
 ; Qualifiers
 (qualif Sz ((v Tree)) (< 0 (thinginess v)))
 (qualif Sz ((v Tree)) (< 1 0))
 
-
 ; Well-formedness Constraints
-(wf $k1 ((v Tree)))
+(wf $k1 ((lq_karg$v##k1 Tree)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Tree)) (=> (< 666 (thinginess _VV##1)) ($k1 _VV##1))))
+(constraint (forall ((_VV##2 Tree)) (=> ($k1 _VV##2) (< 0 (thinginess _VV##2)))))
 
-; Horn Constraints
-(constraint (forall ((v1 Tree)) (=> (< 666 (apply thinginess v1)) ($k1 v1))))
-(constraint (forall ((v2 Tree)) (=> ($k1 v2) (< 0 (apply thinginess v2)))))

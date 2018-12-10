@@ -1,16 +1,13 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun sem (Int Int) (Set Int))
-
 
 ; Qualifiers
 
@@ -18,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((i0 Int)(j0 Int)(p Int)(q Int)(v1 (Set Int))) (=> (and True (and True (and (< i0 j0) (and (< j0 i0) (= v1 (apply (apply sem i0) j0)))))) (= v1 (apply (apply sem j0) i0)))))
+;  Constraints
+(constraint (forall ((_VV##1 (Set Int))(j0 Int)(i0 Int)) (=> (and (< i0 j0) (and (< j0 i0) (= _VV##1 (sem i0 j0)))) (= _VV##1 (sem j0 i0)))))
+

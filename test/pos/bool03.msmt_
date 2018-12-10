@@ -1,14 +1,12 @@
-; Uninterpreted Sorts
+; Sorts
 (declare-sort List 1)
-
+(declare-sort Char 0)
 
 ; Constants
-(declare-const cat Str)
-(declare-const not$45$the$45$hippopotamus Str)
-(declare-const dog Str)
+(declare-const lit#cat (List Char))
+(declare-const lit$36$not$45$the$45$hippopotamus (List Char))
+(declare-const lit#dog (List Char))
 
-
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,11 +15,10 @@
 ; Qualifiers
 (qualif LE ((v @a0)(x @a0)) (<= x v))
 
-
 ; Well-formedness Constraints
-(wf $k1 ((bx Bool)(v Bool)))
+(wf $k1 ((lq_karg$bx##k1 Bool)(lq_karg$v##k1 Bool)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Bool)(bx Bool)) (=> (<= (cast_as_int bx) (cast_as_int _VV##1)) ($k1 bx _VV##1))))
+(constraint (forall ((_VV##2 Bool)(bx Bool)) (=> (and (not (= lit#cat lit#dog)) ($k1 bx _VV##2)) (<= (cast_as_int bx) (cast_as_int _VV##2)))))
 
-; Horn Constraints
-(constraint (forall ((bx Bool)(v1 Bool)) (=> (and True (<= (apply cast_as_int bx) (apply cast_as_int v1))) ($k1 bx v1))))
-(constraint (forall ((bx Bool)(zx Bool)(v2 Bool)) (=> (and True (and (not (= cat dog)) ($k1 bx v2))) (<= (apply cast_as_int bx) (apply cast_as_int v2)))))

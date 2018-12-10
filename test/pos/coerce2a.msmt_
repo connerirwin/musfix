@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Obj_b 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((b Int)(pig Obj b)(v1 Int)) (=> (and True (and (= pig 10) True)) (> pig 5))))
+;  Constraints
+(constraint (forall ((pig Obj_b)) (=> (= pig 10) (> pig 5))))
+

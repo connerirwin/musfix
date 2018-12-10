@@ -1,16 +1,13 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
-(declare-fun Prop (GHC.Types.Bool) Bool)
-
+(declare-fun _Prop (Bool) Bool)
 
 ; Qualifiers
 
@@ -18,4 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
+;  Constraints
+
+

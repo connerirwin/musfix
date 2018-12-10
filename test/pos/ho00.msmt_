@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -15,9 +13,9 @@
 
 
 ; Well-formedness Constraints
-(wf $k0 ((v Int)))
+(wf $k0 ((lq_karg$v##k0 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)) (=> (= _VV##1 12) ($k0 _VV##1))))
+(constraint (forall ((_VV##2 Int)) (=> ($k0 _VV##2) (< 10 _VV##2))))
 
-; Horn Constraints
-(constraint (forall ((foo (Tuple) (MapReduce.List Obj a))(v1 Int)) (=> (and True (= v1 12)) ($k0 v1))))
-(constraint (forall ((v2 Int)) (=> ($k0 v2) (< 10 v2))))

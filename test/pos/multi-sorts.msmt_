@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Tree 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((x Tree)(v1 Tree)) (=> (and True (= v1 x)) (= v1 x))))
+;  Constraints
+(constraint (forall ((_VV##1 Tree)(x Tree)) (=> (= _VV##1 x) (= _VV##1 x))))
+

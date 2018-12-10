@@ -35,6 +35,7 @@ import Data.Version (showVersion)
 import Development.GitRev (gitHash)
 
 import Options.Applicative
+import qualified Options.Applicative as OA
 
 import Paths_musfix (version)
 
@@ -47,7 +48,9 @@ data ProgramOptions = ProgramOptions {
   appendOutput   :: Bool,
   suppressOutput :: Bool,
   verboseLogging :: Bool,
-  leastFixpoint  :: Bool
+  solverLogging  :: Bool,
+  leastFixpoint  :: Bool,
+  solverPruning  :: Bool
 } deriving (Show, Eq)
 
 cmdParser :: Parser ProgramOptions
@@ -56,8 +59,10 @@ cmdParser = ProgramOptions
   <*> strOption (long "output" <> short 'o' <> metavar "FILE" <> value "" <> help "Prints results to the specified file")
   <*> switch (long "append" <> short 'a' <> help "Append file output")
   <*> switch (long "silent" <> short 's' <> help "Supresses command-line output")
-  <*> switch (long "verbose" <> help "Output additional logging")
+  <*> switch (long "verbose" <> help "Output additional logging for inputs and outputs")
+  <*> switch (long "solver-logging" <> help "Output additional logging for the solver")
   <*> switch (long "least-fixpoint" <> short 'l' <> help "Use a least-fixpoint solver (default is greatest)")
+  <*> switch (long "disable-pruning" <> short 'p' <> help "Disable early pruning of evaluations")
 
 versionOption :: Parser (a -> a)
 versionOption = infoOption (concat ["musfix", showVersion version, " git commit ", $(gitHash)])
@@ -89,6 +94,7 @@ readConstraints o f = do
     verboseLog o $ "Preparing to find " ++ (fixPointType o) ++ " fixpoint..."
     verboseLog o $"\nInputs\n--------"
     verboseLog o $ "Reading from file " ++ f
+    -- verboseLog o $ show s
     mapM_ ((verboseLog o) . show) ins
     verboseLog o $ "\nQMAP\n--------"
     verboseLog o $ show qmap
@@ -98,7 +104,9 @@ readConstraints o f = do
         constraints = horns,
         qualifierMap = qmap,
         inConsts = cs,
-        inDistinctConsts = ds
+        inDistinctConsts = ds,
+        inSolverLogLevel = if solverLogging o then 15 else 0,
+        inPruning = not $ solverPruning o
       }
     candidates <- findFixPoint params
     verboseLog o $ show candidates

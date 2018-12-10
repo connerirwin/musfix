@@ -15,9 +15,9 @@
 (qualif ListZ ((v (List @a0))) (>= (len v) 0))
 
 ; Well-formedness Constraints
-(wf $k0 ((lq_karg$v0##k0 (List (Tuple Int Obj_a)))))
+(wf $k0 ((lq_karg$v##k0 (List (Tuple Int Obj_a)))))
 
 ;  Constraints
-(constraint (forall ((_VV##1 (List (Tuple Int Obj_a)))(y (List (Tuple Int Obj_a)))) (=> (and (>= (len y) 0) (= _VV##1 y)) ($k0 _VV##1))))
+(constraint (forall ((_VV##1 (List (Tuple Int Obj_a)))(yoink (List (Tuple Int Obj_a)))) (=> (and (>= (len yoink) 0) (= _VV##1 yoink)) ($k0 _VV##1))))
 (constraint (forall ((_VV##2 (List (Tuple Int Obj_a)))) (=> ($k0 _VV##2) (>= (len _VV##2) 0))))
 

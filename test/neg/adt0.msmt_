@@ -1,12 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 (declare-sort Vec 1)
-
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -18,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((x Int)(y Int)(xs (Vec Int))(ys (Vec Int))(l1 (Vec Int))(l2 (Vec Int))(v1 Int)) (=> (and True (and True (and True (and True (and (= l1 (mkCons x xs)) (and (= l2 (mkCons y ys)) True)))))) (= x y))))
+;  Constraints
+(constraint (forall ((l2 (Vec Int))(l1 (Vec Int))(ys (Vec Int))(xs (Vec Int))(y Int)(x Int)) (=> (and (= l1 (mkCons x xs)) (= l2 (mkCons y ys))) (= x y))))
+

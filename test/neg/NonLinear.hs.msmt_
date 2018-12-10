@@ -1,11 +1,10 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort GHC.Num.Num 1)
+(declare-sort GHC.Types.Ordering 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -15,9 +14,9 @@
 
 
 ; Well-formedness Constraints
-(wf $k_$35$$35$38 ((GHC.Types.EQ GHC.Types.Ordering)(VV Int)(GHC.Types.GT GHC.Types.Ordering)(GHC.Types.LT GHC.Types.Ordering)(pig Int)))
+(wf $k_##38 ((lq_karg$GHC.Types.EQ##6U##k_##38 GHC.Types.Ordering)(lq_karg$GHC.Types.GT##6W##k_##38 GHC.Types.Ordering)(lq_karg$GHC.Types.LT##6S##k_##38 GHC.Types.Ordering)(lq_karg$VV##37##k_##38 Int)(lq_karg$pig##amI##k_##38 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)(alice##alI Int)(lq_tmp$x##71 Int)(bob##alJ Int)(lq_tmp$x##65 Int)(zonk##alH Int)(zonk##1 Int)(zink##alG Int)(zink##0 Int)(_GHC.Types.GT##6W GHC.Types.Ordering)(_VV##30 GHC.Types.Ordering)(_GHC.Types.LT##6S GHC.Types.Ordering)(_VV##29 GHC.Types.Ordering)(_GHC.Types.EQ##6U GHC.Types.Ordering)(_VV##28 GHC.Types.Ordering)) (=> (and (= _VV##28 _GHC.Types.EQ##6U) (and (= _VV##29 _GHC.Types.LT##6S) (and (= _VV##30 _GHC.Types.GT##6W) (and (= zink##0 5) (and (= zonk##1 67) (and ($k_##38 _GHC.Types.EQ##6U _GHC.Types.GT##6W _GHC.Types.LT##6S lq_tmp$x##65 zonk##alH) (and ($k_##38 _GHC.Types.EQ##6U _GHC.Types.GT##6W _GHC.Types.LT##6S lq_tmp$x##71 zink##alG) (= _VV##1 (+ alice##alI bob##alJ))))))))) (= _VV##1 0))))
+(constraint (forall ((_VV##4 Int)(lq_anf$##dvQ Int)(lq_tmp$x##41 Int)(pig##amI Int)(_GHC.Types.GT##6W GHC.Types.Ordering)(_VV##30 GHC.Types.Ordering)(_GHC.Types.LT##6S GHC.Types.Ordering)(_VV##29 GHC.Types.Ordering)(_GHC.Types.EQ##6U GHC.Types.Ordering)(_VV##28 GHC.Types.Ordering)) (=> (and (= _VV##28 _GHC.Types.EQ##6U) (and (= _VV##29 _GHC.Types.LT##6S) (and (= _VV##30 _GHC.Types.GT##6W) (and (= lq_tmp$x##41 1) (= _VV##4 (+ pig##amI lq_anf$##dvQ)))))) ($k_##38 _GHC.Types.EQ##6U _GHC.Types.GT##6W _GHC.Types.LT##6S _VV##4 pig##amI))))
 
-; Horn Constraints
-(constraint (forall ((GHC.Num.$fNumInt##rlL (GHC.Num.Num Int))(GHC.Types.EQ##6U GHC.Types.Ordering)(GHC.Types.LT##6S GHC.Types.Ordering)(GHC.Types.GT##6W GHC.Types.Ordering)(zink##alG Int)(zonk##alH Int)(bob##alJ Int)(alice##alI Int)(v1 Int)) (=> (and True (and (= v28 GHC.Types.EQ##6U) (and (= v29 GHC.Types.LT##6S) (and (= v30 GHC.Types.GT##6W) (and (= zink##0 5) (and (= zonk##1 67) (and ($k_$35$$35$38 GHC.Types.EQ##6U lq_tmp$x##65 GHC.Types.GT##6W GHC.Types.LT##6S zonk##alH) (and ($k_$35$$35$38 GHC.Types.EQ##6U lq_tmp$x##71 GHC.Types.GT##6W GHC.Types.LT##6S zink##alG) (= v1 (+ alice##alI bob##alJ)))))))))) (= v1 0))))
-(constraint (forall ((GHC.Num.$fNumInt##rlL (GHC.Num.Num Int))(GHC.Types.EQ##6U GHC.Types.Ordering)(GHC.Types.LT##6S GHC.Types.Ordering)(GHC.Types.GT##6W GHC.Types.Ordering)(pig##amI Int)(lq_anf$##dvQ Int)(v4 Int)) (=> (and True (and (= v28 GHC.Types.EQ##6U) (and (= v29 GHC.Types.LT##6S) (and (= v30 GHC.Types.GT##6W) (and True (and (= lq_tmp$x##41 1) (= v4 (+ pig##amI lq_anf$##dvQ)))))))) ($k_$35$$35$38 GHC.Types.EQ##6U v4 GHC.Types.GT##6W GHC.Types.LT##6S pig##amI))))

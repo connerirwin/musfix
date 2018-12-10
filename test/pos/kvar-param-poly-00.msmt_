@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Obj_alpha 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -14,11 +12,10 @@
 ; Qualifiers
 (qualif Bog ((v @a0)(x @a0)) (= x v))
 
-
 ; Well-formedness Constraints
-(wf $k0 ((x Obj alpha)(v Obj alpha)))
+(wf $k0 ((lq_karg$v##k0 Obj_alpha)(lq_karg$x##k0 Obj_alpha)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Obj_alpha)(x Obj_alpha)) (=> (= _VV##1 x) ($k0 _VV##1 x))))
+(constraint (forall ((_VV##2 Int)(b Int)(a Int)(v Int)) (=> (and (= a 10) (and ($k0 v a) (= _VV##2 b))) (= _VV##2 10))))
 
-; Horn Constraints
-(constraint (forall ((x Obj alpha)(v1 Obj alpha)) (=> (and True (= v1 x)) ($k0 x v1))))
-(constraint (forall ((a Int)(b Int)(v2 Int)) (=> (and (= a 10) (and ($k0 a v) (= v2 b))) (= v2 10))))

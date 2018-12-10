@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Map_t 2)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,9 +15,10 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((m1 (Map_t Int Int))(v1 Int)) (=> (and (= m1 (Map_default 0)) (= v1 (Map_select m1 100))) (= v1 0))))
-(constraint (forall ((m1 (Map_t Int Int))(m2 (Map_t Int Int))(v2 Int)) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (= v2 (Map_select m2 100)))) (= v2 0))))
-(constraint (forall ((m1 (Map_t Int Int))(m2 (Map_t Int Int))(v3 Int)) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (= v3 (Map_select m2 10)))) (= v3 1))))
-(constraint (forall ((m1 (Map_t Int Int))(m2 (Map_t Int Int))(m3 (Map_t Int Int))(v4 Int)) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (and (= m3 (Map_store (Map_store m1 20 1) 10 1)) True))) (= m2 m3))))
-(constraint (forall ((m1 (Map_t Int Int))(m2 (Map_t Int Int))(m3 (Map_t Int Int))(m4 (Map_t Int Int))(m5 (Map_t Int Int))(v5 Int)) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (and (= m3 (Map_store (Map_store m1 20 1) 10 1)) (and (= m4 (Map_store m1 10 1)) (and (= m5 (Map_store m1 20 1)) True))))) (= m2 (Map_union m4 m4)))))
+;  Constraints
+(constraint (forall ((_VV##1 Int)(m1 (Map_t Int Int))) (=> (and (= m1 (Map_default 0)) (= _VV##1 (Map_select m1 100))) (= _VV##1 0))))
+(constraint (forall ((_VV##2 Int)(m2 (Map_t Int Int))(m1 (Map_t Int Int))) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (= _VV##2 (Map_select m2 100)))) (= _VV##2 0))))
+(constraint (forall ((_VV##3 Int)(m2 (Map_t Int Int))(m1 (Map_t Int Int))) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (= _VV##3 (Map_select m2 10)))) (= _VV##3 1))))
+(constraint (forall ((m3 (Map_t Int Int))(m2 (Map_t Int Int))(m1 (Map_t Int Int))) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (= m3 (Map_store (Map_store m1 20 1) 10 1)))) (= m2 m3))))
+(constraint (forall ((m5 (Map_t Int Int))(m4 (Map_t Int Int))(m3 (Map_t Int Int))(m2 (Map_t Int Int))(m1 (Map_t Int Int))) (=> (and (= m1 (Map_default 0)) (and (= m2 (Map_store (Map_store m1 10 1) 20 1)) (and (= m3 (Map_store (Map_store m1 20 1) 10 1)) (and (= m4 (Map_store m1 10 1)) (= m5 (Map_store m1 20 1)))))) (= m2 (Map_union m4 m4)))))
+

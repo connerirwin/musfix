@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -15,15 +13,15 @@
 
 
 ; Well-formedness Constraints
-(wf $kone ((v Int)))
-(wf $kb ((v Int)))
-(wf $ka ((v Int)))
+(wf $kone ((lq_karg$v##kone Int)))
+(wf $kb ((lq_karg$v##kb Int)))
+(wf $ka ((lq_karg$v##ka Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)(x1 Int)) (=> ($kone _VV##1) (= _VV##1 x1))))
+(constraint (forall ((_VV##2 Int)(x1 Int)) (=> (= _VV##2 (+ x1 1)) ($ka _VV##2))))
+(constraint (forall ((_VV##3 Int)(x2 Int)) (=> ($ka _VV##3) (= _VV##3 x2))))
+(constraint (forall ((_VV##4 Int)(x2 Int)) (=> (= _VV##4 (+ x2 1)) ($kb _VV##4))))
+(constraint (forall ((_VV##5 Int)) (=> ($kb _VV##5) (= _VV##5 3))))
+(constraint (forall ((_VV##10 Int)) (=> (= _VV##10 1) ($kone _VV##10))))
 
-; Horn Constraints
-(constraint (forall ((x1 Int)(v1 Int)) (=> (and True ($kone v1)) (= v1 x1))))
-(constraint (forall ((x1 Int)(v2 Int)) (=> (and True (= v2 (+ x1 1))) ($ka v2))))
-(constraint (forall ((x2 Int)(v3 Int)) (=> (and True ($ka v3)) (= v3 x2))))
-(constraint (forall ((x2 Int)(v4 Int)) (=> (and True (= v4 (+ x2 1))) ($kb v4))))
-(constraint (forall ((v5 Int)) (=> ($kb v5) (= v5 3))))
-(constraint (forall ((v10 Int)) (=> (= v10 1) ($kone v10))))

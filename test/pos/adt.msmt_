@@ -1,12 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 (declare-sort Vec 1)
-
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -18,9 +15,10 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((x Int)(y Int)(xs (Vec Int))(ys (Vec Int))(l1 (Vec Int))(l2 (Vec Int))(v1 Int)) (=> (and True (and True (and (= xs mkNil) (and True (and (= l1 (mkCons x xs)) (and (= l2 (mkCons y ys)) (= l1 l2))))))) (= x y))))
-(constraint (forall ((x Int)(y Int)(xs (Vec Int))(ys (Vec Int))(l1 (Vec Int))(l2 (Vec Int))(v2 Int)) (=> (and True (and True (and (= xs mkNil) (and True (and (= l1 (mkCons x xs)) (and (= l2 (mkCons y ys)) (= l1 l2))))))) (= xs ys))))
-(constraint (forall ((x Int)(xs (Vec Int))(l1 (Vec Int))(l3 (Vec Int))(v3 Int)) (=> (and True (and (= xs mkNil) (and (= l1 (mkCons x xs)) (and True (= l1 l3))))) (is$mkCons l3))))
-(constraint (forall ((x Int)(xs (Vec Int))(l1 (Vec Int))(l3 (Vec Int))(v4 Int)) (=> (and True (and (= xs mkNil) (and (= l1 (mkCons x xs)) (and True (= l1 l3))))) (= x (head l3)))))
-(constraint (forall ((x Int)(xs (Vec Int))(l1 (Vec Int))(l3 (Vec Int))(v5 Int)) (=> (and True (and (= xs mkNil) (and (= l1 (mkCons x xs)) (and True (= l1 l3))))) (= mkNil (tail l3)))))
+;  Constraints
+(constraint (forall ((l2 (Vec Int))(l1 (Vec Int))(ys (Vec Int))(xs (Vec Int))(y Int)(x Int)) (=> (and (= xs mkNil) (and (= l1 (mkCons x xs)) (and (= l2 (mkCons y ys)) (= l1 l2)))) (= x y))))
+(constraint (forall ((l2 (Vec Int))(l1 (Vec Int))(ys (Vec Int))(xs (Vec Int))(y Int)(x Int)) (=> (and (= xs mkNil) (and (= l1 (mkCons x xs)) (and (= l2 (mkCons y ys)) (= l1 l2)))) (= xs ys))))
+(constraint (forall ((l3 (Vec Int))(l1 (Vec Int))(xs (Vec Int))(x Int)) (=> (and (= xs mkNil) (and (= l1 (mkCons x xs)) (= l1 l3))) (is$mkCons l3))))
+(constraint (forall ((l3 (Vec Int))(l1 (Vec Int))(xs (Vec Int))(x Int)) (=> (and (= xs mkNil) (and (= l1 (mkCons x xs)) (= l1 l3))) (= x (head l3)))))
+(constraint (forall ((l3 (Vec Int))(l1 (Vec Int))(xs (Vec Int))(x Int)) (=> (and (= xs mkNil) (and (= l1 (mkCons x xs)) (= l1 l3))) (= mkNil (tail l3)))))
+

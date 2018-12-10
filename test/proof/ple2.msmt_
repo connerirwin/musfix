@@ -1,18 +1,15 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun selQQ (QQ) Int)
-(declare-fun QQ (Int) QQ)
+(declare-fun _mk_QQ (Int) QQ)
 (declare-fun mkQQ (Int) QQ)
-
 
 ; Qualifiers
 
@@ -20,5 +17,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((v1 QQ)) (=> (and (= v1 (apply mkQQ 10)) (and (= (apply mkQQ 10) (apply QQ 10)) (= (apply selQQ (apply QQ 10)) 10))) (= (apply selQQ v1) 10))))
+;  Constraints
+(constraint (forall ((_VV##1 QQ)) (=> (and (= _VV##1 (mkQQ 10)) (and (= (mkQQ 10) (QQ 10)) (= (selQQ (QQ 10)) 10))) (= (selQQ _VV##1) 10))))
+

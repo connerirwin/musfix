@@ -27,6 +27,7 @@ defaultHornSolverParams = HornSolverParams {
   pruneQuals = True,
   isLeastFixpoint = False,
   optimalValuationsStrategy = MarcoValuations,
+  -- These have been modified for precondition testing but should probably be left on otherwise
   semanticPrune = True,
   agressivePrune = True,
   candidatePickStrategy = InitializedWeakCandidate,
@@ -39,14 +40,22 @@ data SolverInputs = SolverInputs {
   constraints :: [Formula],
   qualifierMap :: QMap,
   inConsts :: [(Id, Sort)],
-  inDistinctConsts :: [[Id]]
+  inDistinctConsts :: [[Id]],
+  inSolverLogLevel :: Int,
+  inPruning :: Bool
 }
 
 -- | Finds fix point canidates
 findFixPoint :: SolverInputs -> IO [Candidate]
 findFixPoint inputs = evalZ3State $ evalFixPointSolver (computeFixPoints inputs) params
   where
-    params = defaultHornSolverParams { isLeastFixpoint = (useLeastFixpoint inputs) }
+    params = defaultHornSolverParams {
+        isLeastFixpoint = (useLeastFixpoint inputs),
+        solverLogLevel = (inSolverLogLevel inputs),
+        semanticPrune = (inPruning inputs),
+        agressivePrune = (inPruning inputs),
+        pruneQuals = (inPruning inputs)
+      }
 
 -- | Compute the fix points
 computeFixPoints :: SolverInputs -> HornSolver [Candidate]

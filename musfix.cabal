@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ff96742285f0b8931bf9939e70e2b9347aecc55655e4421694dfd7665c6789b4
+-- hash: 990cf569a5081cb0619e0273b94067ad7a3d858a78abb4aa766af5855b25356c
 
 name:           musfix
 version:        0.1.0.0
@@ -14,7 +16,6 @@ author:         Nadia Polikarpova,
 maintainer:     cjirwin@ucsd.edu
 license:        MIT
 build-type:     Simple
-cabal-version:  >= 1.10
 
 library
   exposed-modules:

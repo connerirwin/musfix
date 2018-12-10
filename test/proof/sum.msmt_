@@ -1,16 +1,13 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun sum (Int) Int)
-
 
 ; Qualifiers
 
@@ -18,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((v1 Int)) (=> (and (= (apply sum 3) (+ 3 (+ (- 3 1) (+ (- (- 3 1) 1) 0)))) (and (= (apply sum (- (- (- 3 1) 1) 1)) 0) (and (= (apply sum (- (- 3 1) 1)) (+ (- (- 3 1) 1) (apply sum (- (- (- 3 1) 1) 1)))) (and (= (apply sum (- 3 1)) (+ (- 3 1) (apply sum (- (- 3 1) 1)))) (= (apply sum 3) (+ 3 (apply sum (- 3 1)))))))) (= (apply sum 3) 6))))
+;  Constraints
+(constraint (forall () (=> (and (= (sum 3) (+ 3 (+ (- 3 1) (+ (- (- 3 1) 1) 0)))) (and (= (sum (- (- (- 3 1) 1) 1)) 0) (and (= (sum (- (- 3 1) 1)) (+ (- (- 3 1) 1) (sum (- (- (- 3 1) 1) 1)))) (and (= (sum (- 3 1)) (+ (- 3 1) (sum (- (- 3 1) 1)))) (= (sum 3) (+ 3 (sum (- 3 1)))))))) (= (sum 3) 6))))
+

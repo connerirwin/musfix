@@ -1,16 +1,14 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort BitVec 1)
+(declare-sort Size32 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun offset (Int Int) @a0)
-
 
 ; Qualifiers
 
@@ -18,5 +16,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((x (BitVec Size32))(v1 (BitVec Size32))) (=> (and (= VV (apply (apply offset 0) 0)) (= v1 x)) (not (= v1 x)))))
+;  Constraints
+(constraint (forall ((_VV##1 (BitVec Size32))(x (BitVec Size32))(_VV (BitVec Size32))) (=> (and (= _VV (offset 0 0)) (= _VV##1 x)) (not (= _VV##1 x)))))
+

@@ -1,16 +1,13 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun foo (@a0) @a0)
-
 
 ; Qualifiers
 
@@ -18,4 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
+;  Constraints
+
+

@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Obj_a_aZU 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((v2 Obj a_aZU)) (=> True (>= v2 1.00000))))
+;  Constraints
+(constraint (forall ((_VV##2 Obj_a_aZU)) (=> True (>= _VV##2 1.0))))
+

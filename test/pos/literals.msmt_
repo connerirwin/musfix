@@ -1,15 +1,12 @@
-; Uninterpreted Sorts
+; Sorts
 (declare-sort List 1)
-
+(declare-sort Char 0)
 
 ; Constants
-(declare-const foo Str)
-(declare-const bar Str)
+(declare-const lit#foo (List Char))
+(declare-const lit#bar (List Char))
 
-
-; Distinct Constants
-(assert (distinct foo bar))
-
+(assert (distinct lit#foo lit#bar))
 
 ; Uninterpreted Functions
 
@@ -20,5 +17,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((v1 Int)) (=> True (not (= bar foo)))))
+;  Constraints
+(constraint (forall () (=> True (not (= lit#bar lit#foo)))))
+

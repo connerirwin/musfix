@@ -1,22 +1,20 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Goo.T 1)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun elems ((Goo.T @a0)) (Set @a0))
 
-
 ; Qualifiers
 (qualif Cmp ((v @a0)(fix##126#X @a0)) (>= v fix##126#X))
-
 
 ; Well-formedness Constraints
 
 
-; Horn Constraints
+;  Constraints
+
+

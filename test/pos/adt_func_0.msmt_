@@ -1,17 +1,13 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 (declare-sort Boo 0)
-
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 (declare-fun booFirst (Boo Int) Int)
-
 
 ; Qualifiers
 
@@ -19,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((x Boo)(y Boo)(v1 Int)) (=> (and True (and (= y x) (= (apply (booFirst x) 0) 10))) (= (apply (booFirst y) 0) 10))))
+;  Constraints
+(constraint (forall ((y Boo)(x Boo)) (=> (and (= y x) (= (booFirst x 0) 10)) (= (booFirst y 0) 10))))
+

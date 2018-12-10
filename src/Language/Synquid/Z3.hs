@@ -357,7 +357,7 @@ assertDistincts cs ds = do
       f <- func name
       mkApp f []
     func name = function (sortOf name cs) name []
-    sortOf name [] = error "assert distinct for unknown constant"
+    sortOf name [] = trace ("assert distinct for unknown constant " ++ name ++ ", assuming int") IntS
     sortOf name ((n, s):xs)
       | n == name     = s
       | otherwise     = sortOf name xs

@@ -1,0 +1,14 @@
+
+Preparing to find greatest fixpoint...
+
+Inputs
+--------
+Reading from file test/sample/var00.msmt
+WFConstraint "$k0" [Var IntS "_v",Var IntS "x"]
+
+QMAP
+--------
+fromList [("$k0",QSpace {_qualifiers = [], _maxCount = 0})]
+
+Candidates
+--------

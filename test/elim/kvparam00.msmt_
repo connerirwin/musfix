@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -15,9 +13,9 @@
 
 
 ; Well-formedness Constraints
-(wf $k_0 ((v Int)))
+(wf $k_0 ((lq_karg$v##k_0 Int)))
 
+;  Constraints
+(constraint (forall ((x Int)) (=> True ($k_0 x))))
+(constraint (forall ((y Int)(x Int)) (=> ($k_0 y) (= y x))))
 
-; Horn Constraints
-(constraint (forall ((x Int)(y Int)(v1 Int)) (=> (and True (and True True)) ($k_0 x))))
-(constraint (forall ((x Int)(y Int)(v2 Int)) (=> (and True (and True ($k_0 y))) (= y x))))

@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Obj_a_aTp 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((v3 (Set Obj a_aTp))) (=> (Set_emp v3) (= v3 {}))))
+;  Constraints
+(constraint (forall ((_VV##3 (Set Obj_a_aTp))) (=> (Set_emp _VV##3) (= _VV##3 {}))))
+

@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -15,13 +13,12 @@
 (qualif Cmp ((v @a0)) (= v 10))
 (qualif Cmp ((v @a0)) (= v 12))
 
-
 ; Well-formedness Constraints
-(wf $k_0 ((v Int)))
+(wf $k_0 ((lq_karg$v##k_0 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)) (=> (= _VV##1 10) ($k_0 _VV##1))))
+(constraint (forall ((_VV##2 Int)) (=> (= _VV##2 12) ($k_0 _VV##2))))
+(constraint (forall ((_VV##3 Int)) (=> ($k_0 _VV##3) (not (= _VV##3 12)))))
+(constraint (forall ((_VV##4 Int)) (=> ($k_0 _VV##4) (not (= _VV##4 10)))))
 
-; Horn Constraints
-(constraint (forall ((v1 Int)) (=> (= v1 10) ($k_0 v1))))
-(constraint (forall ((v2 Int)) (=> (= v2 12) ($k_0 v2))))
-(constraint (forall ((v3 Int)) (=> ($k_0 v3) (not (= v3 12)))))
-(constraint (forall ((v4 Int)) (=> ($k_0 v4) (not (= v4 10)))))

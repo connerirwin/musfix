@@ -1,24 +1,21 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Obj_a_ax6 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 
 
 ; Qualifiers
-(qualif Auto ((v_2 @a0)(A0 @a0)) (= v_2 A0))
-
+(qualif Auto ((v_2 @a0)(_A0 @a0)) (= v_2 _A0))
 
 ; Well-formedness Constraints
-(wf $k__511 ((VV510 Obj a_ax6)(ds_dxx Obj a_ax6)))
+(wf $k__511 ((lq_karg$VV510##k__511 Obj_a_ax6)(lq_karg$ds_dxx##k__511 Obj_a_ax6)))
 
+;  Constraints
+(constraint (forall ((_VV##4 Obj_a_ax6)(ds_dxx Obj_a_ax6)) (=> ($k__511 _VV##4 ds_dxx) (= _VV##4 ds_dxx))))
+(constraint (forall ((_VV##9 Obj_a_ax6)(ds_dxx Obj_a_ax6)) (=> (= _VV##9 ds_dxx) ($k__511 _VV##9 ds_dxx))))
 
-; Horn Constraints
-(constraint (forall ((ds_dxx Obj a_ax6)(v4 Obj a_ax6)) (=> (and True ($k__511 v4 ds_dxx)) (= v4 ds_dxx))))
-(constraint (forall ((ds_dxx Obj a_ax6)(v9 Obj a_ax6)) (=> (and True (= v9 ds_dxx)) ($k__511 v9 ds_dxx))))

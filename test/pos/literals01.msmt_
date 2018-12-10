@@ -1,13 +1,10 @@
-; Uninterpreted Sorts
+; Sorts
 (declare-sort List 1)
-
+(declare-sort Char 0)
 
 ; Constants
-(declare-const cat Str)
+(declare-const lit$cat (List Char))
 
-
-; Distinct Constants
-(assert (distinct cat))
 
 
 ; Uninterpreted Functions
@@ -19,5 +16,7 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((v1 Str)) (=> (= v1 cat) (= (strLen v1) 3))))
+;  Constraints
+(constraint (forall ((_VV##1 (List Char))) (=> (= _VV##1 lit$cat) (= (strLen _VV##1) 3))))
+(constraint (forall ((_VV##2 (List Char))) (=> (= _VV##2 lit$cat) (= _VV##2 lit$cat))))
+

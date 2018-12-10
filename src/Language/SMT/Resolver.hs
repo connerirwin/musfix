@@ -35,6 +35,8 @@ import qualified Data.Map as Map
 import Data.Map (Map, (!))
 import qualified Data.Set as Set
 
+import Debug.Trace
+
 data FunctionApplication = FunctionApplication {
   funcName   :: String,
   signature  :: [Sort],
@@ -84,7 +86,7 @@ generateSubstitutions formals actuals = if length singleMappings /= length forma
     validMappings = filter (isSet . Map.elems) fullMappings
 
     sameSort :: Formula -> Formula -> Bool
-    sameSort (Var s1 _) (Var s2 _) = s1 == s2 || isAnyPoly s1 || isAnyPoly s2
+    sameSort (Var s1 _) (Var s2 _) = canUnifySorts s1 s2
     sameSort _          _          = False
 
     keysMatch :: Eq a => [(a, b)] -> [(a, c)] -> Bool

@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Obj_a 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((a Int)(x Int)(y Obj a)(v1 Int)) (=> (and True (and True (and True (= x y)))) (= y x))))
+;  Constraints
+(constraint (forall ((y Obj_a)(x Int)) (=> (= x y) (= y x))))
+

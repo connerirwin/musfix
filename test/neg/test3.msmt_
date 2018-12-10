@@ -1,24 +1,21 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
 
 
 ; Qualifiers
-(qualif Zog ((v @a1)(z @a0)) (= v z))
-
+(qualif Zog ((v @a0)(z @a1)) (= v z))
 
 ; Well-formedness Constraints
-(wf $k0 ((x Int)(v Int)))
+(wf $k0 ((lq_karg$v##k0 Int)(lq_karg$x##k0 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)(q Int)) (=> (= _VV##1 q) ($k0 _VV##1 q))))
+(constraint (forall ((_VV##2 Int)(y Int)) (=> (and (= y 42) ($k0 _VV##2 y)) (= _VV##2 10))))
 
-; Horn Constraints
-(constraint (forall ((q Int)(v1 Int)) (=> (and True (= v1 q)) ($k0 q v1))))
-(constraint (forall ((y Int)(v2 Int)) (=> (and (= y 42) ($k0 y v2)) (= v2 10))))

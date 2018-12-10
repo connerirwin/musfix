@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
+; Sorts
 
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -17,5 +15,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((a Int)(v3 Int)) (=> (and (or (= a 10) (= a 20)) (= v3 a)) (<= 10 v3))))
+;  Constraints
+(constraint (forall ((_VV##3 Int)(a Int)) (=> (and (or (= a 10) (= a 20)) (= _VV##3 a)) (<= 10 _VV##3))))
+

@@ -1,11 +1,9 @@
-; Uninterpreted Sorts
-(declare-sort List 1)
-
+; Sorts
+(declare-sort Tuple 0)
 
 ; Constants
 
 
-; Distinct Constants
 
 
 ; Uninterpreted Functions
@@ -15,10 +13,10 @@
 
 
 ; Well-formedness Constraints
-(wf $k_$35$$35$1 ((VV Tuple)(a Int)))
+(wf $k_##1 ((lq_karg$VV##1##k_##1 Tuple)(lq_karg$a##k_##1 Int)))
 
+;  Constraints
+(constraint (forall ((_VV##1 Int)(c Int)(a Int)) (=> (= _VV##1 c) ($k_##1 _VV##1 a))))
+(constraint (forall ((_VV##2 Int)(c Int)(a Int)) (=> ($k_##1 _VV##2 a) (= _VV##2 c))))
+(constraint (forall ((_VV##3 Int)) (=> ($k_##1 _VV##3 a) (= _VV##3 0))))
 
-; Horn Constraints
-(constraint (forall ((a Int)(c Int)(v1 Int)) (=> (and True (and True (= v1 c))) ($k_$35$$35$1 v1 a))))
-(constraint (forall ((a Int)(c Int)(v2 Int)) (=> (and True (and True ($k_$35$$35$1 v2 a))) (= v2 c))))
-(constraint (forall ((v3 Int)) (=> ($k_$35$$35$1 v3 a) (= v3 0))))

@@ -17,5 +17,5 @@
 
 
 ;  Constraints
-
+(constraint (forall ((xOne Peano)(xZero Peano)) (=> (and (= xZero _Zero) (= xOne _One)) (= xZero xOne))))
 

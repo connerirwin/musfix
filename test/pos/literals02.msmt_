@@ -1,19 +1,18 @@
-; Uninterpreted Sorts
+; Sorts
 (declare-sort List 1)
-
+(declare-sort Char 0)
+(declare-sort Obj_fix$36$$91$$93$ 0)
+(declare-sort Data.Foldable.Foldable 1)
+(declare-sort GHC.Types.Ordering 0)
 
 ; Constants
-(declare-const cat Str)
+(declare-const lit$cat (List Char))
 
-
-; Distinct Constants
-(assert (distinct cat))
 
 
 ; Uninterpreted Functions
-(declare-fun len ((@a0 @a1)) Int)
+(declare-fun len ((@t0 @a1)) Int)
 (declare-fun strLen ((List Char)) Int)
-
 
 ; Qualifiers
 
@@ -21,5 +20,6 @@
 ; Well-formedness Constraints
 
 
-; Horn Constraints
-(constraint (forall ((Data.Foldable.$36$fFoldable$91$$93$$35$$35$rlx (Data.Foldable.Foldable Obj fix$36$36$36$$36$91$36$$36$93$36$))(GHC.Types.True##6u Bool)(GHC.Types.False##68 Bool)(GHC.Types.EQ##6U GHC.Types.Ordering)(GHC.Types.LT##6S GHC.Types.Ordering)(GHC.Types.GT##6W GHC.Types.Ordering)(lq_anf$##1677724177##dFz Str)(lq_anf$##1677724178##dFA (List Char))(v1 Int)) (=> (and True (and (= v28 GHC.Types.True##6u) (and (= v29 GHC.Types.False##68) (and (= v30 GHC.Types.EQ##6U) (and (= v31 GHC.Types.LT##6S) (and (= v32 GHC.Types.GT##6W) (and (= lq_tmp$x##35 cat) (and (and (= lq_tmp$x##41 lq_anf$##1677724177##dFz) (and (= (apply len lq_tmp$x##41) (strLen lq_anf$##1677724177##dFz)) (>= (apply len lq_tmp$x##41) 0))) (and (>= v1 0) (= v1 (apply len lq_anf$##1677724178##dFA))))))))))) (= v1 3))))
+;  Constraints
+(constraint (forall ((_VV##1 Int)(lq_anf$##1677724178##dFA (List Char))(lq_tmp$x##41 (List Char))(lq_anf$##1677724177##dFz (List Char))(lq_tmp$x##35 (List Char))(_GHC.Types.GT##6W GHC.Types.Ordering)(_VV##32 GHC.Types.Ordering)(_GHC.Types.LT##6S GHC.Types.Ordering)(_VV##31 GHC.Types.Ordering)(_GHC.Types.EQ##6U GHC.Types.Ordering)(_VV##30 GHC.Types.Ordering)(_GHC.Types.False##68 Bool)(_VV##29 Bool)(_GHC.Types.True##6u Bool)(_VV##28 Bool)) (=> (and (= _VV##28 _GHC.Types.True##6u) (and (= _VV##29 _GHC.Types.False##68) (and (= _VV##30 _GHC.Types.EQ##6U) (and (= _VV##31 _GHC.Types.LT##6S) (and (= _VV##32 _GHC.Types.GT##6W) (and (= lq_tmp$x##35 lit$cat) (and (and (= lq_tmp$x##41 lq_anf$##1677724177##dFz) (and (= (len lq_tmp$x##41) (strLen lq_anf$##1677724177##dFz)) (>= (len lq_tmp$x##41) 0))) (and (>= _VV##1 0) (= _VV##1 (len lq_anf$##1677724178##dFA)))))))))) (= _VV##1 3))))
+
