@@ -159,7 +159,13 @@ greatestFixPoint quals extractAssumptions candidates = do
         nc <- mapM (updateCandidate fml cand diffs) diffs
         return (nc, rest)
     case find (Set.null . invalidConstraints) newCandidates of
-      Just cand' -> return $ cand' : (delete cand' newCandidates ++ rest')  -- Solution found
+      Just cand' -> do
+          let newCandidates'    = (delete cand' newCandidates) ++ rest'
+          let validCandidates   = filter (Set.null . invalidConstraints) newCandidates'
+          let invalidCandidates = filter (not . Set.null . invalidConstraints) newCandidates'
+          processedInvalids <- greatestFixPoint quals extractAssumptions invalidCandidates
+--           return $ cand' : newCandidates'
+          return $ cand' : (validCandidates ++ processedInvalids)  -- Solution found
       Nothing -> greatestFixPoint quals extractAssumptions (newCandidates ++ rest')
 
   where
@@ -337,7 +343,9 @@ leastFixPoint extractAssumptions (cand@(Candidate sol _ _ _):rest) = do
       Just sol' -> do
                       cand' <- updateCandidate fml cand sol'
                       if (Set.null . invalidConstraints) cand'
-                        then return $ cand' : rest -- Solution found
+                        then do
+                          rest' <- (leastFixPoint extractAssumptions rest)
+                          return $ cand' : rest'  -- Solution found
                         else leastFixPoint extractAssumptions (cand' : rest)
   where
     -- | Re-evaluate affected clauses in @valids@ and @otherInvalids@ after solution has been strengthened from @sol@ to @sol'@ in order to fix @fml@
